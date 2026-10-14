@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://accounts.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://accounts.google.com https://www.googleapis.com https://*.workers.dev; frame-src https://accounts.google.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://accounts.google.com https://www.googleapis.com https://*.workers.dev; frame-src https://accounts.google.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Lynx</title>
 
 <!-- ====================== GUARD ====================== -->
@@ -12,13 +12,13 @@
   'use strict';
 
   const NATIVE = {
-    fetch:        window.fetch,
-    toString:     Function.prototype.toString,
-    xhrOpen:      window.XMLHttpRequest && window.XMLHttpRequest.prototype.open,
-    xhrSend:      window.XMLHttpRequest && window.XMLHttpRequest.prototype.send,
-    defineProp:   Object.defineProperty,
-    freeze:       Object.freeze,
-    locReplace:   window.location.replace.bind(window.location)
+    fetch:      window.fetch,
+    toString:   Function.prototype.toString,
+    xhrOpen:    window.XMLHttpRequest && window.XMLHttpRequest.prototype.open,
+    xhrSend:    window.XMLHttpRequest && window.XMLHttpRequest.prototype.send,
+    defineProp: Object.defineProperty,
+    freeze:     Object.freeze,
+    locReplace: window.location.replace.bind(window.location)
   };
 
   let killed = false;
@@ -59,8 +59,7 @@
   } catch {}
 
   // ---------- 2. congela só o que não quebra o Google ----------
-  // NÃO congelar setTimeout/setInterval: o GSI usa intensivamente.
-  // NÃO congelar fetch: o GSI tbm usa; em vez disso, checamos integridade.
+  // NÃO congelar setTimeout/setInterval/fetch: o GSI usa intensivamente.
 
   try {
     NATIVE.defineProp(Function.prototype, 'toString', {
@@ -112,14 +111,12 @@
     ];
     for (const g of gm) if (g in window) return hardKill('userscript_global:' + g);
 
-    // DevTools ancorado (dimensão) — threshold generoso pra evitar falso positivo
+    // DevTools ancorado (dimensão) — threshold generoso
     if (devtoolsOpen()) return hardKill('devtools_open');
   }
 
   function devtoolsOpen() {
     try {
-      // janela real vs viewport. Barra de favoritos + status bar ocupam
-      // ~130px no pior caso. DevTools ancorado abre >220px de um lado.
       const wDiff = window.outerWidth  - window.innerWidth;
       const hDiff = window.outerHeight - window.innerHeight;
       return wDiff > 220 || hDiff > 220;
@@ -141,13 +138,11 @@
 
   window.addEventListener('keydown', blockShortcuts, true);
   window.addEventListener('keyup',   blockShortcuts, true);
-
-  // clique direito: por padrão liberado (não atrapalha copiar texto).
-  // pra bloquear, descomenta:
+  // clique direito: liberado por padrão. Descomenta pra bloquear:
   // window.addEventListener('contextmenu', swallow, true);
 
   // ---------- 5. loop ----------
-  const intervalId = setInterval(checkIntegrity, 900);
+  setInterval(checkIntegrity, 900);
   window.addEventListener('resize', checkIntegrity);
   window.addEventListener('focus',  checkIntegrity);
   document.addEventListener('visibilitychange', checkIntegrity);
@@ -171,9 +166,6 @@
   html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100%}
   a{color:inherit;text-decoration:none}
 
-  /* ============================================================
-     PATTERN — camada 1: glow radial + grade fina
-     ============================================================ */
   body::before {
     content: '';
     position: fixed; inset: 0; z-index: -2;
@@ -189,12 +181,8 @@
     pointer-events: none;
   }
 
-  /* ============================================================
-     PATTERN — camada 2: código mono em duas colunas, mascarado
-     ============================================================ */
   body::after {
     content:
-      /* coluna esquerda */
       "  const route = createRouter({ fallback: '/solve' });\A"
       "  route.post('/task/:id', async (req, res) => {\A"
       "    const t = await tasks.get(req.params.id);\A"
@@ -221,7 +209,6 @@
       "  trace('boot', { t: performance.now() });\A"
       "  flush(); commit(); return 0;\A"
       "\A"
-      /* separador invisível pra segunda coluna começar longe */
       "                                                              "
       "  ─── [linha 1] ──────────────────────────────\A"
       "                                                              "
@@ -266,9 +253,6 @@
     mask-composite: intersect;
   }
 
-  /* ============================================================
-     HEADER
-     ============================================================ */
   header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;position:relative;z-index:2}
   .brand{display:flex;align-items:center;gap:10px;font-weight:600}
   .brand .mark{width:28px;height:28px;border-radius:7px;
@@ -287,9 +271,6 @@
   .btn.ghost{color:var(--dim)}.btn.ghost:hover{color:var(--text)}
   .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line-2) 15%,var(--line-2) 85%,transparent);margin:0 32px;position:relative;z-index:2}
 
-  /* ============================================================
-     MAIN
-     ============================================================ */
   main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-index:2}
   .subtitle{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--dim);font-size:13.5px;margin-bottom:32px}
   .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;
@@ -297,9 +278,6 @@
   .chip svg{width:13px;height:13px;color:var(--accent-2)}
   .grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));max-width:1100px;margin:0 auto}
 
-  /* ============================================================
-     CARD
-     ============================================================ */
   .card{background:linear-gradient(180deg, rgba(19,19,24,.92), rgba(15,15,18,.92));
     border:1px solid var(--line);border-radius:16px;
     padding:26px 24px 22px;display:flex;flex-direction:column;
@@ -319,7 +297,6 @@
   .card .cta:hover{background:var(--accent-2);box-shadow:0 6px 22px rgba(59,130,246,.35)}
   .card .cta svg{width:15px;height:15px}
 
-  /* ---------- dourado ---------- */
   .card.gold {
     border-color: rgba(212,175,55,.55);
     box-shadow:
@@ -339,18 +316,10 @@
   .card.gold .kicker { color: rgba(212,175,55,.85); }
   .card.gold h2 em   { color: var(--gold-2); }
   .card.gold .features li svg { color: var(--gold-2); }
-  .card.gold .cta {
-    background: linear-gradient(180deg, var(--gold), var(--gold-dim));
-    color: #0a0a0c;
-  }
-  .card.gold .cta:hover {
-    background: linear-gradient(180deg, var(--gold-2), #c89a2a);
-    box-shadow: 0 6px 22px rgba(212,175,55,.40);
-  }
+  .card.gold .cta { background: linear-gradient(180deg, var(--gold), var(--gold-dim)); color: #0a0a0c; }
+  .card.gold .cta:hover { background: linear-gradient(180deg, var(--gold-2), #c89a2a); box-shadow: 0 6px 22px rgba(212,175,55,.40); }
 
-  /* ============================================================
-     ESTADOS
-     ============================================================ */
+  /* ---------- ESTADOS ---------- */
   .center{display:grid;place-items:center;min-height:60vh;text-align:center;padding:24px;position:relative;z-index:2}
   .panel{background:linear-gradient(180deg, rgba(19,19,24,.94), rgba(15,15,18,.94));
     border:1px solid var(--line);border-radius:16px;
@@ -362,9 +331,7 @@
   .err{color:var(--danger);font-size:13px;margin-top:14px;min-height:18px}
   .hidden{display:none !important}
 
-  /* ============================================================
-     POPUP
-     ============================================================ */
+  /* ---------- POPUP ---------- */
   #exec-overlay {
     position: fixed; inset: 0; z-index: 9999;
     background: rgba(10,10,12,.72);
@@ -514,7 +481,7 @@
   const execClose   = document.getElementById('exec-close');
   const execEmail   = document.getElementById('exec-email');
 
-  const payloads = new Map();  // tag → script (vem do Worker, não do repo)
+  const payloads = new Map();
 
   // ---------- Google Sign-In ----------
   window.onCredential = async (resp) => {
@@ -628,6 +595,7 @@
     if (e.target === execOverlay) closeExec();
   });
 
+  // ---------- logout ----------
   function kill() {
     try { window.__guardKill && window.__guardKill('app_kill'); }
     catch { try { location.replace('about:blank'); } catch {} }
