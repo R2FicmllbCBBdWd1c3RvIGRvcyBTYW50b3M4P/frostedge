@@ -59,8 +59,6 @@
   } catch {}
 
   // ---------- 2. congela só o que não quebra o Google ----------
-  // NÃO congelar setTimeout/setInterval/fetch: o GSI usa intensivamente.
-
   try {
     NATIVE.defineProp(Function.prototype, 'toString', {
       value: NATIVE.toString, writable: false, configurable: false
@@ -102,7 +100,6 @@
     if (Object.defineProperty !== NATIVE.defineProp) return hardKill('defineprop_replaced');
     if (Object.freeze !== NATIVE.freeze)             return hardKill('freeze_replaced');
 
-    // userscript managers
     const gm = [
       'unsafeWindow','GM_info','GM','GM_setValue','GM_getValue','GM_deleteValue',
       'GM_listValues','GM_xmlhttpRequest','GM_addStyle','GM_registerMenuCommand',
@@ -111,7 +108,6 @@
     ];
     for (const g of gm) if (g in window) return hardKill('userscript_global:' + g);
 
-    // DevTools ancorado (dimensão) — threshold generoso
     if (devtoolsOpen()) return hardKill('devtools_open');
   }
 
@@ -138,8 +134,6 @@
 
   window.addEventListener('keydown', blockShortcuts, true);
   window.addEventListener('keyup',   blockShortcuts, true);
-  // clique direito: liberado por padrão. Descomenta pra bloquear:
-  // window.addEventListener('contextmenu', swallow, true);
 
   // ---------- 5. loop ----------
   setInterval(checkIntegrity, 900);
@@ -163,27 +157,31 @@
     --danger:#e05252;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100%}
+  html{margin:0;background:var(--bg);min-height:100%}
+  body{margin:0;background:transparent;color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100%}
   a{color:inherit;text-decoration:none}
 
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: -2;
-    background:
-      radial-gradient(ellipse 70% 45% at 50% -5%, rgba(59,130,246,.14), transparent 65%),
-      radial-gradient(ellipse 50% 40% at 100% 100%, rgba(59,130,246,.06), transparent 70%),
-      radial-gradient(ellipse 50% 40% at 0% 60%,   rgba(30,58,138,.10), transparent 70%),
-      linear-gradient(rgba(96,165,250,.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(96,165,250,.045) 1px, transparent 1px),
-      linear-gradient(180deg, #0a0a0c, #08080a 60%, #0a0a0c);
-    background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px, 100% 100%;
-    background-position: 0 0, 0 0, 0 0, -1px -1px, -1px -1px, 0 0;
-    pointer-events: none;
+  /* ============================================================
+     PATTERN — só dentro do #view-site (aparece pós-login)
+     ============================================================ */
+  .bg-pattern{
+    position:fixed;inset:0;z-index:0;
+    pointer-events:none;overflow:hidden;
   }
-
-    body::after {
+  .bg-pattern::before{
+    content:'';
+    position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse 70% 45% at 50% -5%, rgba(59,130,246,.16), transparent 65%),
+      radial-gradient(ellipse 50% 40% at 100% 100%, rgba(59,130,246,.07), transparent 70%),
+      radial-gradient(ellipse 50% 40% at 0% 60%,   rgba(30,58,138,.12), transparent 70%),
+      linear-gradient(rgba(96,165,250,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(96,165,250,.05) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+    background-position: 0 0, 0 0, 0 0, -1px -1px, -1px -1px;
+  }
+  .bg-pattern::after{
     content:
-      /* ============ coluna 1 ============ */
       "  const route = createRouter({ fallback: '/solve' });\A"
       "  route.post('/task/:id', async (req, res) => {\A"
       "    const t = await tasks.get(req.params.id);\A"
@@ -224,7 +222,6 @@
       "  await schema.validate(input, { strict: true });\A"
       "  emit('ready'); detach(); reset();\A"
       "                                                              "
-      /* ============ coluna 2 ============ */
       "  const cache = new LRU({ max: 512, ttl: 60_000 });\A"
       "  cache.on('evict', (k, v) => stats.bump('miss', k));\A"
       "\A"
@@ -261,7 +258,6 @@
       "  const map = new Map(data.map(o => [o.id, o]));\A"
       "  if (window.__hook) hook.attach();\A"
       "                                                              "
-      /* ============ coluna 3 ============ */
       "  let n = 0; while (!done) { n++; tick(); }\A"
       "  trace(stack, '[run]', { deep: true });\A"
       "  cfg.retries = 3; cfg.backoff = 1.2;\A"
@@ -304,13 +300,11 @@
       "  emit('ready'); await drain(); return true;\A"
       "  commit(); push(); reset(); destroy();\A"
       "  // ===== eof =====\A";
-    position: fixed; inset: 0; z-index: -1;
+    position:absolute;inset:0;
     font: 11.5px/1.75 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     color: rgba(96,165,250,.10);
     white-space: pre;
     padding: 40px 0 40px 40px;
-    overflow: hidden;
-    pointer-events: none;
     letter-spacing: .1px;
     -webkit-mask-image:
       linear-gradient(90deg,  transparent 0%, #000 5%, #000 92%, transparent 100%),
@@ -322,6 +316,7 @@
     mask-composite: intersect;
   }
 
+  /* ---------- HEADER ---------- */
   header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;position:relative;z-index:2}
   .brand{display:flex;align-items:center;gap:10px;font-weight:600}
   .brand .mark{width:28px;height:28px;border-radius:7px;
@@ -340,6 +335,7 @@
   .btn.ghost{color:var(--dim)}.btn.ghost:hover{color:var(--text)}
   .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line-2) 15%,var(--line-2) 85%,transparent);margin:0 32px;position:relative;z-index:2}
 
+  /* ---------- MAIN ---------- */
   main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-index:2}
   .subtitle{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--dim);font-size:13.5px;margin-bottom:32px}
   .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;
@@ -347,7 +343,8 @@
   .chip svg{width:13px;height:13px;color:var(--accent-2)}
   .grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));max-width:1100px;margin:0 auto}
 
-    .card{
+  /* ---------- CARD ---------- */
+  .card{
     background:linear-gradient(180deg, rgba(19,19,24,.92), rgba(15,15,18,.92));
     border:1px solid var(--line);border-radius:16px;
     padding:26px 24px 22px;display:flex;flex-direction:column;
@@ -474,7 +471,7 @@
     .rule{margin:0 18px}
     main{padding:36px 18px 64px}
     .nav .btn span{display:none}
-    body::after{font-size:10px;padding:40px 30px}
+    .bg-pattern::after{font-size:10px;padding:40px 30px}
   }
 </style>
 </head>
@@ -497,6 +494,7 @@
 </section>
 
 <section id="view-site" class="hidden">
+  <div class="bg-pattern" aria-hidden="true"></div>
   <header>
     <div class="brand">
       <div class="mark">L</div>
