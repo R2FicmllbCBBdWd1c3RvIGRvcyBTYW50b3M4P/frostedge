@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://accounts.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://accounts.google.com https://www.googleapis.com https://lynx-gate.*.workers.dev; frame-src https://accounts.google.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Lynx</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
@@ -11,11 +12,51 @@
     --line:#1e1e24;--line-2:#26262e;
     --text:#e8e8ea;--dim:#8a8a94;
     --accent:#3b82f6;--accent-2:#60a5fa;--accent-dim:#1e3a8a;
+    --gold:#d4af37;--gold-2:#e8c766;--gold-dim:#a67c00;
     --danger:#e05252;
   }
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
   a{color:inherit;text-decoration:none}
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: -1;
+    background-image:
+      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(59,130,246,.10), transparent 70%),
+      linear-gradient(rgba(59,130,246,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,.035) 1px, transparent 1px);
+    background-size: 100% 100%, 42px 42px, 42px 42px;
+    pointer-events: none;
+  }
+  body::after {
+    content:
+      "const solve = async (id) => {\A"
+      "  const s = await fetch('/api/task/'+id);\A"
+      "  const d = await s.json();\A"
+      "  return d.answers.map(a => a.value);\A"
+      "}\A"
+      "// [auto] resolve(v => v.done)\A"
+      "let n = 0; while (!done) { n++ }\A"
+      "if (window.__hook) hook.attach();\A"
+      "sessionStorage.setItem('t', Date.now());\A"
+      "const map = new Map(data.map(o => [o.id, o]));\A"
+      "await Promise.all(queue.map(run));\A"
+      "// build: 0x9f3a — ok\A"
+      "detach(); flush(); return n;\A"
+      "trace(stack, '[run]', { deep: true });\A"
+      "cfg.retries = 3; cfg.backoff = 1.2;\A"
+      "for (const k of keys) emit(k, val);\A"
+      "export default { solve, reset };";
+    position: fixed; inset: 0; z-index: -1;
+    font: 11px/1.7 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color: rgba(96,165,250,.08);
+    white-space: pre; padding: 40px 60px; overflow: hidden;
+    pointer-events: none;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 20%, transparent 85%);
+            mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 20%, transparent 85%);
+  }
+
   header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px}
   .brand{display:flex;align-items:center;gap:10px;font-weight:600}
   .brand .mark{width:28px;height:28px;border-radius:7px;
@@ -31,14 +72,16 @@
   .btn svg{width:15px;height:15px;opacity:.9}
   .btn.ghost{color:var(--dim)}.btn.ghost:hover{color:var(--text)}
   .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line-2) 15%,var(--line-2) 85%,transparent);margin:0 32px}
-  main{padding:56px 32px 80px;max-width:1120px;margin:0 auto}
+
+  main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-index:1}
   .subtitle{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--dim);font-size:13.5px;margin-bottom:32px}
   .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;
     border:1px solid var(--line-2);background:#0f0f13;color:var(--text);font-size:12.5px}
   .chip svg{width:13px;height:13px;color:var(--accent-2)}
   .grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));max-width:1100px;margin:0 auto}
+
   .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
-    padding:26px 24px 22px;display:flex;flex-direction:column;transition:border-color .15s}
+    padding:26px 24px 22px;display:flex;flex-direction:column;transition:border-color .15s, box-shadow .2s}
   .card:hover{border-color:var(--line-2)}
   .card .kicker{font-size:11px;letter-spacing:1.4px;color:var(--dim);text-transform:uppercase;margin-bottom:14px}
   .card h2{margin:0 0 2px;font-size:26px;font-weight:600;letter-spacing:-.3px}
@@ -52,14 +95,101 @@
     font-size:14px;border:none;cursor:pointer;transition:background .15s}
   .card .cta:hover{background:var(--accent-2)}
   .card .cta svg{width:15px;height:15px}
-  .center{display:grid;place-items:center;min-height:60vh;text-align:center;padding:24px}
+
+  .card.gold {
+    border-color: rgba(212,175,55,.55);
+    box-shadow:
+      0 0 0 1px rgba(212,175,55,.25),
+      0 0 24px rgba(212,175,55,.18),
+      0 0 60px rgba(212,175,55,.10),
+      inset 0 0 32px rgba(212,175,55,.05);
+  }
+  .card.gold:hover {
+    border-color: rgba(212,175,55,.85);
+    box-shadow:
+      0 0 0 1px rgba(212,175,55,.40),
+      0 0 32px rgba(212,175,55,.30),
+      0 0 80px rgba(212,175,55,.14),
+      inset 0 0 40px rgba(212,175,55,.08);
+  }
+  .card.gold .kicker { color: rgba(212,175,55,.85); }
+  .card.gold h2 em   { color: var(--gold-2); }
+  .card.gold .features li svg { color: var(--gold-2); }
+  .card.gold .cta {
+    background: linear-gradient(180deg, var(--gold), var(--gold-dim));
+    color: #0a0a0c;
+  }
+  .card.gold .cta:hover { background: linear-gradient(180deg, var(--gold-2), #c89a2a); }
+
+  .center{display:grid;place-items:center;min-height:60vh;text-align:center;padding:24px;position:relative;z-index:1}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;
     padding:32px;max-width:380px;width:100%}
   .panel h1{margin:0 0 6px;font-size:19px;font-weight:600}
   .panel p{margin:0 0 22px;color:var(--dim);font-size:13.5px}
   .err{color:var(--danger);font-size:13px;margin-top:14px;min-height:18px}
   .hidden{display:none !important}
-  @media (max-width:560px){header{padding:14px 18px}.rule{margin:0 18px}main{padding:36px 18px 64px}.nav .btn span{display:none}}
+
+  #exec-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(10,10,12,.72);
+    -webkit-backdrop-filter: blur(8px) saturate(.8);
+            backdrop-filter: blur(8px) saturate(.8);
+    display: grid; place-items: center;
+    opacity: 0; transition: opacity .25s ease;
+  }
+  #exec-overlay:not(.hidden) { opacity: 1; }
+  #exec-overlay.hidden { display: none; }
+
+  .exec-modal {
+    background: rgba(19,19,24,.92);
+    border: 1px solid var(--line-2);
+    border-radius: 16px;
+    padding: 36px 40px 28px;
+    width: 340px; text-align: center;
+    box-shadow: 0 24px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(59,130,246,.06);
+    animation: execIn .28s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes execIn {
+    from { opacity: 0; transform: translateY(8px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+  }
+  .exec-body { min-height: 130px; display: grid; place-items: center; }
+  .exec-body h3 { margin: 14px 0 4px; font-size: 17px; font-weight: 600; color: var(--text); letter-spacing: -.2px; }
+  .exec-sub { margin: 0; color: var(--dim); font-size: 12.5px; }
+  .spinner {
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 2.5px solid rgba(96,165,250,.18);
+    border-top-color: var(--accent-2);
+    animation: spin .8s linear infinite; margin: 0 auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .dots span { animation: blink 1.4s infinite both; }
+  .dots span:nth-child(2) { animation-delay: .2s; }
+  .dots span:nth-child(3) { animation-delay: .4s; }
+  @keyframes blink { 0%,80%,100% { opacity: .2 } 40% { opacity: 1 } }
+  .check {
+    width: 44px; height: 44px; color: var(--accent-2);
+    margin: 0 auto;
+    animation: checkIn .35s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes checkIn {
+    from { transform: scale(.6); opacity: 0; }
+    to   { transform: none; opacity: 1; }
+  }
+  .exec-close {
+    margin-top: 22px; width: 100%; padding: 11px 16px; border-radius: 11px;
+    border: none; background: var(--accent); color: #fff;
+    font-weight: 600; font-size: 14px; cursor: pointer; transition: background .15s;
+  }
+  .exec-close:hover { background: var(--accent-2); }
+  .exec-close.hidden { display: none; }
+
+  @media (max-width:560px){
+    header{padding:14px 18px}
+    .rule{margin:0 18px}
+    main{padding:36px 18px 64px}
+    .nav .btn span{display:none}
+  }
 </style>
 </head>
 <body>
@@ -109,7 +239,164 @@
   </main>
 </section>
 
+<div id="exec-overlay" class="hidden">
+  <div class="exec-modal">
+    <div class="exec-body">
+      <div id="exec-state-running">
+        <div class="spinner"></div>
+        <h3>Executando<span class="dots"><span>.</span><span>.</span><span>.</span></span></h3>
+        <p class="exec-sub" id="exec-email">—</p>
+      </div>
+      <div id="exec-state-done" class="hidden">
+        <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10" opacity=".25"/>
+          <path d="M7 12.5 10.5 16 17 9"/>
+        </svg>
+        <h3>Processo finalizado</h3>
+        <p class="exec-sub">código copiado para a área de transferência.</p>
+      </div>
+    </div>
+    <button id="exec-close" class="exec-close hidden">Fechar</button>
+  </div>
+</div>
+
 <script>
+/* ============================================================
+   GUARD — anti-devtools, anti-console, anti-monkey-patch
+   Roda ANTES de qualquer outro código. Se detectar violação,
+   destrói a sessão e manda pra about:blank.
+   ============================================================ */
+(function () {
+  // referências nativas — guardadas antes que alguém possa mexer
+  const _fetch        = window.fetch;
+  const _toString     = Function.prototype.toString;
+  const _defineProp   = Object.defineProperty;
+  const _freeze       = Object.freeze;
+  const _keys         = Object.getOwnPropertyNames;
+  const _location     = window.location;
+  const _setTimeout   = window.setTimeout;
+
+  let killed = false;
+  function hardKill(reason) {
+    if (killed) return;
+    killed = true;
+    try { console.clear && console.clear(); } catch {}
+    try { localStorage.clear(); sessionStorage.clear(); } catch {}
+    try {
+      document.cookie.split(';').forEach(c => {
+        const n = c.split('=')[0].trim();
+        document.cookie = n + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+      });
+    } catch {}
+    try { _location.replace('about:blank'); } catch {}
+  }
+  window.__guardKill = hardKill;
+
+  // ---------- 1. inutilizar console ----------
+  // console.log/warn/etc viram no-op. Exceção: nosso próprio log interno
+  // (usamos __log que não passa pelo console do usuário).
+  const _noop = function () {};
+  try {
+    for (const m of ['log','info','warn','error','debug','trace','dir','table','group','groupEnd','count','assert','clear','time','timeEnd','profile','profileEnd']) {
+      try { Object.defineProperty(console, m, { value: _noop, writable: false, configurable: false }); } catch {}
+    }
+    try { Object.freeze(console); } catch {}
+  } catch {}
+
+  // ---------- 2. congelar fetch ----------
+  try {
+    Object.defineProperty(window, 'fetch', {
+      value: _fetch, writable: false, configurable: false
+    });
+  } catch {}
+
+  // ---------- 3. bloquear atalhos de devtools ----------
+  const blockedKeys = (e) => {
+    const k = (e.key || '').toLowerCase();
+    // F12
+    if (k === 'f12') { e.preventDefault(); e.stopPropagation(); return false; }
+    // Ctrl+Shift+I / J / C / K  (devtools, console, inspector, tool)
+    if (e.ctrlKey && e.shiftKey && ['i','j','c','k'].includes(k)) {
+      e.preventDefault(); e.stopPropagation(); return false;
+    }
+    // Ctrl+U — view source
+    if (e.ctrlKey && k === 'u') { e.preventDefault(); e.stopPropagation(); return false; }
+    // Ctrl+S — salvar página
+    if (e.ctrlKey && k === 's') { e.preventDefault(); e.stopPropagation(); return false; }
+    // Ctrl+Shift+E / M / P — network, device mode, performance
+    if (e.ctrlKey && e.shiftKey && ['e','m','p'].includes(k)) {
+      e.preventDefault(); e.stopPropagation(); return false;
+    }
+    return true;
+  };
+  window.addEventListener('keydown', blockedKeys, true);
+  window.addEventListener('keyup', blockedKeys, true);
+
+  // ---------- 4. detecção de devtools aberto ----------
+  // usa a diferença entre outer e inner dimensions — técnica clássica.
+  // se a diferença for grande o bastante, devtools está ancorado em algum lado.
+  function devtoolsOpen() {
+    try {
+      const wDiff = window.outerWidth  - window.innerWidth;
+      const hDiff = window.outerHeight - window.innerHeight;
+      // barra do browser ocupa ~90-120px de altura. devtools ancorado
+      // abre mais de 160px de diferença em qualquer eixo.
+      return wDiff > 200 || hDiff > 200;
+    } catch { return false; }
+  }
+
+  // ---------- 5. detecção de monkey-patch ----------
+  function isNative(fn) {
+    try {
+      return _toString.call(fn).includes('[native code]');
+    } catch { return false; }
+  }
+
+  function checkIntegrity() {
+    if (killed) return;
+
+    // fetch foi sobrescrito?
+    if (window.fetch !== _fetch) return hardKill('fetch_patched');
+    if (!isNative(window.fetch))  return hardKill('fetch_not_native');
+
+    // Function.prototype.toString foi sobrescrito? (Tampermonkey faz isso)
+    if (Function.prototype.toString !== _toString) return hardKill('fptostring_patched');
+    if (!isNative(Function.prototype.toString))   return hardKill('fptostring_not_native');
+
+    // setTimeout foi sobrescrito?
+    if (window.setTimeout !== _setTimeout) return hardKill('settimeout_patched');
+    if (!isNative(window.setTimeout))      return hardKill('settimeout_not_native');
+
+    // XMLHttpRequest
+    if (window.XMLHttpRequest && !isNative(window.XMLHttpRequest.prototype.open))
+      return hardKill('xhr_patched');
+    if (window.XMLHttpRequest && !isNative(window.XMLHttpRequest.prototype.send))
+      return hardKill('xhr_send_patched');
+
+    // globals típicos de Tampermonkey / userscript managers
+    const suspicious = [
+      'unsafeWindow','GM_info','GM_setValue','GM_getValue','GM_xmlhttpRequest',
+      'GM_addStyle','GM_registerMenuCommand','GM_notification'
+    ];
+    for (const g of suspicious) if (g in window) return hardKill('gm_detected:' + g);
+
+    // devtools aberto?
+    if (devtoolsOpen()) return hardKill('devtools_open');
+  }
+
+  // roda a cada 800ms, e também em eventos que sugerem manipulação
+  setInterval(checkIntegrity, 800);
+  window.addEventListener('resize', checkIntegrity);
+  window.addEventListener('focus', checkIntegrity);
+  document.addEventListener('visibilitychange', checkIntegrity);
+
+  // roda uma vez já no boot
+  try { checkIntegrity(); } catch {}
+})();
+
+/* ============================================================
+   APP
+   ============================================================ */
 (function () {
   const WORKER_URL  = 'https://lynx-gate.mamaetata216.workers.dev/';
   const SESSION_KEY = 'auth_jwt';
@@ -120,17 +407,28 @@
   const who       = document.getElementById('who');
   const loginErr  = document.getElementById('login-err');
 
-  window.onCredential = async (resp) => {
-    loginErr.textContent = '';
-    try {
-      sessionStorage.setItem(SESSION_KEY, resp.credential);
-      await enter(resp.credential);
-    } catch (e) {
-      console.error(e);
-      loginErr.textContent = 'conta não autorizada.';
-      kill();
-    }
-  };
+  const execOverlay = document.getElementById('exec-overlay');
+  const execRunning = document.getElementById('exec-state-running');
+  const execDone    = document.getElementById('exec-state-done');
+  const execClose   = document.getElementById('exec-close');
+  const execEmail   = document.getElementById('exec-email');
+
+  const payloads = new Map();  // tag → script (vem do Worker, não do repo)
+
+  // ---------- Google Sign-In ----------
+  Object.defineProperty(window, 'onCredential', {
+    value: async (resp) => {
+      loginErr.textContent = '';
+      try {
+        sessionStorage.setItem(SESSION_KEY, resp.credential);
+        await enter(resp.credential);
+      } catch (e) {
+        loginErr.textContent = 'conta não autorizada.';
+        kill();
+      }
+    },
+    writable: false, configurable: false
+  });
 
   async function tryRestore() {
     const jwt = sessionStorage.getItem(SESSION_KEY);
@@ -139,7 +437,7 @@
   }
 
   async function enter(jwt) {
-    const r = await fetch(WORKER_URL, {
+    const r = await window.fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jwt })
@@ -165,7 +463,8 @@
 
   function renderBlock(b) {
     const el = document.createElement('article');
-    el.className = 'card';
+    el.className = 'card' + (b.tag === 'Ingles' ? ' gold' : '');
+    payloads.set(b.tag, b.payload || '');
     const feats = (b.features || []).map(f => `
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>${escapeHtml(f)}</li>`).join('');
     el.innerHTML = `
@@ -182,13 +481,59 @@
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
+  // ---------- popup ----------
+  function openExec(name) {
+    execEmail.textContent = name || '—';
+    execRunning.classList.remove('hidden');
+    execDone.classList.add('hidden');
+    execClose.classList.add('hidden');
+    execOverlay.classList.remove('hidden');
+  }
+  function finishExec() {
+    execRunning.classList.add('hidden');
+    execDone.classList.remove('hidden');
+    execClose.classList.remove('hidden');
+  }
+  function closeExec() { execOverlay.classList.add('hidden'); }
+
+  async function copyToClipboard(text) {
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch {}
+      document.body.removeChild(ta);
+      return ok;
+    }
+  }
+
+  grid.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.cta');
+    if (!btn) return;
+    const card = btn.closest('.card');
+    const tag  = card?.querySelector('h2 em')?.textContent || '';
+    const payload = payloads.get(tag) || '';
+    openExec(tag);
+    const ok = await copyToClipboard(payload);
+    await new Promise(r => setTimeout(r, 1400));
+    finishExec();
+    if (!ok) {
+      execDone.querySelector('.exec-sub').textContent =
+        'não deu pra copiar automaticamente. selecione o texto manualmente.';
+    }
+  });
+
+  execClose.addEventListener('click', closeExec);
+  execOverlay.addEventListener('click', (e) => {
+    if (e.target === execOverlay) closeExec();
+  });
+
+  // ---------- logout + kill ----------
   function kill() {
-    try { localStorage.clear(); sessionStorage.clear(); } catch {}
-    try { document.cookie.split(';').forEach(c => {
-      const n = c.split('=')[0].trim();
-      document.cookie = n + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
-    }); } catch {}
-    setTimeout(() => { try { location.replace('about:blank'); } catch {} }, 400);
+    try { window.__guardKill && window.__guardKill('app_kill'); }
+    catch { try { location.replace('about:blank'); } catch {} }
   }
 
   document.getElementById('btn-logout').addEventListener('click', () => {
