@@ -40,7 +40,6 @@
   }
   window.__guardKill = hardKill;
 
-  // ---------- 1. console vira no-op ----------
   try {
     const _noop = function () {};
     const methods = [
@@ -58,7 +57,6 @@
     try { NATIVE.freeze(console); } catch {}
   } catch {}
 
-  // ---------- 2. congela só o que não quebra o Google ----------
   try {
     NATIVE.defineProp(Function.prototype, 'toString', {
       value: NATIVE.toString, writable: false, configurable: false
@@ -76,7 +74,6 @@
     }
   } catch {}
 
-  // ---------- 3. integridade ----------
   function isNative(fn) {
     if (typeof fn !== 'function') return false;
     try { return NATIVE.toString.call(fn).indexOf('[native code]') !== -1; }
@@ -119,7 +116,6 @@
     } catch { return false; }
   }
 
-  // ---------- 4. atalhos ----------
   function swallow(e) {
     e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
     return false;
@@ -135,7 +131,6 @@
   window.addEventListener('keydown', blockShortcuts, true);
   window.addEventListener('keyup',   blockShortcuts, true);
 
-  // ---------- 5. loop ----------
   setInterval(checkIntegrity, 900);
   window.addEventListener('resize', checkIntegrity);
   window.addEventListener('focus',  checkIntegrity);
@@ -162,7 +157,7 @@
   a{color:inherit;text-decoration:none}
 
   /* ============================================================
-     PATTERN — só dentro do #view-site (aparece pós-login)
+     PATTERN — só o glow + grade (código saiu, vai pros cards)
      ============================================================ */
   .bg-pattern{
     position:fixed;inset:0;z-index:0;
@@ -179,141 +174,6 @@
       linear-gradient(90deg, rgba(96,165,250,.05) 1px, transparent 1px);
     background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
     background-position: 0 0, 0 0, 0 0, -1px -1px, -1px -1px;
-  }
-  .bg-pattern::after{
-    content:
-      "  const route = createRouter({ fallback: '/solve' });\A"
-      "  route.post('/task/:id', async (req, res) => {\A"
-      "    const t = await tasks.get(req.params.id);\A"
-      "    if (!t) return res.status(404).json({ e: 'nf' });\A"
-      "    res.json({ ok: true, data: t });\A"
-      "  });\A"
-      "\A"
-      "  // pipeline:\A"
-      "  //   parse → validate → resolve → emit\A"
-      "  //   retries=3 backoff=1.2 concurrency=4\A"
-      "\A"
-      "  const graph = new Graph({\A"
-      "    nodes: Object.keys(schema),\A"
-      "    edges: buildEdges(schema),\A"
-      "    cyclic: false,\A"
-      "    depth: 12\A"
-      "  });\A"
-      "\A"
-      "  export default {\A"
-      "    async run(queue) {\A"
-      "      for await (const job of queue) {\A"
-      "        const r = await process(job);\A"
-      "        if (!r.ok) retry(job, r.reason);\A"
-      "        emit('done', { id: job.id, ms: r.ms });\A"
-      "      }\A"
-      "    }\A"
-      "  };\A"
-      "\A"
-      "  trace('boot', { t: performance.now() });\A"
-      "  flush(); commit(); return 0;\A"
-      "  await drain(); logger.close();\A"
-      "\A"
-      "  if (env.__DEV) seed(mock);\A"
-      "  pool = new Pool({ size: 8, idle: 30_000 });\A"
-      "  const s = pool.acquire();\A"
-      "  s.on('error', err => retry(s));\A"
-      "  metrics.push({ key, val, t: Date.now() });\A"
-      "  await schema.validate(input, { strict: true });\A"
-      "  emit('ready'); detach(); reset();\A"
-      "                                                              "
-      "  const cache = new LRU({ max: 512, ttl: 60_000 });\A"
-      "  cache.on('evict', (k, v) => stats.bump('miss', k));\A"
-      "\A"
-      "  function solve(input) {\A"
-      "    const parsed = parse(input, { strict: true });\A"
-      "    if (!parsed.ok) throw new ParseError(parsed.reason);\A"
-      "    return parsed.value.map(v => resolve(v, { deep: true }));\A"
-      "  }\A"
-      "\A"
-      "  const adapters = ['json', 'csv', 'xlsx', 'ndjson'];\A"
-      "  for (const a of adapters) register(a, loader(a));\A"
-      "\A"
-      "  // hash 0x9f3a — checksum ok\A"
-      "  // build 0x4c1d — warn: size\A"
-      "  // flag --no-cache --isolate\A"
-      "\A"
-      "  class Resolver {\A"
-      "    #depth = 0;\A"
-      "    async walk(node) {\A"
-      "      if (this.#depth > 32) throw new Error('deep');\A"
-      "      this.#depth++;\A"
-      "      const kids = await Promise.all(node.children.map(c => this.walk(c)));\A"
-      "      return { node, kids, t: Date.now() };\A"
-      "    }\A"
-      "  }\A"
-      "\A"
-      "  const r = new Resolver();\A"
-      "  const tree = await r.walk(root);\A"
-      "  bus.emit('tree', tree);\A"
-      "\A"
-      "  await Promise.all(queue.map(run));\A"
-      "  sessionStorage.setItem('t', Date.now());\A"
-      "  hooks.forEach(h => h.attach(instance));\A"
-      "  const map = new Map(data.map(o => [o.id, o]));\A"
-      "  if (window.__hook) hook.attach();\A"
-      "                                                              "
-      "  let n = 0; while (!done) { n++; tick(); }\A"
-      "  trace(stack, '[run]', { deep: true });\A"
-      "  cfg.retries = 3; cfg.backoff = 1.2;\A"
-      "  for (const k of keys) emit(k, val);\A"
-      "\A"
-      "  function* gen(range) {\A"
-      "    for (let i = 0; i < range; i++) yield i * 2;\A"
-      "  }\A"
-      "\A"
-      "  const sum = [...gen(64)].reduce((a, b) => a + b, 0);\A"
-      "  observer.observe(target, { childList: true, subtree: true });\A"
-      "  mutation.on('add', m => index(m.target));\A"
-      "\A"
-      "  // workers: 4 — mem: 512mb — io: async\A"
-      "  // cpu: 82% — net: 1.4mb/s\A"
-      "\A"
-      "  const worker = new Worker('resolve.js', { type: 'module' });\A"
-      "  worker.postMessage({ cmd: 'solve', id, payload });\A"
-      "  worker.onmessage = ({ data }) => resolve(data);\A"
-      "\A"
-      "  async function loop() {\A"
-      "    while (running) {\A"
-      "      const batch = await fetchBatch();\A"
-      "      await handleAll(batch);\A"
-      "      await sleep(cfg.backoff * 1000);\A"
-      "    }\A"
-      "  }\A"
-      "\A"
-      "  retry(async () => {\A"
-      "    const r = await api.post('/submit', body);\A"
-      "    if (!r.ok) throw new Error(r.status);\A"
-      "    return r.data;\A"
-      "  }, { attempts: 3, delay: 800 });\A"
-      "\A"
-      "  const proxy = new Proxy(target, {\A"
-      "    get(t, k) { return Reflect.get(t, k); },\A"
-      "    set(t, k, v) { t._dirty = true; return Reflect.set(t, k, v); }\A"
-      "  });\A"
-      "\A"
-      "  emit('ready'); await drain(); return true;\A"
-      "  commit(); push(); reset(); destroy();\A"
-      "  // ===== eof =====\A";
-    position:absolute;inset:0;
-    font: 11.5px/1.75 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    color: rgba(96,165,250,.10);
-    white-space: pre;
-    padding: 40px 0 40px 40px;
-    letter-spacing: .1px;
-    -webkit-mask-image:
-      linear-gradient(90deg,  transparent 0%, #000 5%, #000 92%, transparent 100%),
-      linear-gradient(180deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
-    -webkit-mask-composite: source-in;
-    mask-image:
-      linear-gradient(90deg,  transparent 0%, #000 5%, #000 92%, transparent 100%),
-      linear-gradient(180deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
-    mask-composite: intersect;
   }
 
   /* ---------- HEADER ---------- */
@@ -471,7 +331,6 @@
     .rule{margin:0 18px}
     main{padding:36px 18px 64px}
     .nav .btn span{display:none}
-    .bg-pattern::after{font-size:10px;padding:40px 30px}
   }
 </style>
 </head>
@@ -563,7 +422,6 @@
 
   const payloads = new Map();
 
-  // ---------- Google Sign-In ----------
   window.onCredential = async (resp) => {
     loginErr.textContent = '';
     try {
@@ -626,7 +484,6 @@
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
-  // ---------- popup ----------
   function openExec(name) {
     execEmail.textContent = name || '—';
     execRunning.classList.remove('hidden');
@@ -675,7 +532,6 @@
     if (e.target === execOverlay) closeExec();
   });
 
-  // ---------- logout ----------
   function kill() {
     try { window.__guardKill && window.__guardKill('app_kill'); }
     catch { try { location.replace('about:blank'); } catch {} }
