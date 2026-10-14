@@ -3,9 +3,161 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://accounts.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://accounts.google.com https://www.googleapis.com https://lynx-gate.*.workers.dev; frame-src https://accounts.google.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://accounts.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://accounts.google.com https://www.googleapis.com https://*.workers.dev; frame-src https://accounts.google.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Lynx</title>
+
+<!-- ====================== GUARD ====================== -->
+<script>
+(function () {
+  'use strict';
+
+  const NATIVE = {
+    fetch:        window.fetch,
+    toString:     Function.prototype.toString,
+    xhrOpen:      window.XMLHttpRequest && window.XMLHttpRequest.prototype.open,
+    xhrSend:      window.XMLHttpRequest && window.XMLHttpRequest.prototype.send,
+    defineProp:   Object.defineProperty,
+    freeze:       Object.freeze,
+    locReplace:   window.location.replace.bind(window.location)
+  };
+
+  let killed = false;
+
+  function hardKill(reason) {
+    if (killed) return;
+    killed = true;
+    try { localStorage.clear(); } catch {}
+    try { sessionStorage.clear(); } catch {}
+    try {
+      document.cookie.split(';').forEach(c => {
+        const n = c.split('=')[0].trim();
+        document.cookie = n + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+      });
+    } catch {}
+    try { NATIVE.locReplace('about:blank'); } catch {
+      try { window.location.href = 'about:blank'; } catch {}
+    }
+  }
+  window.__guardKill = hardKill;
+
+  // ---------- 1. console vira no-op ----------
+  try {
+    const _noop = function () {};
+    const methods = [
+      'log','info','warn','error','debug','trace','dir','dirxml','table',
+      'group','groupCollapsed','groupEnd','count','countReset','assert',
+      'clear','time','timeEnd','timeLog','profile','profileEnd','timeStamp'
+    ];
+    for (const m of methods) {
+      try {
+        NATIVE.defineProp(console, m, {
+          value: _noop, writable: false, configurable: false, enumerable: false
+        });
+      } catch {}
+    }
+    try { NATIVE.freeze(console); } catch {}
+  } catch {}
+
+  // ---------- 2. congela só o que não quebra o Google ----------
+  // NÃO congelar setTimeout/setInterval: o GSI usa intensivamente.
+  // NÃO congelar fetch: o GSI tbm usa; em vez disso, checamos integridade.
+
+  try {
+    NATIVE.defineProp(Function.prototype, 'toString', {
+      value: NATIVE.toString, writable: false, configurable: false
+    });
+  } catch {}
+
+  try {
+    if (window.XMLHttpRequest) {
+      NATIVE.defineProp(window.XMLHttpRequest.prototype, 'open', {
+        value: NATIVE.xhrOpen, writable: false, configurable: false
+      });
+      NATIVE.defineProp(window.XMLHttpRequest.prototype, 'send', {
+        value: NATIVE.xhrSend, writable: false, configurable: false
+      });
+    }
+  } catch {}
+
+  // ---------- 3. integridade ----------
+  function isNative(fn) {
+    if (typeof fn !== 'function') return false;
+    try { return NATIVE.toString.call(fn).indexOf('[native code]') !== -1; }
+    catch { return false; }
+  }
+
+  function checkIntegrity() {
+    if (killed) return;
+
+    if (window.fetch !== NATIVE.fetch) return hardKill('fetch_replaced');
+    if (!isNative(window.fetch))       return hardKill('fetch_not_native');
+
+    if (Function.prototype.toString !== NATIVE.toString) return hardKill('fptostring_replaced');
+    if (!isNative(Function.prototype.toString))          return hardKill('fptostring_not_native');
+
+    if (window.XMLHttpRequest) {
+      if (!isNative(window.XMLHttpRequest.prototype.open)) return hardKill('xhr_open_patched');
+      if (!isNative(window.XMLHttpRequest.prototype.send)) return hardKill('xhr_send_patched');
+    }
+
+    if (Object.defineProperty !== NATIVE.defineProp) return hardKill('defineprop_replaced');
+    if (Object.freeze !== NATIVE.freeze)             return hardKill('freeze_replaced');
+
+    // userscript managers
+    const gm = [
+      'unsafeWindow','GM_info','GM','GM_setValue','GM_getValue','GM_deleteValue',
+      'GM_listValues','GM_xmlhttpRequest','GM_addStyle','GM_registerMenuCommand',
+      'GM_notification','GM_openInTab','GM_setClipboard','GM_download',
+      'GM_getResourceText','GM_addElement','VM','VM_info'
+    ];
+    for (const g of gm) if (g in window) return hardKill('userscript_global:' + g);
+
+    // DevTools ancorado (dimensão) — threshold generoso pra evitar falso positivo
+    if (devtoolsOpen()) return hardKill('devtools_open');
+  }
+
+  function devtoolsOpen() {
+    try {
+      // janela real vs viewport. Barra de favoritos + status bar ocupam
+      // ~130px no pior caso. DevTools ancorado abre >220px de um lado.
+      const wDiff = window.outerWidth  - window.innerWidth;
+      const hDiff = window.outerHeight - window.innerHeight;
+      return wDiff > 220 || hDiff > 220;
+    } catch { return false; }
+  }
+
+  // ---------- 4. atalhos ----------
+  function swallow(e) {
+    e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+    return false;
+  }
+
+  function blockShortcuts(e) {
+    const k = (e.key || '').toLowerCase();
+    if (k === 'f12') return swallow(e);
+    if (e.ctrlKey && e.shiftKey && ['i','j','c','k','e','m','p'].includes(k)) return swallow(e);
+    if (e.ctrlKey && !e.shiftKey && ['u','s','p'].includes(k)) return swallow(e);
+  }
+
+  window.addEventListener('keydown', blockShortcuts, true);
+  window.addEventListener('keyup',   blockShortcuts, true);
+
+  // clique direito: por padrão liberado (não atrapalha copiar texto).
+  // pra bloquear, descomenta:
+  // window.addEventListener('contextmenu', swallow, true);
+
+  // ---------- 5. loop ----------
+  const intervalId = setInterval(checkIntegrity, 900);
+  window.addEventListener('resize', checkIntegrity);
+  window.addEventListener('focus',  checkIntegrity);
+  document.addEventListener('visibilitychange', checkIntegrity);
+
+  try { checkIntegrity(); } catch {}
+})();
+</script>
+
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+
 <style>
   :root{
     --bg:#0a0a0c;--panel:#101013;--card:#131318;
@@ -16,73 +168,144 @@
     --danger:#e05252;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100%}
   a{color:inherit;text-decoration:none}
 
+  /* ============================================================
+     PATTERN — camada 1: glow radial + grade fina
+     ============================================================ */
   body::before {
     content: '';
-    position: fixed; inset: 0; z-index: -1;
-    background-image:
-      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(59,130,246,.10), transparent 70%),
-      linear-gradient(rgba(59,130,246,.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(59,130,246,.035) 1px, transparent 1px);
-    background-size: 100% 100%, 42px 42px, 42px 42px;
+    position: fixed; inset: 0; z-index: -2;
+    background:
+      radial-gradient(ellipse 70% 45% at 50% -5%, rgba(59,130,246,.14), transparent 65%),
+      radial-gradient(ellipse 50% 40% at 100% 100%, rgba(59,130,246,.06), transparent 70%),
+      radial-gradient(ellipse 50% 40% at 0% 60%,   rgba(30,58,138,.10), transparent 70%),
+      linear-gradient(rgba(96,165,250,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(96,165,250,.045) 1px, transparent 1px),
+      linear-gradient(180deg, #0a0a0c, #08080a 60%, #0a0a0c);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px, 100% 100%;
+    background-position: 0 0, 0 0, 0 0, -1px -1px, -1px -1px, 0 0;
     pointer-events: none;
-  }
-  body::after {
-    content:
-      "const solve = async (id) => {\A"
-      "  const s = await fetch('/api/task/'+id);\A"
-      "  const d = await s.json();\A"
-      "  return d.answers.map(a => a.value);\A"
-      "}\A"
-      "// [auto] resolve(v => v.done)\A"
-      "let n = 0; while (!done) { n++ }\A"
-      "if (window.__hook) hook.attach();\A"
-      "sessionStorage.setItem('t', Date.now());\A"
-      "const map = new Map(data.map(o => [o.id, o]));\A"
-      "await Promise.all(queue.map(run));\A"
-      "// build: 0x9f3a — ok\A"
-      "detach(); flush(); return n;\A"
-      "trace(stack, '[run]', { deep: true });\A"
-      "cfg.retries = 3; cfg.backoff = 1.2;\A"
-      "for (const k of keys) emit(k, val);\A"
-      "export default { solve, reset };";
-    position: fixed; inset: 0; z-index: -1;
-    font: 11px/1.7 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    color: rgba(96,165,250,.08);
-    white-space: pre; padding: 40px 60px; overflow: hidden;
-    pointer-events: none;
-    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 20%, transparent 85%);
-            mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 20%, transparent 85%);
   }
 
-  header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px}
+  /* ============================================================
+     PATTERN — camada 2: código mono em duas colunas, mascarado
+     ============================================================ */
+  body::after {
+    content:
+      /* coluna esquerda */
+      "  const route = createRouter({ fallback: '/solve' });\A"
+      "  route.post('/task/:id', async (req, res) => {\A"
+      "    const t = await tasks.get(req.params.id);\A"
+      "    res.json({ ok: true, data: t });\A"
+      "  });\A"
+      "\A"
+      "  // pipeline:\A"
+      "  //   parse → validate → resolve → emit\A"
+      "\A"
+      "  const graph = new Graph({\A"
+      "    nodes: Object.keys(schema),\A"
+      "    edges: buildEdges(schema)\A"
+      "  });\A"
+      "\A"
+      "  export default {\A"
+      "    async run(queue) {\A"
+      "      for await (const job of queue) {\A"
+      "        const r = await process(job);\A"
+      "        if (!r.ok) retry(job, r.reason);\A"
+      "      }\A"
+      "    }\A"
+      "  };\A"
+      "\A"
+      "  trace('boot', { t: performance.now() });\A"
+      "  flush(); commit(); return 0;\A"
+      "\A"
+      /* separador invisível pra segunda coluna começar longe */
+      "                                                              "
+      "  ─── [linha 1] ──────────────────────────────\A"
+      "                                                              "
+      "  const cache = new LRU({ max: 512, ttl: 60_000 });\A"
+      "                                                              "
+      "  function solve(input) {\A"
+      "                                                              "
+      "    const parsed = parse(input, { strict: true });\A"
+      "                                                              "
+      "    if (!parsed.ok) throw new ParseError(parsed.reason);\A"
+      "                                                              "
+      "    return parsed.value.map(v => resolve(v));\A"
+      "                                                              "
+      "  }\A"
+      "                                                              "
+      "\A"
+      "                                                              "
+      "  const adapters = ['json', 'csv', 'xlsx'];\A"
+      "                                                              "
+      "  for (const a of adapters) register(a, loader(a));\A"
+      "                                                              "
+      "\A"
+      "                                                              "
+      "  // hash 0x9f3a — checksum ok\A"
+      "                                                              "
+      "  emit('ready'); await drain(); return true;\A";
+    position: fixed; inset: 0; z-index: -1;
+    font: 11.5px/1.75 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color: rgba(96,165,250,.085);
+    white-space: pre;
+    padding: 60px 80px;
+    overflow: hidden;
+    pointer-events: none;
+    letter-spacing: .1px;
+    -webkit-mask-image:
+      radial-gradient(ellipse 80% 70% at 50% 40%, #000 25%, transparent 88%),
+      linear-gradient(180deg, transparent, #000 15%, #000 85%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      radial-gradient(ellipse 80% 70% at 50% 40%, #000 25%, transparent 88%),
+      linear-gradient(180deg, transparent, #000 15%, #000 85%, transparent);
+    mask-composite: intersect;
+  }
+
+  /* ============================================================
+     HEADER
+     ============================================================ */
+  header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;position:relative;z-index:2}
   .brand{display:flex;align-items:center;gap:10px;font-weight:600}
   .brand .mark{width:28px;height:28px;border-radius:7px;
     background:linear-gradient(180deg,var(--accent),var(--accent-dim));
-    display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700}
+    display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700;
+    box-shadow:0 0 0 1px rgba(96,165,250,.20), 0 4px 20px rgba(59,130,246,.30)}
   .brand .name{font-size:16px}
   .brand .name em{font-style:normal;color:var(--accent-2)}
   .nav{display:flex;align-items:center;gap:10px}
   .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;
-    font-size:13.5px;font-weight:500;border:1px solid var(--line-2);background:transparent;
+    font-size:13.5px;font-weight:500;border:1px solid var(--line-2);background:rgba(15,15,19,.55);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
     color:var(--text);cursor:pointer;transition:border-color .15s,background .15s,color .15s}
-  .btn:hover{border-color:#33333d;background:#15151a}
+  .btn:hover{border-color:#33333d;background:rgba(21,21,26,.85)}
   .btn svg{width:15px;height:15px;opacity:.9}
   .btn.ghost{color:var(--dim)}.btn.ghost:hover{color:var(--text)}
-  .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line-2) 15%,var(--line-2) 85%,transparent);margin:0 32px}
+  .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line-2) 15%,var(--line-2) 85%,transparent);margin:0 32px;position:relative;z-index:2}
 
-  main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-index:1}
+  /* ============================================================
+     MAIN
+     ============================================================ */
+  main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-index:2}
   .subtitle{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--dim);font-size:13.5px;margin-bottom:32px}
   .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;
-    border:1px solid var(--line-2);background:#0f0f13;color:var(--text);font-size:12.5px}
+    border:1px solid var(--line-2);background:rgba(15,15,19,.75);color:var(--text);font-size:12.5px}
   .chip svg{width:13px;height:13px;color:var(--accent-2)}
   .grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));max-width:1100px;margin:0 auto}
 
-  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
-    padding:26px 24px 22px;display:flex;flex-direction:column;transition:border-color .15s, box-shadow .2s}
-  .card:hover{border-color:var(--line-2)}
+  /* ============================================================
+     CARD
+     ============================================================ */
+  .card{background:linear-gradient(180deg, rgba(19,19,24,.92), rgba(15,15,18,.92));
+    border:1px solid var(--line);border-radius:16px;
+    padding:26px 24px 22px;display:flex;flex-direction:column;
+    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+    transition:border-color .15s, box-shadow .25s, transform .15s}
+  .card:hover{border-color:var(--line-2);box-shadow:0 12px 40px rgba(0,0,0,.35)}
   .card .kicker{font-size:11px;letter-spacing:1.4px;color:var(--dim);text-transform:uppercase;margin-bottom:14px}
   .card h2{margin:0 0 2px;font-size:26px;font-weight:600;letter-spacing:-.3px}
   .card h2 em{font-style:normal;color:var(--accent-2)}
@@ -92,10 +315,11 @@
   .features li svg{width:15px;height:15px;color:var(--accent-2);flex:0 0 auto}
   .card .cta{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:8px;
     padding:11px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:600;
-    font-size:14px;border:none;cursor:pointer;transition:background .15s}
-  .card .cta:hover{background:var(--accent-2)}
+    font-size:14px;border:none;cursor:pointer;transition:background .15s, box-shadow .2s}
+  .card .cta:hover{background:var(--accent-2);box-shadow:0 6px 22px rgba(59,130,246,.35)}
   .card .cta svg{width:15px;height:15px}
 
+  /* ---------- dourado ---------- */
   .card.gold {
     border-color: rgba(212,175,55,.55);
     box-shadow:
@@ -119,16 +343,28 @@
     background: linear-gradient(180deg, var(--gold), var(--gold-dim));
     color: #0a0a0c;
   }
-  .card.gold .cta:hover { background: linear-gradient(180deg, var(--gold-2), #c89a2a); }
+  .card.gold .cta:hover {
+    background: linear-gradient(180deg, var(--gold-2), #c89a2a);
+    box-shadow: 0 6px 22px rgba(212,175,55,.40);
+  }
 
-  .center{display:grid;place-items:center;min-height:60vh;text-align:center;padding:24px;position:relative;z-index:1}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;
-    padding:32px;max-width:380px;width:100%}
+  /* ============================================================
+     ESTADOS
+     ============================================================ */
+  .center{display:grid;place-items:center;min-height:60vh;text-align:center;padding:24px;position:relative;z-index:2}
+  .panel{background:linear-gradient(180deg, rgba(19,19,24,.94), rgba(15,15,18,.94));
+    border:1px solid var(--line);border-radius:16px;
+    padding:32px;max-width:380px;width:100%;
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    box-shadow:0 20px 60px rgba(0,0,0,.45)}
   .panel h1{margin:0 0 6px;font-size:19px;font-weight:600}
   .panel p{margin:0 0 22px;color:var(--dim);font-size:13.5px}
   .err{color:var(--danger);font-size:13px;margin-top:14px;min-height:18px}
   .hidden{display:none !important}
 
+  /* ============================================================
+     POPUP
+     ============================================================ */
   #exec-overlay {
     position: fixed; inset: 0; z-index: 9999;
     background: rgba(10,10,12,.72);
@@ -141,12 +377,12 @@
   #exec-overlay.hidden { display: none; }
 
   .exec-modal {
-    background: rgba(19,19,24,.92);
+    background: rgba(19,19,24,.94);
     border: 1px solid var(--line-2);
     border-radius: 16px;
     padding: 36px 40px 28px;
     width: 340px; text-align: center;
-    box-shadow: 0 24px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(59,130,246,.06);
+    box-shadow: 0 24px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(59,130,246,.08);
     animation: execIn .28s cubic-bezier(.2,.8,.2,1);
   }
   @keyframes execIn {
@@ -189,6 +425,7 @@
     .rule{margin:0 18px}
     main{padding:36px 18px 64px}
     .nav .btn span{display:none}
+    body::after{font-size:10px;padding:40px 30px}
   }
 </style>
 </head>
@@ -261,144 +498,8 @@
 </div>
 
 <script>
-/* ============================================================
-   GUARD — anti-devtools, anti-console, anti-monkey-patch
-   Roda ANTES de qualquer outro código. Se detectar violação,
-   destrói a sessão e manda pra about:blank.
-   ============================================================ */
 (function () {
-  // referências nativas — guardadas antes que alguém possa mexer
-  const _fetch        = window.fetch;
-  const _toString     = Function.prototype.toString;
-  const _defineProp   = Object.defineProperty;
-  const _freeze       = Object.freeze;
-  const _keys         = Object.getOwnPropertyNames;
-  const _location     = window.location;
-  const _setTimeout   = window.setTimeout;
-
-  let killed = false;
-  function hardKill(reason) {
-    if (killed) return;
-    killed = true;
-    try { console.clear && console.clear(); } catch {}
-    try { localStorage.clear(); sessionStorage.clear(); } catch {}
-    try {
-      document.cookie.split(';').forEach(c => {
-        const n = c.split('=')[0].trim();
-        document.cookie = n + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
-      });
-    } catch {}
-    try { _location.replace('about:blank'); } catch {}
-  }
-  window.__guardKill = hardKill;
-
-  // ---------- 1. inutilizar console ----------
-  // console.log/warn/etc viram no-op. Exceção: nosso próprio log interno
-  // (usamos __log que não passa pelo console do usuário).
-  const _noop = function () {};
-  try {
-    for (const m of ['log','info','warn','error','debug','trace','dir','table','group','groupEnd','count','assert','clear','time','timeEnd','profile','profileEnd']) {
-      try { Object.defineProperty(console, m, { value: _noop, writable: false, configurable: false }); } catch {}
-    }
-    try { Object.freeze(console); } catch {}
-  } catch {}
-
-  // ---------- 2. congelar fetch ----------
-  try {
-    Object.defineProperty(window, 'fetch', {
-      value: _fetch, writable: false, configurable: false
-    });
-  } catch {}
-
-  // ---------- 3. bloquear atalhos de devtools ----------
-  const blockedKeys = (e) => {
-    const k = (e.key || '').toLowerCase();
-    // F12
-    if (k === 'f12') { e.preventDefault(); e.stopPropagation(); return false; }
-    // Ctrl+Shift+I / J / C / K  (devtools, console, inspector, tool)
-    if (e.ctrlKey && e.shiftKey && ['i','j','c','k'].includes(k)) {
-      e.preventDefault(); e.stopPropagation(); return false;
-    }
-    // Ctrl+U — view source
-    if (e.ctrlKey && k === 'u') { e.preventDefault(); e.stopPropagation(); return false; }
-    // Ctrl+S — salvar página
-    if (e.ctrlKey && k === 's') { e.preventDefault(); e.stopPropagation(); return false; }
-    // Ctrl+Shift+E / M / P — network, device mode, performance
-    if (e.ctrlKey && e.shiftKey && ['e','m','p'].includes(k)) {
-      e.preventDefault(); e.stopPropagation(); return false;
-    }
-    return true;
-  };
-  window.addEventListener('keydown', blockedKeys, true);
-  window.addEventListener('keyup', blockedKeys, true);
-
-  // ---------- 4. detecção de devtools aberto ----------
-  // usa a diferença entre outer e inner dimensions — técnica clássica.
-  // se a diferença for grande o bastante, devtools está ancorado em algum lado.
-  function devtoolsOpen() {
-    try {
-      const wDiff = window.outerWidth  - window.innerWidth;
-      const hDiff = window.outerHeight - window.innerHeight;
-      // barra do browser ocupa ~90-120px de altura. devtools ancorado
-      // abre mais de 160px de diferença em qualquer eixo.
-      return wDiff > 200 || hDiff > 200;
-    } catch { return false; }
-  }
-
-  // ---------- 5. detecção de monkey-patch ----------
-  function isNative(fn) {
-    try {
-      return _toString.call(fn).includes('[native code]');
-    } catch { return false; }
-  }
-
-  function checkIntegrity() {
-    if (killed) return;
-
-    // fetch foi sobrescrito?
-    if (window.fetch !== _fetch) return hardKill('fetch_patched');
-    if (!isNative(window.fetch))  return hardKill('fetch_not_native');
-
-    // Function.prototype.toString foi sobrescrito? (Tampermonkey faz isso)
-    if (Function.prototype.toString !== _toString) return hardKill('fptostring_patched');
-    if (!isNative(Function.prototype.toString))   return hardKill('fptostring_not_native');
-
-    // setTimeout foi sobrescrito?
-    if (window.setTimeout !== _setTimeout) return hardKill('settimeout_patched');
-    if (!isNative(window.setTimeout))      return hardKill('settimeout_not_native');
-
-    // XMLHttpRequest
-    if (window.XMLHttpRequest && !isNative(window.XMLHttpRequest.prototype.open))
-      return hardKill('xhr_patched');
-    if (window.XMLHttpRequest && !isNative(window.XMLHttpRequest.prototype.send))
-      return hardKill('xhr_send_patched');
-
-    // globals típicos de Tampermonkey / userscript managers
-    const suspicious = [
-      'unsafeWindow','GM_info','GM_setValue','GM_getValue','GM_xmlhttpRequest',
-      'GM_addStyle','GM_registerMenuCommand','GM_notification'
-    ];
-    for (const g of suspicious) if (g in window) return hardKill('gm_detected:' + g);
-
-    // devtools aberto?
-    if (devtoolsOpen()) return hardKill('devtools_open');
-  }
-
-  // roda a cada 800ms, e também em eventos que sugerem manipulação
-  setInterval(checkIntegrity, 800);
-  window.addEventListener('resize', checkIntegrity);
-  window.addEventListener('focus', checkIntegrity);
-  document.addEventListener('visibilitychange', checkIntegrity);
-
-  // roda uma vez já no boot
-  try { checkIntegrity(); } catch {}
-})();
-
-/* ============================================================
-   APP
-   ============================================================ */
-(function () {
-  const WORKER_URL  = 'https://lynx-gate.mamaetata216.workers.dev/';
+  const WORKER_URL  = 'https://lynx-gate.SEU_SUB.workers.dev';
   const SESSION_KEY = 'auth_jwt';
 
   const viewLogin = document.getElementById('view-login');
@@ -416,19 +517,16 @@
   const payloads = new Map();  // tag → script (vem do Worker, não do repo)
 
   // ---------- Google Sign-In ----------
-  Object.defineProperty(window, 'onCredential', {
-    value: async (resp) => {
-      loginErr.textContent = '';
-      try {
-        sessionStorage.setItem(SESSION_KEY, resp.credential);
-        await enter(resp.credential);
-      } catch (e) {
-        loginErr.textContent = 'conta não autorizada.';
-        kill();
-      }
-    },
-    writable: false, configurable: false
-  });
+  window.onCredential = async (resp) => {
+    loginErr.textContent = '';
+    try {
+      sessionStorage.setItem(SESSION_KEY, resp.credential);
+      await enter(resp.credential);
+    } catch (e) {
+      loginErr.textContent = 'conta não autorizada.';
+      kill();
+    }
+  };
 
   async function tryRestore() {
     const jwt = sessionStorage.getItem(SESSION_KEY);
@@ -530,7 +628,6 @@
     if (e.target === execOverlay) closeExec();
   });
 
-  // ---------- logout + kill ----------
   function kill() {
     try { window.__guardKill && window.__guardKill('app_kill'); }
     catch { try { location.replace('about:blank'); } catch {} }
