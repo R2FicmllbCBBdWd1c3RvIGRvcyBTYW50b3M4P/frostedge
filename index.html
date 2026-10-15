@@ -140,16 +140,6 @@
 })();
 </script>
 
-<script>
-  /* boot de tema — antes do primeiro paint, sem flash */
-  (function () {
-    try {
-      const t = localStorage.getItem('lynx_theme');
-      if (t && t !== 'azul') document.documentElement.setAttribute('data-theme', t);
-    } catch {}
-  })();
-</script>
-
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <style>
@@ -165,7 +155,6 @@
   }
 
   /* ---------- TEMAS ---------- */
-  /* azul = default, sem data-theme */
   html[data-theme="roxo"] {
     --accent:#8b5cf6;--accent-2:#a78bfa;--accent-dim:#4c1d95;
     --glow-rgb:139,92,246;
@@ -674,7 +663,6 @@
 (function () {
   const WORKER_URL  = 'https://lynx-gate.mamaetata216.workers.dev/';
   const SESSION_KEY = 'auth_jwt';
-  const THEME_KEY   = 'lynx_theme';
 
   const viewLogin = document.getElementById('view-login');
   const viewSite  = document.getElementById('view-site');
@@ -715,17 +703,26 @@
     const t = name || 'azul';
     if (t === 'azul') document.documentElement.removeAttribute('data-theme');
     else              document.documentElement.setAttribute('data-theme', t);
-    try { localStorage.setItem(THEME_KEY, t); } catch {}
     document.querySelectorAll('.theme-swatch').forEach(s => {
       s.classList.toggle('selected', s.dataset.theme === t);
     });
   }
 
-  // aplica o tema já ao carregar (o boot script já colocou o attribute antes do paint)
-  try { applyTheme(localStorage.getItem(THEME_KEY) || 'azul'); } catch {}
-
+  // swatch: aplica local (otimista) + grava no KV
   document.querySelectorAll('.theme-swatch').forEach(s => {
-    s.addEventListener('click', () => applyTheme(s.dataset.theme));
+    s.addEventListener('click', async () => {
+      const theme = s.dataset.theme;
+      applyTheme(theme);
+      const jwt = sessionStorage.getItem(SESSION_KEY);
+      if (!jwt) return;
+      try {
+        await window.fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jwt, setTheme: theme })
+        });
+      } catch {}
+    });
   });
 
   // ---------- Google Sign-In ----------
@@ -765,6 +762,7 @@
     }
 
     const data = await r.json();
+    applyTheme(data.theme || 'azul');
     currentUser = {
       name: data.name || '',
       email: jwtEmail(jwt),
