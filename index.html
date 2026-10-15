@@ -319,7 +319,28 @@
   #view-area-body.animate .area-tag:nth-child(6) { animation-delay: .50s; }
   #view-area-body.animate .area-actions { animation-delay: .40s; }
 
-  /* ---------- LOADER DA ÁREA ---------- */
+  /* ---------- ENTRADA DO SITE (grid) ---------- */
+  @keyframes siteIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+  #view-site.animate header,
+  #view-site.animate .rule,
+  #view-site.animate .subtitle,
+  #view-site.animate .card {
+    animation: siteIn .5s cubic-bezier(.2,.8,.2,1) both;
+  }
+  #view-site.animate header    { animation-delay: 0s; }
+  #view-site.animate .rule     { animation-delay: .05s; }
+  #view-site.animate .subtitle { animation-delay: .10s; }
+  #view-site.animate .card:nth-child(1) { animation-delay: .16s; }
+  #view-site.animate .card:nth-child(2) { animation-delay: .21s; }
+  #view-site.animate .card:nth-child(3) { animation-delay: .26s; }
+  #view-site.animate .card:nth-child(4) { animation-delay: .31s; }
+  #view-site.animate .card:nth-child(5) { animation-delay: .36s; }
+  #view-site.animate .card:nth-child(6) { animation-delay: .41s; }
+
+  /* ---------- LOADER ---------- */
   #area-loader {
     position: fixed; inset: 0; z-index: 9998;
     background: rgba(10,10,12,.72);
@@ -540,11 +561,11 @@
   </div>
 </section>
 
-<!-- ====================== LOADER ÁREA ====================== -->
+<!-- ====================== LOADER ====================== -->
 <div id="area-loader" class="hidden">
   <div class="area-loader-card">
     <div class="spinner"></div>
-    <h3>Abrindo área<span class="dots"><span>.</span><span>.</span><span>.</span></span></h3>
+    <h3 id="loader-title">Abrindo área<span class="dots"><span>.</span><span>.</span><span>.</span></span></h3>
     <p class="exec-sub" id="area-loader-sub">carregando seus dados</p>
   </div>
 </div>
@@ -589,8 +610,9 @@
   const execClose   = document.getElementById('exec-close');
   const execEmail   = document.getElementById('exec-email');
 
-  const areaLoader  = document.getElementById('area-loader');
-  const areaLoaderSub = document.getElementById('area-loader-sub');
+  const areaLoader     = document.getElementById('area-loader');
+  const areaLoaderSub  = document.getElementById('area-loader-sub');
+  const loaderTitle    = document.getElementById('loader-title');
 
   const payloads = new Map();
   let currentUser = null;
@@ -731,17 +753,16 @@
     if (e.target === execOverlay) closeExec();
   });
 
-  // ---------- loader da área ----------
-  function showAreaLoader() {
-    areaLoaderSub.textContent = currentUser && currentUser.name
-      ? 'carregando dados de ' + currentUser.name
-      : 'carregando seus dados';
+  // ---------- loader genérico ----------
+  function showLoader(title, sub) {
+    loaderTitle.innerHTML = `${title}<span class="dots"><span>.</span><span>.</span><span>.</span></span>`;
+    areaLoaderSub.textContent = sub || '';
     areaLoader.classList.remove('hidden');
-    void areaLoader.offsetWidth;      // força reflow pro transition pegar
+    void areaLoader.offsetWidth;
     areaLoader.classList.add('show');
   }
 
-  function hideAreaLoader() {
+  function hideLoader() {
     areaLoader.classList.remove('show');
     setTimeout(() => areaLoader.classList.add('hidden'), 380);
   }
@@ -749,8 +770,25 @@
   function playAreaEntrance() {
     const body = document.getElementById('view-area-body');
     body.classList.remove('animate');
-    void body.offsetWidth;            // força reflow pra reanimar
+    void body.offsetWidth;
     body.classList.add('animate');
+  }
+
+  function playSiteEntrance() {
+    const site = document.getElementById('view-site');
+    site.classList.remove('animate');
+    void site.offsetWidth;
+    site.classList.add('animate');
+  }
+
+  function withLoader(title, sub, applyFn) {
+    if (areaOpenTimer) return;
+    showLoader(title, sub);
+    areaOpenTimer = setTimeout(() => {
+      applyFn();
+      hideLoader();
+      areaOpenTimer = null;
+    }, 650);
   }
 
   // ---------- view ----------
@@ -781,17 +819,25 @@
     });
   }
 
-  // abre a área com loader + animação
   function openArea() {
-    if (areaOpenTimer) return;
-    showAreaLoader();
-    areaOpenTimer = setTimeout(() => {
+    const sub = currentUser && currentUser.name
+      ? 'carregando dados de ' + currentUser.name
+      : 'carregando seus dados';
+    withLoader('Abrindo área', sub, () => {
       renderArea();
       showView('area');
       playAreaEntrance();
-      hideAreaLoader();
-      areaOpenTimer = null;
-    }, 650);
+    });
+  }
+
+  function backHome() {
+    const sub = currentUser && currentUser.name
+      ? 'voltando ao painel de ' + currentUser.name
+      : 'voltando ao painel';
+    withLoader('Voltando', sub, () => {
+      showView('site');
+      playSiteEntrance();
+    });
   }
 
   // ---------- rota ----------
@@ -800,12 +846,14 @@
 
     if (path === '/area') {
       if (!currentUser) { showView('login'); return; }
-      // já está aberto — só re-renderiza, sem loader
       if (!viewArea.classList.contains('hidden')) { renderArea(); return; }
       openArea();
     } else {
-      if (currentUser) showView('site');
-      else             showView('login');
+      if (!currentUser) { showView('login'); return; }
+      if (!viewSite.classList.contains('hidden')) return;
+      // primeira entrada pós-login — sem loader, mas com cascata
+      showView('site');
+      playSiteEntrance();
     }
   }
 
@@ -816,9 +864,18 @@
 
   window.addEventListener('popstate', route);
 
-  document.getElementById('btn-area').addEventListener('click', () => go('/area'));
-  document.getElementById('btn-home').addEventListener('click', () => go('/'));
-  document.getElementById('btn-back').addEventListener('click', () => go('/'));
+  document.getElementById('btn-area').addEventListener('click', () => {
+    if (location.pathname !== '/area') history.pushState({}, '', '/area');
+    openArea();
+  });
+  document.getElementById('btn-home').addEventListener('click', () => {
+    if (location.pathname !== '/') history.pushState({}, '', '/');
+    backHome();
+  });
+  document.getElementById('btn-back').addEventListener('click', () => {
+    if (location.pathname !== '/') history.pushState({}, '', '/');
+    backHome();
+  });
 
   // ---------- logout ----------
   function kill() {
