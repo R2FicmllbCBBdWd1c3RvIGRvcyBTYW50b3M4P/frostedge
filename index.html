@@ -1717,3 +1717,43 @@
     if (location.pathname !== path) history.pushState({}, '', path);
     route();
   }
+
+  window.addEventListener('popstate', route);
+
+  document.getElementById('btn-area').addEventListener('click', () => {
+    if (location.pathname !== '/area') history.pushState({}, '', '/area');
+    if (currentUser && currentUser.hasPin && !areaUnlocked) {
+      openPinGate();
+      return;
+    }
+    openArea();
+  });
+  document.getElementById('btn-home').addEventListener('click', () => {
+    if (location.pathname !== '/') history.pushState({}, '', '/');
+    backHome();
+  });
+  document.getElementById('btn-back').addEventListener('click', () => {
+    if (location.pathname !== '/') history.pushState({}, '', '/');
+    backHome();
+  });
+
+  // ---------- logout ----------
+  function kill() {
+    try { window.__guardKill && window.__guardKill('app_kill'); }
+    catch { try { location.replace('about:blank'); } catch {} }
+  }
+
+  ['btn-logout','btn-logout-2','btn-logout-3'].forEach(id => {
+    document.getElementById(id).addEventListener('click', () => {
+      sessionStorage.removeItem(SESSION_KEY);
+      try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
+      kill();
+    });
+  });
+
+  // ---------- boot ----------
+  tryRestore().then(() => route());
+})();
+</script>
+</body>
+</html>
