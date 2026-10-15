@@ -326,7 +326,6 @@
     box-shadow:0 0 0 2px var(--accent);
   }
 
-  /* ---------- TABS DA ÁREA ---------- */
   .area-tabs{display:flex;gap:4px;margin:0 0 28px;border-bottom:1px solid var(--line)}
   .area-tab{
     padding:10px 16px;background:none;border:none;
@@ -337,7 +336,6 @@
   .area-tab:hover{color:var(--text)}
   .area-tab.selected{color:var(--accent-2);border-bottom-color:var(--accent)}
 
-  /* ---------- ADMIN ---------- */
   .admin-form{display:flex;flex-direction:column;gap:14px}
   .admin-field{display:flex;flex-direction:column;gap:6px}
   .admin-field label{font-size:11px;font-weight:600;color:var(--dim);letter-spacing:1.2px;text-transform:uppercase}
@@ -798,6 +796,7 @@
   let currentUser = null;
   let areaOpenTimer = null;
   let adminData = null;
+  let adminPanelRemoved = false;
 
   // ---------- helpers ----------
   function jwtEmail(jwt) {
@@ -882,6 +881,17 @@
       isAdmin: !!data.isAdmin,
       blocks: data.blocks || []
     };
+
+    // não-admin: remove a aba e o painel da DOM de vez.
+    // roda uma vez só (guard `adminPanelRemoved` cobre múltiplos enters).
+    if (!currentUser.isAdmin && !adminPanelRemoved) {
+      adminPanelRemoved = true;
+      const tab = document.getElementById('tab-acesso');
+      const panel = document.querySelector('[data-panel="acesso"]');
+      if (tab) tab.remove();
+      if (panel) panel.remove();
+    }
+
     who.textContent = currentUser.name || currentUser.email;
     grid.innerHTML = '';
     currentUser.blocks.forEach(b => grid.appendChild(renderBlock(b)));
@@ -1015,7 +1025,10 @@
     document.getElementById('area-name').textContent  = currentUser.name || '—';
     document.getElementById('area-email').textContent = currentUser.email || '—';
 
-    document.getElementById('tab-acesso').classList.toggle('hidden', !currentUser.isAdmin);
+    // destrava a aba "Acesso" se for admin e o elemento ainda existir.
+    // se foi removido (não-admin), o `?.` protege.
+    const tabAcesso = document.getElementById('tab-acesso');
+    if (tabAcesso) tabAcesso.classList.toggle('hidden', !currentUser.isAdmin);
 
     const wrap = document.getElementById('area-tags');
     wrap.innerHTML = '';
@@ -1069,6 +1082,7 @@
   // ---------- admin ----------
   function toast(msg, isErr) {
     const el = document.getElementById('admin-toast');
+    if (!el) return;
     el.textContent = msg;
     el.classList.toggle('err', !!isErr);
     el.classList.add('show');
@@ -1103,8 +1117,9 @@
 
   function renderAdminTagsInput() {
     const wrap = document.getElementById('admin-new-tags');
+    if (!wrap) return;
     wrap.innerHTML = '';
-    if (!adminData || !adminData.allTags.length) {
+    if (!adminData || !adminData.allTags || !adminData.allTags.length) {
       wrap.innerHTML = '<span style="color:var(--dim);font-size:12.5px">sem tags no catálogo.</span>';
       return;
     }
@@ -1121,8 +1136,9 @@
 
   function renderAdminUsers() {
     const list = document.getElementById('admin-users');
+    if (!list) return;
     list.innerHTML = '';
-    if (!adminData || !adminData.people.length) {
+    if (!adminData || !adminData.people || !adminData.people.length) {
       list.innerHTML = '<div class="admin-empty">ninguém cadastrado além de você.</div>';
       return;
     }
@@ -1181,23 +1197,26 @@
     }
   }
 
-  document.getElementById('admin-add-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const email = form.email.value.trim().toLowerCase();
-    const name  = form.name.value.trim();
-    const tags  = [...form.querySelectorAll('input[type=checkbox]:checked')].map(c => c.value);
-    if (!email.includes('@')) { toast('email inválido', true); return; }
-    if (!name) { toast('nome obrigatório', true); return; }
-    try {
-      await adminCall('admin:setUser', { email, name, tags });
-      toast('adicionado: ' + name);
-      form.reset();
-      await loadAdmin();
-    } catch (e) {
-      toast('falha: ' + e.message, true);
-    }
-  });
+  const addForm = document.getElementById('admin-add-form');
+  if (addForm) {
+    addForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const email = form.email.value.trim().toLowerCase();
+      const name  = form.name.value.trim();
+      const tags  = [...form.querySelectorAll('input[type=checkbox]:checked')].map(c => c.value);
+      if (!email.includes('@')) { toast('email inválido', true); return; }
+      if (!name) { toast('nome obrigatório', true); return; }
+      try {
+        await adminCall('admin:setUser', { email, name, tags });
+        toast('adicionado: ' + name);
+        form.reset();
+        await loadAdmin();
+      } catch (e) {
+        toast('falha: ' + e.message, true);
+      }
+    });
+  }
 
   // ---------- rota ----------
   function route() {
