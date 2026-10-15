@@ -302,31 +302,6 @@
   .area-actions{margin-top:22px}
   .area-actions .btn{width:100%;justify-content:center;padding:12px 16px}
 
-  .area-pin-wrap{display:flex;align-items:center;gap:8px}
-  .area-pin{
-    width:96px;
-    background:rgba(10,10,12,.6);
-    border:1px solid var(--line-2);
-    border-radius:8px;
-    padding:6px 8px;
-    color:var(--text);
-    font-size:13px;
-    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-    letter-spacing:5px;
-    text-align:center;
-    transition:border-color .15s;
-  }
-  .area-pin:focus{outline:none;border-color:var(--accent)}
-  .area-pin::placeholder{color:var(--dim);letter-spacing:5px}
-  .pin-save{
-    background:transparent;border:1px solid var(--line-2);color:var(--dim);
-    padding:6px 10px;border-radius:8px;font-size:11.5px;font-weight:500;
-    cursor:pointer;font-family:inherit;
-    transition:border-color .15s,color .15s,background .15s;
-  }
-  .pin-save:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
-  .pin-save:disabled{opacity:.5;cursor:not-allowed}
-
   .theme-row{display:flex;flex-wrap:wrap;gap:10px;padding:6px 0 4px}
   .theme-swatch{
     display:inline-flex;align-items:center;gap:8px;
@@ -406,18 +381,6 @@
   .admin-search:focus{outline:none;border-color:var(--accent)}
   .admin-search::placeholder{color:var(--dim)}
 
-  .admin-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 14px;gap:12px}
-  .admin-head h3{margin:0}
-  .admin-io{display:flex;gap:6px}
-  .admin-io button{
-    background:transparent;border:1px solid var(--line-2);color:var(--dim);
-    padding:5px 10px;border-radius:8px;font-size:11.5px;font-weight:500;
-    cursor:pointer;font-family:inherit;
-    transition:border-color .15s,color .15s,background .15s;
-  }
-  .admin-io button:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
-  .admin-last{font-size:11px;color:var(--dim);margin-top:2px;opacity:.85}
-
   .admin-users{display:flex;flex-direction:column;gap:10px}
   .admin-row{
     display:flex;align-items:center;gap:12px;
@@ -462,80 +425,6 @@
   }
   .admin-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .admin-toast.err{border-color:rgba(224,82,82,.55);color:#e05252}
-
-  /* ---------- PIN GATE ---------- */
-  #pin-gate{
-    position: fixed; inset: 0; z-index: 9997;
-    background: rgba(10,10,12,.72);
-    -webkit-backdrop-filter: blur(8px) saturate(.8);
-            backdrop-filter: blur(8px) saturate(.8);
-    display: grid; place-items: center;
-    opacity: 0; transition: opacity .25s ease;
-  }
-  #pin-gate:not(.hidden){ opacity: 1; }
-  #pin-gate.hidden{ display: none; }
-
-  .pin-gate-card{
-    background: rgba(19,19,24,.94);
-    border: 1px solid var(--line-2);
-    border-radius: 16px;
-    padding: 32px 34px 24px;
-    width: 340px;
-    text-align: center;
-    box-shadow: 0 24px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(var(--glow-rgb),.08);
-    animation: pinIn .28s cubic-bezier(.2,.8,.2,1);
-  }
-  @keyframes pinIn {
-    from { opacity: 0; transform: translateY(8px) scale(.97); }
-    to   { opacity: 1; transform: none; }
-  }
-  .pin-gate-card h3{
-    margin: 0 0 6px; font-size: 17px; font-weight: 600;
-    color: var(--text); letter-spacing: -.2px;
-  }
-  .pin-gate-card p{
-    margin: 0 0 20px; color: var(--dim); font-size: 12.5px;
-    line-height: 1.5;
-  }
-  .pin-gate-input{
-    width: 100%; box-sizing: border-box;
-    background: rgba(10,10,12,.6);
-    border: 1px solid var(--line-2);
-    border-radius: 10px;
-    padding: 12px 14px;
-    color: var(--text);
-    font-size: 22px;
-    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    letter-spacing: 14px;
-    text-align: center;
-    transition: border-color .15s;
-  }
-  .pin-gate-input:focus{ outline: none; border-color: var(--accent); }
-  .pin-gate-input::placeholder{ color: var(--dim); letter-spacing: 14px; }
-  .pin-gate-err{
-    min-height: 16px;
-    margin-top: 8px;
-    color: var(--danger);
-    font-size: 12.5px;
-  }
-  .pin-gate-btn{
-    margin-top: 12px;
-    width: 100%; padding: 11px 16px; border-radius: 11px;
-    background: var(--accent); color: #fff;
-    font-weight: 600; font-size: 14px; border: none; cursor: pointer;
-    font-family: inherit;
-    transition: background .15s, box-shadow .2s;
-  }
-  .pin-gate-btn:hover:not(:disabled){ background: var(--accent-2); box-shadow: 0 6px 22px rgba(var(--glow-rgb),.35); }
-  .pin-gate-btn:disabled{ opacity: .6; cursor: not-allowed; }
-  .pin-gate-cancel{
-    margin-top: 8px;
-    background: none; border: none; color: var(--dim);
-    font-size: 12.5px; cursor: pointer; font-family: inherit;
-    padding: 4px 8px;
-    transition: color .15s;
-  }
-  .pin-gate-cancel:hover{ color: var(--text); }
 
   @keyframes areaIn {
     from { opacity: 0; transform: translateY(12px); }
@@ -791,24 +680,6 @@
         <h3>Conta</h3>
         <div class="area-row"><span class="k">nome</span><span class="v" id="area-name">—</span></div>
         <div class="area-row"><span class="k">email</span><span class="v" id="area-email">—</span></div>
-        <div class="area-row">
-          <span class="k">pin</span>
-          <span class="v area-pin-wrap">
-            <input id="pin-input" class="area-pin" type="text" inputmode="numeric"
-                   maxlength="6" placeholder="••••••"
-                   autocomplete="off" spellcheck="false">
-            <button id="pin-save" class="pin-save" type="button">salvar</button>
-          </span>
-        </div>
-        <div class="area-row">
-          <span class="k">recuperação</span>
-          <span class="v area-pin-wrap">
-            <input id="pin2-input" class="area-pin" type="text" inputmode="numeric"
-                   maxlength="4" placeholder="••••"
-                   autocomplete="off" spellcheck="false">
-            <button id="pin2-save" class="pin-save" type="button">salvar</button>
-          </span>
-        </div>
       </div>
 
       <div class="area-card">
@@ -854,47 +725,6 @@
     <div class="spinner"></div>
     <h3 id="loader-title">Abrindo área<span class="dots"><span>.</span><span>.</span><span>.</span></span></h3>
     <p class="exec-sub" id="area-loader-sub">carregando seus dados</p>
-  </div>
-</div>
-
-<!-- ====================== PIN GATE ====================== -->
-<div id="pin-gate" class="hidden">
-  <div class="pin-gate-card">
-    <!-- estado 1: verificação do PIN principal (6 dígitos) -->
-    <div id="pin-verify-state">
-      <h3>Digite seu PIN</h3>
-      <p>6 dígitos para abrir a área.</p>
-      <input id="pin-gate-input" type="text" inputmode="numeric" maxlength="6"
-             autocomplete="off" spellcheck="false"
-             class="pin-gate-input" placeholder="••••••">
-      <div class="pin-gate-err" id="pin-gate-err"></div>
-      <button id="pin-gate-ok" class="pin-gate-btn" type="button">Confirmar</button>
-      <button id="pin-gate-cancel" class="pin-gate-cancel" type="button">cancelar</button>
-    </div>
-
-    <!-- estado 2: PIN de recuperação (4 dígitos) -->
-    <div id="pin-rec-state" class="hidden">
-      <h3>Recuperação</h3>
-      <p>3 tentativas erradas. Digite o PIN de recuperação de 4 dígitos.</p>
-      <input id="pin-rec-input" type="text" inputmode="numeric" maxlength="4"
-             autocomplete="off" spellcheck="false"
-             class="pin-gate-input" placeholder="••••">
-      <div class="pin-gate-err" id="pin-rec-err"></div>
-      <button id="pin-rec-ok" class="pin-gate-btn" type="button">Confirmar</button>
-      <button id="pin-rec-cancel" class="pin-gate-cancel" type="button">cancelar</button>
-    </div>
-
-    <!-- estado 3: definir novo PIN principal (6 dígitos) -->
-    <div id="pin-new-state" class="hidden">
-      <h3>Novo PIN</h3>
-      <p>Defina um novo PIN de 6 dígitos.</p>
-      <input id="pin-new-input" type="text" inputmode="numeric" maxlength="6"
-             autocomplete="off" spellcheck="false"
-             class="pin-gate-input" placeholder="••••••">
-      <div class="pin-gate-err" id="pin-new-err"></div>
-      <button id="pin-new-ok" class="pin-gate-btn" type="button">Salvar</button>
-      <button id="pin-new-cancel" class="pin-gate-cancel" type="button">cancelar</button>
-    </div>
   </div>
 </div>
 
@@ -950,7 +780,6 @@
   let areaOpenTimer = null;
   let adminData = null;
   let adminMounted = false;
-  let areaUnlocked = false;
 
   // ---------- helpers ----------
   function jwtEmail(jwt) {
@@ -1033,14 +862,8 @@
       name: data.name || '',
       email: jwtEmail(jwt),
       isAdmin: !!data.isAdmin,
-      hasPin: !!data.hasPin,
-      hasPin2: !!data.hasPin2,
-      pinLocked: !!data.pinLocked,
       blocks: data.blocks || []
     };
-
-    // sem PIN definido? área já liberada nessa sessão
-    areaUnlocked = !currentUser.hasPin;
 
     if (currentUser.isAdmin && !adminMounted) {
       adminMounted = true;
@@ -1180,11 +1003,6 @@
     document.getElementById('area-name').textContent  = currentUser.name || '—';
     document.getElementById('area-email').textContent = currentUser.email || '—';
 
-    const pinInput  = document.getElementById('pin-input');
-    const pin2Input = document.getElementById('pin2-input');
-    if (pinInput)  pinInput.placeholder  = currentUser.hasPin  ? '••••••' : 'definir';
-    if (pin2Input) pin2Input.placeholder = currentUser.hasPin2 ? '••••'   : 'definir';
-
     const wrap = document.getElementById('area-tags');
     wrap.innerHTML = '';
     if (!currentUser.blocks.length) {
@@ -1240,212 +1058,6 @@
     selectTab(e.currentTarget.dataset.tab);
   }
 
-  // ---------- PIN gate (3 estados) ----------
-  const pinGate = document.getElementById('pin-gate');
-  const pinVerifyState = document.getElementById('pin-verify-state');
-  const pinRecState    = document.getElementById('pin-rec-state');
-  const pinNewState    = document.getElementById('pin-new-state');
-
-  const pinGateInput = document.getElementById('pin-gate-input');
-  const pinGateErr   = document.getElementById('pin-gate-err');
-  const pinGateOk    = document.getElementById('pin-gate-ok');
-  const pinGateCancel = document.getElementById('pin-gate-cancel');
-
-  const pinRecInput  = document.getElementById('pin-rec-input');
-  const pinRecErr    = document.getElementById('pin-rec-err');
-  const pinRecOk     = document.getElementById('pin-rec-ok');
-  const pinRecCancel = document.getElementById('pin-rec-cancel');
-
-  const pinNewInput  = document.getElementById('pin-new-input');
-  const pinNewErr    = document.getElementById('pin-new-err');
-  const pinNewOk     = document.getElementById('pin-new-ok');
-  const pinNewCancel = document.getElementById('pin-new-cancel');
-
-  function showGateState(which) {
-    pinVerifyState.classList.toggle('hidden', which !== 'verify');
-    pinRecState.classList.toggle('hidden', which !== 'rec');
-    pinNewState.classList.toggle('hidden', which !== 'new');
-    [pinGateErr, pinRecErr, pinNewErr].forEach(el => el && (el.textContent = ''));
-    if (which === 'verify') { pinGateInput.value = ''; setTimeout(() => pinGateInput.focus(), 50); }
-    if (which === 'rec')    { pinRecInput.value = '';  setTimeout(() => pinRecInput.focus(), 50); }
-    if (which === 'new')    { pinNewInput.value = '';  setTimeout(() => pinNewInput.focus(), 50); }
-  }
-
-  function openPinGate() {
-    pinGate.classList.remove('hidden');
-    showGateState('verify');
-  }
-
-  function closePinGate() { pinGate.classList.add('hidden'); }
-
-  [
-    [pinGateInput, pinGateOk],
-    [pinRecInput,  pinRecOk],
-    [pinNewInput,  pinNewOk]
-  ].forEach(([input, btn]) => {
-    if (!input) return;
-    input.addEventListener('input', () => {
-      const max = parseInt(input.maxLength, 10) || 6;
-      input.value = input.value.replace(/\D/g, '').slice(0, max);
-    });
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); btn.click(); }
-    });
-  });
-
-  pinGateCancel.addEventListener('click', closePinGate);
-  pinRecCancel.addEventListener('click', closePinGate);
-  pinNewCancel.addEventListener('click', closePinGate);
-
-  // 1) verificar PIN principal (6 dígitos)
-  pinGateOk.addEventListener('click', async () => {
-    const pin = pinGateInput.value.trim();
-    if (!/^\d{6}$/.test(pin)) { pinGateErr.textContent = 'digite 6 dígitos'; return; }
-    pinGateOk.disabled = true;
-    try {
-      const jwt = sessionStorage.getItem(SESSION_KEY);
-      const r = await window.fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jwt, action: 'verifyPin', pin })
-      });
-      const data = await r.json();
-      if (data.ok) {
-        areaUnlocked = true;
-        closePinGate();
-        openArea();
-      } else if (data.locked) {
-        showGateState('rec');
-      } else {
-        pinGateErr.textContent = 'incorreto — restam ' + data.remaining + ' tentativa' + (data.remaining === 1 ? '' : 's');
-        pinGateInput.value = '';
-        pinGateInput.focus();
-      }
-    } catch (e) {
-      pinGateErr.textContent = 'falha na verificação';
-    } finally {
-      pinGateOk.disabled = false;
-    }
-  });
-
-  // 2) verificar PIN de recuperação (4 dígitos)
-  pinRecOk.addEventListener('click', async () => {
-    const pin = pinRecInput.value.trim();
-    if (!/^\d{4}$/.test(pin)) { pinRecErr.textContent = 'digite 4 dígitos'; return; }
-    pinRecOk.disabled = true;
-    try {
-      const jwt = sessionStorage.getItem(SESSION_KEY);
-      const r = await window.fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jwt, action: 'verifyPin2', pin })
-      });
-      const data = await r.json();
-      if (data.ok) {
-        showGateState('new');
-      } else if (data.error === 'no_pin2') {
-        pinRecErr.textContent = 'você não definiu um PIN de recuperação.';
-      } else {
-        pinRecErr.textContent = 'PIN de recuperação incorreto.';
-        pinRecInput.value = '';
-        pinRecInput.focus();
-      }
-    } catch (e) {
-      pinRecErr.textContent = 'falha na verificação';
-    } finally {
-      pinRecOk.disabled = false;
-    }
-  });
-
-  // 3) definir novo PIN principal (6 dígitos)
-  pinNewOk.addEventListener('click', async () => {
-    const pin = pinNewInput.value.trim();
-    if (!/^\d{6}$/.test(pin)) { pinNewErr.textContent = 'digite 6 dígitos'; return; }
-    const rec = pinRecInput.value.trim();
-    pinNewOk.disabled = true;
-    try {
-      const jwt = sessionStorage.getItem(SESSION_KEY);
-      const r = await window.fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jwt, action: 'resetPin', pin, rec })
-      });
-      const data = await r.json();
-      if (data.ok) {
-        areaUnlocked = true;
-        currentUser.pinLocked = false;
-        currentUser.hasPin = true;
-        closePinGate();
-        openArea();
-      } else {
-        pinNewErr.textContent = 'falha: ' + (data.error || 'tente de novo');
-      }
-    } catch (e) {
-      pinNewErr.textContent = 'falha na redefinição';
-    } finally {
-      pinNewOk.disabled = false;
-    }
-  });
-
-  // ---------- PIN do perfil ----------
-  const pinInputEl  = document.getElementById('pin-input');
-  const pinSaveEl   = document.getElementById('pin-save');
-  const pin2InputEl = document.getElementById('pin2-input');
-  const pin2SaveEl  = document.getElementById('pin2-save');
-
-  async function savePin(kind, input, btn, label) {
-    const pin = input.value.trim();
-    const len = kind === 'pin' ? 6 : 4;
-    if (!new RegExp('^\\d{' + len + '}$').test(pin)) {
-      toast(label + ' precisa ter ' + len + ' dígitos', true);
-      return;
-    }
-    const jwt = sessionStorage.getItem(SESSION_KEY);
-    if (!jwt) { toast('sessão expirada', true); return; }
-    btn.disabled = true;
-    try {
-      const r = await window.fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jwt, action: kind === 'pin' ? 'setPin' : 'setPin2', pin })
-      });
-      if (!r.ok) throw new Error('http ' + r.status);
-      if (kind === 'pin') {
-        currentUser.hasPin = true;
-        currentUser.pinLocked = false;
-        input.placeholder = '••••••';
-      } else {
-        currentUser.hasPin2 = true;
-        input.placeholder = '••••';
-      }
-      input.value = '';
-      toast(label + ' salvo');
-    } catch (e) {
-      toast('falha: ' + e.message, true);
-    } finally {
-      btn.disabled = false;
-    }
-  }
-
-  if (pinInputEl && pinSaveEl) {
-    pinInputEl.addEventListener('input', () => {
-      pinInputEl.value = pinInputEl.value.replace(/\D/g, '').slice(0, 6);
-    });
-    pinInputEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); pinSaveEl.click(); }
-    });
-    pinSaveEl.addEventListener('click', () => savePin('pin', pinInputEl, pinSaveEl, 'pin'));
-  }
-  if (pin2InputEl && pin2SaveEl) {
-    pin2InputEl.addEventListener('input', () => {
-      pin2InputEl.value = pin2InputEl.value.replace(/\D/g, '').slice(0, 4);
-    });
-    pin2InputEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); pin2SaveEl.click(); }
-    });
-    pin2SaveEl.addEventListener('click', () => savePin('pin2', pin2InputEl, pin2SaveEl, 'recuperação'));
-  }
-
   // ---------- monta a UI admin ----------
   function mountAdminUI() {
     const tabsBar = document.getElementById('area-tabs');
@@ -1485,14 +1097,7 @@
       </div>
 
       <div class="area-card">
-        <div class="admin-head">
-          <h3>Acessos</h3>
-          <div class="admin-io">
-            <button id="admin-export" type="button">exportar</button>
-            <button id="admin-import" type="button">importar</button>
-            <input id="admin-import-file" type="file" accept="application/json" style="display:none">
-          </div>
-        </div>
+        <h3>Acessos</h3>
         <input id="admin-search" class="admin-search" type="text"
                placeholder="buscar por nome ou email…"
                autocomplete="off" spellcheck="false">
@@ -1524,11 +1129,6 @@
     });
 
     document.getElementById('admin-search').addEventListener('input', applyAdminFilter);
-    document.getElementById('admin-export').addEventListener('click', doExport);
-    document.getElementById('admin-import').addEventListener('click', () => {
-      document.getElementById('admin-import-file').click();
-    });
-    document.getElementById('admin-import-file').addEventListener('change', doImport);
   }
 
   // ---------- admin ----------
@@ -1654,57 +1254,6 @@
     });
   }
 
-  // ---------- export / import ----------
-  function doExport() {
-    if (!adminData) { toast('nada para exportar', true); return; }
-    const data = {
-      exportedAt: new Date().toISOString(),
-      authorizedTags: adminData.allTags,
-      people: adminData.people
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'lynx-access-' + new Date().toISOString().slice(0, 10) + '.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 500);
-    toast('exportado');
-  }
-
-  async function doImport(e) {
-    const file = e.target.files && e.target.files[0];
-    e.target.value = '';
-    if (!file) return;
-    try {
-      const text = await file.text();
-      const parsed = JSON.parse(text);
-      const people = Array.isArray(parsed) ? parsed : parsed.people;
-      if (!Array.isArray(people) || !people.length) {
-        toast('arquivo sem pessoas', true);
-        return;
-      }
-      const r = await adminCall('admin:import', { people });
-      toast('importado: ' + r.imported);
-      await loadAdmin();
-    } catch (err) {
-      toast('falha: ' + err.message, true);
-    }
-  }
-
-  function fmtTs(ts) {
-    if (!ts) return '—';
-    const d = new Date(ts);
-    const now = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    const date = d.getFullYear() === now.getFullYear()
-      ? `${pad(d.getDate())}/${pad(d.getMonth()+1)}`
-      : `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${String(d.getFullYear()).slice(2)}`;
-    return `${date} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  }
-
   function renderAdminUsers() {
     const list = document.getElementById('admin-users');
     if (!list) return;
@@ -1723,13 +1272,6 @@
       const nm = document.createElement('div'); nm.className = 'admin-name'; nm.textContent = p.name || '(sem nome)';
       const em = document.createElement('div'); em.className = 'admin-email'; em.textContent = p.email;
       meta.append(nm, em);
-      if (p.lastAccess && p.lastAccess.ts) {
-        const la = document.createElement('div');
-        la.className = 'admin-last';
-        la.textContent = 'último: ' + fmtTs(p.lastAccess.ts)
-          + (p.lastAccess.ip ? ' · ' + p.lastAccess.ip : '');
-        meta.appendChild(la);
-      }
 
       const chips = document.createElement('div');
       chips.className = 'admin-chips';
@@ -1786,7 +1328,6 @@
     if (path === '/area') {
       if (!currentUser) { showView('login'); return; }
       if (!viewArea.classList.contains('hidden')) { renderArea(); return; }
-      if (currentUser.hasPin && !areaUnlocked) { openPinGate(); return; }
       openArea();
     } else {
       if (!currentUser) { showView('login'); return; }
@@ -1805,10 +1346,6 @@
 
   document.getElementById('btn-area').addEventListener('click', () => {
     if (location.pathname !== '/area') history.pushState({}, '', '/area');
-    if (currentUser && currentUser.hasPin && !areaUnlocked) {
-      openPinGate();
-      return;
-    }
     openArea();
   });
   document.getElementById('btn-home').addEventListener('click', () => {
