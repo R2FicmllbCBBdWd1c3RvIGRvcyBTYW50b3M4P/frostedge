@@ -1186,13 +1186,71 @@
     }
   }
 
+  // ---------- busca fuzzy ----------
+  function normalize(s) {
+    return String(s || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s@._-]/g, '')
+      .trim();
+  }
+
+  function levenshtein(a, b) {
+    if (a === b) return 0;
+    if (!a.length) return b.length;
+    if (!b.length) return a.length;
+    const prev = new Array(b.length + 1);
+    const curr = new Array(b.length + 1);
+    for (let j = 0; j <= b.length; j++) prev[j] = j;
+    for (let i = 1; i <= a.length; i++) {
+      curr[0] = i;
+      for (let j = 1; j <= b.length; j++) {
+        const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+        curr[j] = Math.min(
+          curr[j - 1] + 1,
+          prev[j] + 1,
+          prev[j - 1] + cost
+        );
+      }
+      for (let j = 0; j <= b.length; j++) prev[j] = curr[j];
+    }
+    return prev[b.length];
+  }
+
+  function thresholdFor(term) {
+    const n = term.length;
+    if (n <= 3) return 1;
+    if (n <= 6) return 2;
+    return 3;
+  }
+
+  function fuzzyMatch(term, hay) {
+    if (!term) return true;
+    if (!hay) return false;
+
+    const t = normalize(term);
+    const h = normalize(hay);
+
+    if (h.includes(t)) return true;
+
+    const words = h.split(/[\s@._-]+/).filter(Boolean);
+    if (words.some(w => w.startsWith(t))) return true;
+
+    const threshold = thresholdFor(t);
+    if (words.some(w => levenshtein(t, w) <= threshold)) return true;
+    if (levenshtein(t, h) <= threshold) return true;
+
+    return false;
+  }
+
   function applyAdminFilter() {
     const input = document.getElementById('admin-search');
     if (!input) return;
-    const term = input.value.trim().toLowerCase();
+    const term = input.value.trim();
     document.querySelectorAll('#admin-users .admin-row').forEach(row => {
       const hay = row.dataset.search || '';
-      row.style.display = (!term || hay.includes(term)) ? '' : 'none';
+      row.style.display = fuzzyMatch(term, hay) ? '' : 'none';
     });
   }
 
