@@ -381,6 +381,29 @@
   .admin-search:focus{outline:none;border-color:var(--accent)}
   .admin-search::placeholder{color:var(--dim)}
 
+  .admin-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 14px;gap:12px}
+  .admin-head h3{margin:0}
+  .admin-head-left{display:flex;align-items:baseline;gap:10px}
+  .admin-count{
+    font-size:11.5px;
+    color:var(--dim);
+    font-weight:500;
+    letter-spacing:.3px;
+  }
+  .admin-count b{
+    color:var(--accent-2);
+    font-weight:600;
+  }
+  .admin-io{display:flex;gap:6px}
+  .admin-io button{
+    background:transparent;border:1px solid var(--line-2);color:var(--dim);
+    padding:5px 10px;border-radius:8px;font-size:11.5px;font-weight:500;
+    cursor:pointer;font-family:inherit;
+    transition:border-color .15s,color .15s,background .15s;
+  }
+  .admin-io button:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
+  .admin-last{font-size:11px;color:var(--dim);margin-top:2px;opacity:.85}
+
   .admin-users{display:flex;flex-direction:column;gap:10px}
   .admin-row{
     display:flex;align-items:center;gap:12px;
@@ -1097,7 +1120,17 @@
       </div>
 
       <div class="area-card">
-        <h3>Acessos</h3>
+        <div class="admin-head">
+          <div class="admin-head-left">
+            <h3>Acessos</h3>
+            <span class="admin-count" id="admin-count"></span>
+          </div>
+          <div class="admin-io">
+            <button id="admin-export" type="button">exportar</button>
+            <button id="admin-import" type="button">importar</button>
+            <input id="admin-import-file" type="file" accept="application/json" style="display:none">
+          </div>
+        </div>
         <input id="admin-search" class="admin-search" type="text"
                placeholder="buscar por nome ou email…"
                autocomplete="off" spellcheck="false">
@@ -1129,6 +1162,11 @@
     });
 
     document.getElementById('admin-search').addEventListener('input', applyAdminFilter);
+    document.getElementById('admin-export').addEventListener('click', doExport);
+    document.getElementById('admin-import').addEventListener('click', () => {
+      document.getElementById('admin-import-file').click();
+    });
+    document.getElementById('admin-import-file').addEventListener('change', doImport);
   }
 
   // ---------- admin ----------
@@ -1162,9 +1200,19 @@
       adminData = await adminCall('admin:list');
       renderAdminTagsInput();
       renderAdminUsers();
+      updateAdminCount();
     } catch (e) {
       toast('falha ao carregar: ' + e.message, true);
     }
+  }
+
+  function updateAdminCount() {
+    const el = document.getElementById('admin-count');
+    if (!el) return;
+    const total = adminData && adminData.count != null
+      ? adminData.count
+      : (adminData && adminData.people ? adminData.people.length : 0);
+    el.innerHTML = `<b>${total}</b> pessoa${total === 1 ? '' : 's'}`;
   }
 
   function renderAdminTagsInput() {
@@ -1254,6 +1302,57 @@
     });
   }
 
+  // ---------- export / import ----------
+  function doExport() {
+    if (!adminData) { toast('nada para exportar', true); return; }
+    const data = {
+      exportedAt: new Date().toISOString(),
+      authorizedTags: adminData.allTags,
+      people: adminData.people
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lynx-access-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 500);
+    toast('exportado');
+  }
+
+  async function doImport(e) {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const people = Array.isArray(parsed) ? parsed : parsed.people;
+      if (!Array.isArray(people) || !people.length) {
+        toast('arquivo sem pessoas', true);
+        return;
+      }
+      const r = await adminCall('admin:import', { people });
+      toast('importado: ' + r.imported);
+      await loadAdmin();
+    } catch (err) {
+      toast('falha: ' + err.message, true);
+    }
+  }
+
+  function fmtTs(ts) {
+    if (!ts) return '—';
+    const d = new Date(ts);
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const date = d.getFullYear() === now.getFullYear()
+      ? `${pad(d.getDate())}/${pad(d.getMonth()+1)}`
+      : `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${String(d.getFullYear()).slice(2)}`;
+    return `${date} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
   function renderAdminUsers() {
     const list = document.getElementById('admin-users');
     if (!list) return;
@@ -1272,6 +1371,13 @@
       const nm = document.createElement('div'); nm.className = 'admin-name'; nm.textContent = p.name || '(sem nome)';
       const em = document.createElement('div'); em.className = 'admin-email'; em.textContent = p.email;
       meta.append(nm, em);
+      if (p.lastAccess && p.lastAccess.ts) {
+        const la = document.createElement('div');
+        la.className = 'admin-last';
+        la.textContent = 'último: ' + fmtTs(p.lastAccess.ts)
+          + (p.lastAccess.ip ? ' · ' + p.lastAccess.ip : '');
+        meta.appendChild(la);
+      }
 
       const chips = document.createElement('div');
       chips.className = 'admin-chips';
