@@ -655,9 +655,9 @@
     <h1 class="area-title">Minha <em>área</em></h1>
     <p class="area-sub">dados da sua conta e acessos liberados.</p>
 
-    <div class="area-tabs">
+    <!-- tabs e painéis admin são criados dinamicamente pelo JS se isAdmin --> 
+    <div class="area-tabs" id="area-tabs">
       <button class="area-tab selected" data-tab="perfil">Perfil</button>
-      <button class="area-tab hidden" data-tab="acesso" id="tab-acesso">Acesso</button>
     </div>
 
     <!-- ============ PAINEL: PERFIL ============ -->
@@ -700,37 +700,6 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5"/><path d="M5 12h11"/></svg>
           Sair da conta
         </button>
-      </div>
-    </div>
-
-    <!-- ============ PAINEL: ACESSO (admin) ============ -->
-    <div class="area-panel hidden" data-panel="acesso">
-      <div class="area-card">
-        <h3>Adicionar acesso</h3>
-        <form class="admin-form" id="admin-add-form">
-          <div class="admin-field">
-            <label for="admin-new-email">email @escola</label>
-            <input id="admin-new-email" name="email" type="email" required
-                   placeholder="nome.sobrenome@escola.pr.gov.br" autocomplete="off" spellcheck="false">
-          </div>
-          <div class="admin-field">
-            <label for="admin-new-name">nome</label>
-            <input id="admin-new-name" name="name" type="text" required
-                   placeholder="Nome" autocomplete="off" spellcheck="false">
-          </div>
-          <div class="admin-field">
-            <label>blocos liberados</label>
-            <div class="admin-tag-checks" id="admin-new-tags"></div>
-          </div>
-          <button class="admin-btn" type="submit">Adicionar</button>
-        </form>
-      </div>
-
-      <div class="area-card">
-        <h3>Acessos</h3>
-        <div class="admin-users" id="admin-users">
-          <div class="admin-empty">carregando…</div>
-        </div>
       </div>
     </div>
   </div>
@@ -796,7 +765,7 @@
   let currentUser = null;
   let areaOpenTimer = null;
   let adminData = null;
-  let adminPanelRemoved = false;
+  let adminMounted = false;
 
   // ---------- helpers ----------
   function jwtEmail(jwt) {
@@ -882,14 +851,10 @@
       blocks: data.blocks || []
     };
 
-    // não-admin: remove a aba e o painel da DOM de vez.
-    // roda uma vez só (guard `adminPanelRemoved` cobre múltiplos enters).
-    if (!currentUser.isAdmin && !adminPanelRemoved) {
-      adminPanelRemoved = true;
-      const tab = document.getElementById('tab-acesso');
-      const panel = document.querySelector('[data-panel="acesso"]');
-      if (tab) tab.remove();
-      if (panel) panel.remove();
+    // monta a UI admin — igual aos blocos, só depois do Worker confirmar
+    if (currentUser.isAdmin && !adminMounted) {
+      adminMounted = true;
+      mountAdminUI();
     }
 
     who.textContent = currentUser.name || currentUser.email;
@@ -1025,11 +990,6 @@
     document.getElementById('area-name').textContent  = currentUser.name || '—';
     document.getElementById('area-email').textContent = currentUser.email || '—';
 
-    // destrava a aba "Acesso" se for admin e o elemento ainda existir.
-    // se foi removido (não-admin), o `?.` protege.
-    const tabAcesso = document.getElementById('tab-acesso');
-    if (tabAcesso) tabAcesso.classList.toggle('hidden', !currentUser.isAdmin);
-
     const wrap = document.getElementById('area-tags');
     wrap.innerHTML = '';
     if (!currentUser.blocks.length) {
@@ -1075,9 +1035,86 @@
     if (name === 'acesso' && currentUser && currentUser.isAdmin) loadAdmin();
   }
 
-  document.querySelectorAll('.area-tab').forEach(t => {
-    t.addEventListener('click', () => selectTab(t.dataset.tab));
-  });
+  function wireTabs() {
+    document.querySelectorAll('.area-tab').forEach(t => {
+      t.removeEventListener('click', onTabClick);
+      t.addEventListener('click', onTabClick);
+    });
+  }
+  function onTabClick(e) {
+    selectTab(e.currentTarget.dataset.tab);
+  }
+
+  // ---------- monta a UI admin (só pós-confirmação) ----------
+  function mountAdminUI() {
+    const tabsBar = document.getElementById('area-tabs');
+    const areaBody = document.getElementById('view-area-body');
+    if (!tabsBar || !areaBody) return;
+
+    // tab "Acesso"
+    const tabBtn = document.createElement('button');
+    tabBtn.className = 'area-tab';
+    tabBtn.dataset.tab = 'acesso';
+    tabBtn.id = 'tab-acesso';
+    tabBtn.textContent = 'Acesso';
+    tabsBar.appendChild(tabBtn);
+
+    // painel completo
+    const panel = document.createElement('div');
+    panel.className = 'area-panel hidden';
+    panel.dataset.panel = 'acesso';
+    panel.innerHTML = `
+      <div class="area-card">
+        <h3>Adicionar acesso</h3>
+        <form class="admin-form" id="admin-add-form">
+          <div class="admin-field">
+            <label for="admin-new-email">email @escola</label>
+            <input id="admin-new-email" name="email" type="email" required
+                   placeholder="nome.sobrenome@escola.pr.gov.br" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="admin-field">
+            <label for="admin-new-name">nome</label>
+            <input id="admin-new-name" name="name" type="text" required
+                   placeholder="Nome" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="admin-field">
+            <label>blocos liberados</label>
+            <div class="admin-tag-checks" id="admin-new-tags"></div>
+          </div>
+          <button class="admin-btn" type="submit">Adicionar</button>
+        </form>
+      </div>
+
+      <div class="area-card">
+        <h3>Acessos</h3>
+        <div class="admin-users" id="admin-users">
+          <div class="admin-empty">carregando…</div>
+        </div>
+      </div>
+    `;
+    areaBody.appendChild(panel);
+
+    wireTabs();
+
+    // listener do form
+    document.getElementById('admin-add-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const email = form.email.value.trim().toLowerCase();
+      const name  = form.name.value.trim();
+      const tags  = [...form.querySelectorAll('input[type=checkbox]:checked')].map(c => c.value);
+      if (!email.includes('@')) { toast('email inválido', true); return; }
+      if (!name) { toast('nome obrigatório', true); return; }
+      try {
+        await adminCall('admin:setUser', { email, name, tags });
+        toast('adicionado: ' + name);
+        form.reset();
+        await loadAdmin();
+      } catch (e) {
+        toast('falha: ' + e.message, true);
+      }
+    });
+  }
 
   // ---------- admin ----------
   function toast(msg, isErr) {
@@ -1197,26 +1234,8 @@
     }
   }
 
-  const addForm = document.getElementById('admin-add-form');
-  if (addForm) {
-    addForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const form = e.target;
-      const email = form.email.value.trim().toLowerCase();
-      const name  = form.name.value.trim();
-      const tags  = [...form.querySelectorAll('input[type=checkbox]:checked')].map(c => c.value);
-      if (!email.includes('@')) { toast('email inválido', true); return; }
-      if (!name) { toast('nome obrigatório', true); return; }
-      try {
-        await adminCall('admin:setUser', { email, name, tags });
-        toast('adicionado: ' + name);
-        form.reset();
-        await loadAdmin();
-      } catch (e) {
-        toast('falha: ' + e.message, true);
-      }
-    });
-  }
+  // wire inicial das tabs (perfil já existe)
+  wireTabs();
 
   // ---------- rota ----------
   function route() {
