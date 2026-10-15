@@ -302,6 +302,30 @@
   .area-actions{margin-top:22px}
   .area-actions .btn{width:100%;justify-content:center;padding:12px 16px}
 
+  .area-pin-wrap{display:flex;align-items:center;gap:8px}
+  .area-pin{
+    width:82px;
+    background:rgba(10,10,12,.6);
+    border:1px solid var(--line-2);
+    border-radius:8px;
+    padding:6px 8px;
+    color:var(--text);
+    font-size:13px;
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    letter-spacing:5px;
+    text-align:center;
+    transition:border-color .15s;
+  }
+  .area-pin:focus{outline:none;border-color:var(--accent)}
+  .area-pin::placeholder{color:var(--dim);letter-spacing:5px}
+  .pin-save{
+    background:transparent;border:1px solid var(--line-2);color:var(--dim);
+    padding:6px 10px;border-radius:8px;font-size:11.5px;font-weight:500;
+    cursor:pointer;font-family:inherit;
+    transition:border-color .15s,color .15s,background .15s;
+  }
+  .pin-save:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
+
   .theme-row{display:flex;flex-wrap:wrap;gap:10px;padding:6px 0 4px}
   .theme-swatch{
     display:inline-flex;align-items:center;gap:8px;
@@ -381,6 +405,18 @@
   .admin-search:focus{outline:none;border-color:var(--accent)}
   .admin-search::placeholder{color:var(--dim)}
 
+  .admin-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 14px;gap:12px}
+  .admin-head h3{margin:0}
+  .admin-io{display:flex;gap:6px}
+  .admin-io button{
+    background:transparent;border:1px solid var(--line-2);color:var(--dim);
+    padding:5px 10px;border-radius:8px;font-size:11.5px;font-weight:500;
+    cursor:pointer;font-family:inherit;
+    transition:border-color .15s,color .15s,background .15s;
+  }
+  .admin-io button:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
+  .admin-last{font-size:11px;color:var(--dim);margin-top:2px;opacity:.85}
+
   .admin-users{display:flex;flex-direction:column;gap:10px}
   .admin-row{
     display:flex;align-items:center;gap:12px;
@@ -425,6 +461,79 @@
   }
   .admin-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .admin-toast.err{border-color:rgba(224,82,82,.55);color:#e05252}
+
+  /* ---------- PIN GATE ---------- */
+  #pin-gate{
+    position: fixed; inset: 0; z-index: 9997;
+    background: rgba(10,10,12,.72);
+    -webkit-backdrop-filter: blur(8px) saturate(.8);
+            backdrop-filter: blur(8px) saturate(.8);
+    display: grid; place-items: center;
+    opacity: 0; transition: opacity .25s ease;
+  }
+  #pin-gate:not(.hidden){ opacity: 1; }
+  #pin-gate.hidden{ display: none; }
+
+  .pin-gate-card{
+    background: rgba(19,19,24,.94);
+    border: 1px solid var(--line-2);
+    border-radius: 16px;
+    padding: 32px 34px 24px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 24px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(var(--glow-rgb),.08);
+    animation: pinIn .28s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes pinIn {
+    from { opacity: 0; transform: translateY(8px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+  }
+  .pin-gate-card h3{
+    margin: 0 0 6px; font-size: 17px; font-weight: 600;
+    color: var(--text); letter-spacing: -.2px;
+  }
+  .pin-gate-card p{
+    margin: 0 0 20px; color: var(--dim); font-size: 12.5px;
+  }
+  .pin-gate-input{
+    width: 100%; box-sizing: border-box;
+    background: rgba(10,10,12,.6);
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-size: 22px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: 14px;
+    text-align: center;
+    transition: border-color .15s;
+  }
+  .pin-gate-input:focus{ outline: none; border-color: var(--accent); }
+  .pin-gate-input::placeholder{ color: var(--dim); letter-spacing: 14px; }
+  .pin-gate-err{
+    min-height: 16px;
+    margin-top: 8px;
+    color: var(--danger);
+    font-size: 12.5px;
+  }
+  .pin-gate-btn{
+    margin-top: 12px;
+    width: 100%; padding: 11px 16px; border-radius: 11px;
+    background: var(--accent); color: #fff;
+    font-weight: 600; font-size: 14px; border: none; cursor: pointer;
+    font-family: inherit;
+    transition: background .15s, box-shadow .2s;
+  }
+  .pin-gate-btn:hover:not(:disabled){ background: var(--accent-2); box-shadow: 0 6px 22px rgba(var(--glow-rgb),.35); }
+  .pin-gate-btn:disabled{ opacity: .6; cursor: not-allowed; }
+  .pin-gate-cancel{
+    margin-top: 8px;
+    background: none; border: none; color: var(--dim);
+    font-size: 12.5px; cursor: pointer; font-family: inherit;
+    padding: 4px 8px;
+    transition: color .15s;
+  }
+  .pin-gate-cancel:hover{ color: var(--text); }
 
   @keyframes areaIn {
     from { opacity: 0; transform: translateY(12px); }
@@ -680,6 +789,15 @@
         <h3>Conta</h3>
         <div class="area-row"><span class="k">nome</span><span class="v" id="area-name">—</span></div>
         <div class="area-row"><span class="k">email</span><span class="v" id="area-email">—</span></div>
+        <div class="area-row">
+          <span class="k">pin</span>
+          <span class="v area-pin-wrap">
+            <input id="pin-input" class="area-pin" type="text" inputmode="numeric"
+                   maxlength="4" pattern="\d{4}" placeholder="••••"
+                   autocomplete="off" spellcheck="false">
+            <button id="pin-save" class="pin-save" type="button">salvar</button>
+          </span>
+        </div>
       </div>
 
       <div class="area-card">
@@ -725,6 +843,32 @@
     <div class="spinner"></div>
     <h3 id="loader-title">Abrindo área<span class="dots"><span>.</span><span>.</span><span>.</span></span></h3>
     <p class="exec-sub" id="area-loader-sub">carregando seus dados</p>
+  </div>
+</div>
+
+<!-- ====================== PIN GATE ====================== -->
+<div id="pin-gate" class="hidden">
+  <div class="pin-gate-card">
+    <div id="pin-verify-state">
+      <h3>Digite seu PIN</h3>
+      <p>4 dígitos para abrir a área.</p>
+      <input id="pin-gate-input" type="text" inputmode="numeric" maxlength="4"
+             pattern="\d{4}" autocomplete="off" spellcheck="false"
+             class="pin-gate-input" placeholder="••••">
+      <div class="pin-gate-err" id="pin-gate-err"></div>
+      <button id="pin-gate-ok" class="pin-gate-btn" type="button">Confirmar</button>
+      <button id="pin-gate-cancel" class="pin-gate-cancel" type="button">cancelar</button>
+    </div>
+    <div id="pin-reset-state" class="hidden">
+      <h3>Bloqueado</h3>
+      <p>3 tentativas incorretas. Defina um novo PIN.</p>
+      <input id="pin-reset-input" type="text" inputmode="numeric" maxlength="4"
+             pattern="\d{4}" autocomplete="off" spellcheck="false"
+             class="pin-gate-input" placeholder="••••">
+      <div class="pin-gate-err" id="pin-reset-err"></div>
+      <button id="pin-reset-ok" class="pin-gate-btn" type="button">Salvar novo PIN</button>
+      <button id="pin-reset-cancel" class="pin-gate-cancel" type="button">cancelar</button>
+    </div>
   </div>
 </div>
 
@@ -780,6 +924,7 @@
   let areaOpenTimer = null;
   let adminData = null;
   let adminMounted = false;
+  let areaUnlocked = false;
 
   // ---------- helpers ----------
   function jwtEmail(jwt) {
@@ -862,8 +1007,13 @@
       name: data.name || '',
       email: jwtEmail(jwt),
       isAdmin: !!data.isAdmin,
+      hasPin: !!data.hasPin,
+      pinLocked: !!data.pinLocked,
       blocks: data.blocks || []
     };
+
+    // sem PIN ou já destravado? destrava direto
+    areaUnlocked = !currentUser.hasPin;
 
     if (currentUser.isAdmin && !adminMounted) {
       adminMounted = true;
@@ -1003,6 +1153,11 @@
     document.getElementById('area-name').textContent  = currentUser.name || '—';
     document.getElementById('area-email').textContent = currentUser.email || '—';
 
+    const pinInput = document.getElementById('pin-input');
+    if (pinInput) {
+      pinInput.placeholder = currentUser.hasPin ? '••••' : 'definir';
+    }
+
     const wrap = document.getElementById('area-tags');
     wrap.innerHTML = '';
     if (!currentUser.blocks.length) {
@@ -1058,6 +1213,157 @@
     selectTab(e.currentTarget.dataset.tab);
   }
 
+  // ---------- PIN gate ----------
+  const pinGate = document.getElementById('pin-gate');
+  const pinVerifyState = document.getElementById('pin-verify-state');
+  const pinResetState  = document.getElementById('pin-reset-state');
+  const pinGateInput = document.getElementById('pin-gate-input');
+  const pinGateErr   = document.getElementById('pin-gate-err');
+  const pinGateOk    = document.getElementById('pin-gate-ok');
+  const pinGateCancel = document.getElementById('pin-gate-cancel');
+  const pinResetInput = document.getElementById('pin-reset-input');
+  const pinResetErr   = document.getElementById('pin-reset-err');
+  const pinResetOk    = document.getElementById('pin-reset-ok');
+  const pinResetCancel = document.getElementById('pin-reset-cancel');
+
+  function openPinGate() {
+    pinGateErr.textContent = '';
+    pinResetErr.textContent = '';
+    pinGateInput.value = '';
+    pinResetInput.value = '';
+    if (currentUser && currentUser.pinLocked) {
+      pinVerifyState.classList.add('hidden');
+      pinResetState.classList.remove('hidden');
+      setTimeout(() => pinResetInput.focus(), 50);
+    } else {
+      pinResetState.classList.add('hidden');
+      pinVerifyState.classList.remove('hidden');
+      setTimeout(() => pinGateInput.focus(), 50);
+    }
+    pinGate.classList.remove('hidden');
+  }
+
+  function closePinGate() {
+    pinGate.classList.add('hidden');
+  }
+
+  function showPinReset() {
+    pinVerifyState.classList.add('hidden');
+    pinResetState.classList.remove('hidden');
+    pinResetInput.value = '';
+    pinResetErr.textContent = '';
+    setTimeout(() => pinResetInput.focus(), 50);
+  }
+
+  if (pinGateInput && pinResetInput) {
+    [pinGateInput, pinResetInput].forEach(inp => {
+      inp.addEventListener('input', () => {
+        inp.value = inp.value.replace(/\D/g, '').slice(0, 4);
+      });
+      inp.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          (inp === pinGateInput ? pinGateOk : pinResetOk).click();
+        }
+      });
+    });
+  }
+
+  pinGateCancel.addEventListener('click', closePinGate);
+  pinResetCancel.addEventListener('click', closePinGate);
+
+  pinGateOk.addEventListener('click', async () => {
+    const pin = pinGateInput.value.trim();
+    if (!/^\d{4}$/.test(pin)) { pinGateErr.textContent = 'digite 4 dígitos'; return; }
+    pinGateOk.disabled = true;
+    try {
+      const jwt = sessionStorage.getItem(SESSION_KEY);
+      const r = await window.fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jwt, action: 'verifyPin', pin })
+      });
+      const data = await r.json();
+      if (data.ok) {
+        areaUnlocked = true;
+        closePinGate();
+        openArea();
+      } else if (data.locked) {
+        currentUser.pinLocked = true;
+        showPinReset();
+      } else {
+        pinGateErr.textContent = 'incorreto — restam ' + data.remaining + ' tentativa' + (data.remaining === 1 ? '' : 's');
+        pinGateInput.value = '';
+        pinGateInput.focus();
+      }
+    } catch (e) {
+      pinGateErr.textContent = 'falha na verificação';
+    } finally {
+      pinGateOk.disabled = false;
+    }
+  });
+
+  pinResetOk.addEventListener('click', async () => {
+    const pin = pinResetInput.value.trim();
+    if (!/^\d{4}$/.test(pin)) { pinResetErr.textContent = 'digite 4 dígitos'; return; }
+    pinResetOk.disabled = true;
+    try {
+      const jwt = sessionStorage.getItem(SESSION_KEY);
+      const r = await window.fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jwt, action: 'resetPin', pin })
+      });
+      const data = await r.json();
+      if (data.ok) {
+        areaUnlocked = true;
+        currentUser.pinLocked = false;
+        currentUser.hasPin = true;
+        closePinGate();
+        openArea();
+      } else {
+        pinResetErr.textContent = data.error || 'falha';
+      }
+    } catch (e) {
+      pinResetErr.textContent = 'falha na redefinição';
+    } finally {
+      pinResetOk.disabled = false;
+    }
+  });
+
+  // ---------- PIN do perfil ----------
+  const pinInputEl = document.getElementById('pin-input');
+  const pinSaveEl  = document.getElementById('pin-save');
+  if (pinInputEl && pinSaveEl) {
+    pinInputEl.addEventListener('input', () => {
+      pinInputEl.value = pinInputEl.value.replace(/\D/g, '').slice(0, 4);
+    });
+    pinInputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); pinSaveEl.click(); }
+    });
+    pinSaveEl.addEventListener('click', async () => {
+      const pin = pinInputEl.value.trim();
+      if (!/^\d{4}$/.test(pin)) { toast('pin precisa ter 4 dígitos', true); return; }
+      const jwt = sessionStorage.getItem(SESSION_KEY);
+      if (!jwt) { toast('sessão expirada', true); return; }
+      try {
+        const r = await window.fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jwt, setPin: pin })
+        });
+        if (!r.ok) throw new Error('http ' + r.status);
+        currentUser.hasPin = true;
+        currentUser.pinLocked = false;
+        pinInputEl.value = '';
+        pinInputEl.placeholder = '••••';
+        toast('pin salvo');
+      } catch (e) {
+        toast('falha: ' + e.message, true);
+      }
+    });
+  }
+
   // ---------- monta a UI admin ----------
   function mountAdminUI() {
     const tabsBar = document.getElementById('area-tabs');
@@ -1097,7 +1403,14 @@
       </div>
 
       <div class="area-card">
-        <h3>Acessos</h3>
+        <div class="admin-head">
+          <h3>Acessos</h3>
+          <div class="admin-io">
+            <button id="admin-export" type="button">exportar</button>
+            <button id="admin-import" type="button">importar</button>
+            <input id="admin-import-file" type="file" accept="application/json" style="display:none">
+          </div>
+        </div>
         <input id="admin-search" class="admin-search" type="text"
                placeholder="buscar por nome ou email…"
                autocomplete="off" spellcheck="false">
@@ -1129,6 +1442,11 @@
     });
 
     document.getElementById('admin-search').addEventListener('input', applyAdminFilter);
+    document.getElementById('admin-export').addEventListener('click', doExport);
+    document.getElementById('admin-import').addEventListener('click', () => {
+      document.getElementById('admin-import-file').click();
+    });
+    document.getElementById('admin-import-file').addEventListener('change', doImport);
   }
 
   // ---------- admin ----------
@@ -1254,6 +1572,57 @@
     });
   }
 
+  // ---------- export / import ----------
+  function doExport() {
+    if (!adminData) { toast('nada para exportar', true); return; }
+    const data = {
+      exportedAt: new Date().toISOString(),
+      authorizedTags: adminData.allTags,
+      people: adminData.people
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lynx-access-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 500);
+    toast('exportado');
+  }
+
+  async function doImport(e) {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const people = Array.isArray(parsed) ? parsed : parsed.people;
+      if (!Array.isArray(people) || !people.length) {
+        toast('arquivo sem pessoas', true);
+        return;
+      }
+      const r = await adminCall('admin:import', { people });
+      toast('importado: ' + r.imported);
+      await loadAdmin();
+    } catch (err) {
+      toast('falha: ' + err.message, true);
+    }
+  }
+
+  function fmtTs(ts) {
+    if (!ts) return '—';
+    const d = new Date(ts);
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const date = d.getFullYear() === now.getFullYear()
+      ? `${pad(d.getDate())}/${pad(d.getMonth()+1)}`
+      : `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${String(d.getFullYear()).slice(2)}`;
+    return `${date} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
   function renderAdminUsers() {
     const list = document.getElementById('admin-users');
     if (!list) return;
@@ -1272,6 +1641,13 @@
       const nm = document.createElement('div'); nm.className = 'admin-name'; nm.textContent = p.name || '(sem nome)';
       const em = document.createElement('div'); em.className = 'admin-email'; em.textContent = p.email;
       meta.append(nm, em);
+      if (p.lastAccess && p.lastAccess.ts) {
+        const la = document.createElement('div');
+        la.className = 'admin-last';
+        la.textContent = 'último: ' + fmtTs(p.lastAccess.ts)
+          + (p.lastAccess.ip ? ' · ' + p.lastAccess.ip : '');
+        meta.appendChild(la);
+      }
 
       const chips = document.createElement('div');
       chips.className = 'admin-chips';
@@ -1341,39 +1717,3 @@
     if (location.pathname !== path) history.pushState({}, '', path);
     route();
   }
-
-  window.addEventListener('popstate', route);
-
-  document.getElementById('btn-area').addEventListener('click', () => {
-    if (location.pathname !== '/area') history.pushState({}, '', '/area');
-    openArea();
-  });
-  document.getElementById('btn-home').addEventListener('click', () => {
-    if (location.pathname !== '/') history.pushState({}, '', '/');
-    backHome();
-  });
-  document.getElementById('btn-back').addEventListener('click', () => {
-    if (location.pathname !== '/') history.pushState({}, '', '/');
-    backHome();
-  });
-
-  // ---------- logout ----------
-  function kill() {
-    try { window.__guardKill && window.__guardKill('app_kill'); }
-    catch { try { location.replace('about:blank'); } catch {} }
-  }
-
-  ['btn-logout','btn-logout-2','btn-logout-3'].forEach(id => {
-    document.getElementById(id).addEventListener('click', () => {
-      sessionStorage.removeItem(SESSION_KEY);
-      try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
-      kill();
-    });
-  });
-
-  // ---------- boot ----------
-  tryRestore().then(() => route());
-})();
-</script>
-</body>
-</html>
