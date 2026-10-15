@@ -304,7 +304,7 @@
 
   .area-pin-wrap{display:flex;align-items:center;gap:8px}
   .area-pin{
-    width:82px;
+    width:96px;
     background:rgba(10,10,12,.6);
     border:1px solid var(--line-2);
     border-radius:8px;
@@ -325,6 +325,7 @@
     transition:border-color .15s,color .15s,background .15s;
   }
   .pin-save:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
+  .pin-save:disabled{opacity:.5;cursor:not-allowed}
 
   .theme-row{display:flex;flex-wrap:wrap;gap:10px;padding:6px 0 4px}
   .theme-swatch{
@@ -479,7 +480,7 @@
     border: 1px solid var(--line-2);
     border-radius: 16px;
     padding: 32px 34px 24px;
-    width: 320px;
+    width: 340px;
     text-align: center;
     box-shadow: 0 24px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(var(--glow-rgb),.08);
     animation: pinIn .28s cubic-bezier(.2,.8,.2,1);
@@ -494,6 +495,7 @@
   }
   .pin-gate-card p{
     margin: 0 0 20px; color: var(--dim); font-size: 12.5px;
+    line-height: 1.5;
   }
   .pin-gate-input{
     width: 100%; box-sizing: border-box;
@@ -793,9 +795,18 @@
           <span class="k">pin</span>
           <span class="v area-pin-wrap">
             <input id="pin-input" class="area-pin" type="text" inputmode="numeric"
-                   maxlength="4" pattern="\d{4}" placeholder="••••"
+                   maxlength="6" placeholder="••••••"
                    autocomplete="off" spellcheck="false">
             <button id="pin-save" class="pin-save" type="button">salvar</button>
+          </span>
+        </div>
+        <div class="area-row">
+          <span class="k">recuperação</span>
+          <span class="v area-pin-wrap">
+            <input id="pin2-input" class="area-pin" type="text" inputmode="numeric"
+                   maxlength="4" placeholder="••••"
+                   autocomplete="off" spellcheck="false">
+            <button id="pin2-save" class="pin-save" type="button">salvar</button>
           </span>
         </div>
       </div>
@@ -849,25 +860,40 @@
 <!-- ====================== PIN GATE ====================== -->
 <div id="pin-gate" class="hidden">
   <div class="pin-gate-card">
+    <!-- estado 1: verificação do PIN principal (6 dígitos) -->
     <div id="pin-verify-state">
       <h3>Digite seu PIN</h3>
-      <p>4 dígitos para abrir a área.</p>
-      <input id="pin-gate-input" type="text" inputmode="numeric" maxlength="4"
-             pattern="\d{4}" autocomplete="off" spellcheck="false"
-             class="pin-gate-input" placeholder="••••">
+      <p>6 dígitos para abrir a área.</p>
+      <input id="pin-gate-input" type="text" inputmode="numeric" maxlength="6"
+             autocomplete="off" spellcheck="false"
+             class="pin-gate-input" placeholder="••••••">
       <div class="pin-gate-err" id="pin-gate-err"></div>
       <button id="pin-gate-ok" class="pin-gate-btn" type="button">Confirmar</button>
       <button id="pin-gate-cancel" class="pin-gate-cancel" type="button">cancelar</button>
     </div>
-    <div id="pin-reset-state" class="hidden">
-      <h3>Bloqueado</h3>
-      <p>3 tentativas incorretas. Defina um novo PIN.</p>
-      <input id="pin-reset-input" type="text" inputmode="numeric" maxlength="4"
-             pattern="\d{4}" autocomplete="off" spellcheck="false"
+
+    <!-- estado 2: PIN de recuperação (4 dígitos) -->
+    <div id="pin-rec-state" class="hidden">
+      <h3>Recuperação</h3>
+      <p>3 tentativas erradas. Digite o PIN de recuperação de 4 dígitos.</p>
+      <input id="pin-rec-input" type="text" inputmode="numeric" maxlength="4"
+             autocomplete="off" spellcheck="false"
              class="pin-gate-input" placeholder="••••">
-      <div class="pin-gate-err" id="pin-reset-err"></div>
-      <button id="pin-reset-ok" class="pin-gate-btn" type="button">Salvar novo PIN</button>
-      <button id="pin-reset-cancel" class="pin-gate-cancel" type="button">cancelar</button>
+      <div class="pin-gate-err" id="pin-rec-err"></div>
+      <button id="pin-rec-ok" class="pin-gate-btn" type="button">Confirmar</button>
+      <button id="pin-rec-cancel" class="pin-gate-cancel" type="button">cancelar</button>
+    </div>
+
+    <!-- estado 3: definir novo PIN principal (6 dígitos) -->
+    <div id="pin-new-state" class="hidden">
+      <h3>Novo PIN</h3>
+      <p>Defina um novo PIN de 6 dígitos.</p>
+      <input id="pin-new-input" type="text" inputmode="numeric" maxlength="6"
+             autocomplete="off" spellcheck="false"
+             class="pin-gate-input" placeholder="••••••">
+      <div class="pin-gate-err" id="pin-new-err"></div>
+      <button id="pin-new-ok" class="pin-gate-btn" type="button">Salvar</button>
+      <button id="pin-new-cancel" class="pin-gate-cancel" type="button">cancelar</button>
     </div>
   </div>
 </div>
@@ -1008,11 +1034,12 @@
       email: jwtEmail(jwt),
       isAdmin: !!data.isAdmin,
       hasPin: !!data.hasPin,
+      hasPin2: !!data.hasPin2,
       pinLocked: !!data.pinLocked,
       blocks: data.blocks || []
     };
 
-    // sem PIN ou já destravado? destrava direto
+    // sem PIN definido? área já liberada nessa sessão
     areaUnlocked = !currentUser.hasPin;
 
     if (currentUser.isAdmin && !adminMounted) {
@@ -1153,10 +1180,10 @@
     document.getElementById('area-name').textContent  = currentUser.name || '—';
     document.getElementById('area-email').textContent = currentUser.email || '—';
 
-    const pinInput = document.getElementById('pin-input');
-    if (pinInput) {
-      pinInput.placeholder = currentUser.hasPin ? '••••' : 'definir';
-    }
+    const pinInput  = document.getElementById('pin-input');
+    const pin2Input = document.getElementById('pin2-input');
+    if (pinInput)  pinInput.placeholder  = currentUser.hasPin  ? '••••••' : 'definir';
+    if (pin2Input) pin2Input.placeholder = currentUser.hasPin2 ? '••••'   : 'definir';
 
     const wrap = document.getElementById('area-tags');
     wrap.innerHTML = '';
@@ -1213,68 +1240,67 @@
     selectTab(e.currentTarget.dataset.tab);
   }
 
-  // ---------- PIN gate ----------
+  // ---------- PIN gate (3 estados) ----------
   const pinGate = document.getElementById('pin-gate');
   const pinVerifyState = document.getElementById('pin-verify-state');
-  const pinResetState  = document.getElementById('pin-reset-state');
+  const pinRecState    = document.getElementById('pin-rec-state');
+  const pinNewState    = document.getElementById('pin-new-state');
+
   const pinGateInput = document.getElementById('pin-gate-input');
   const pinGateErr   = document.getElementById('pin-gate-err');
   const pinGateOk    = document.getElementById('pin-gate-ok');
   const pinGateCancel = document.getElementById('pin-gate-cancel');
-  const pinResetInput = document.getElementById('pin-reset-input');
-  const pinResetErr   = document.getElementById('pin-reset-err');
-  const pinResetOk    = document.getElementById('pin-reset-ok');
-  const pinResetCancel = document.getElementById('pin-reset-cancel');
+
+  const pinRecInput  = document.getElementById('pin-rec-input');
+  const pinRecErr    = document.getElementById('pin-rec-err');
+  const pinRecOk     = document.getElementById('pin-rec-ok');
+  const pinRecCancel = document.getElementById('pin-rec-cancel');
+
+  const pinNewInput  = document.getElementById('pin-new-input');
+  const pinNewErr    = document.getElementById('pin-new-err');
+  const pinNewOk     = document.getElementById('pin-new-ok');
+  const pinNewCancel = document.getElementById('pin-new-cancel');
+
+  function showGateState(which) {
+    pinVerifyState.classList.toggle('hidden', which !== 'verify');
+    pinRecState.classList.toggle('hidden', which !== 'rec');
+    pinNewState.classList.toggle('hidden', which !== 'new');
+    [pinGateErr, pinRecErr, pinNewErr].forEach(el => el && (el.textContent = ''));
+    if (which === 'verify') { pinGateInput.value = ''; setTimeout(() => pinGateInput.focus(), 50); }
+    if (which === 'rec')    { pinRecInput.value = '';  setTimeout(() => pinRecInput.focus(), 50); }
+    if (which === 'new')    { pinNewInput.value = '';  setTimeout(() => pinNewInput.focus(), 50); }
+  }
 
   function openPinGate() {
-    pinGateErr.textContent = '';
-    pinResetErr.textContent = '';
-    pinGateInput.value = '';
-    pinResetInput.value = '';
-    if (currentUser && currentUser.pinLocked) {
-      pinVerifyState.classList.add('hidden');
-      pinResetState.classList.remove('hidden');
-      setTimeout(() => pinResetInput.focus(), 50);
-    } else {
-      pinResetState.classList.add('hidden');
-      pinVerifyState.classList.remove('hidden');
-      setTimeout(() => pinGateInput.focus(), 50);
-    }
     pinGate.classList.remove('hidden');
+    showGateState('verify');
   }
 
-  function closePinGate() {
-    pinGate.classList.add('hidden');
-  }
+  function closePinGate() { pinGate.classList.add('hidden'); }
 
-  function showPinReset() {
-    pinVerifyState.classList.add('hidden');
-    pinResetState.classList.remove('hidden');
-    pinResetInput.value = '';
-    pinResetErr.textContent = '';
-    setTimeout(() => pinResetInput.focus(), 50);
-  }
-
-  if (pinGateInput && pinResetInput) {
-    [pinGateInput, pinResetInput].forEach(inp => {
-      inp.addEventListener('input', () => {
-        inp.value = inp.value.replace(/\D/g, '').slice(0, 4);
-      });
-      inp.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          (inp === pinGateInput ? pinGateOk : pinResetOk).click();
-        }
-      });
+  [
+    [pinGateInput, pinGateOk],
+    [pinRecInput,  pinRecOk],
+    [pinNewInput,  pinNewOk]
+  ].forEach(([input, btn]) => {
+    if (!input) return;
+    input.addEventListener('input', () => {
+      const max = parseInt(input.maxLength, 10) || 6;
+      input.value = input.value.replace(/\D/g, '').slice(0, max);
     });
-  }
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); btn.click(); }
+    });
+  });
 
   pinGateCancel.addEventListener('click', closePinGate);
-  pinResetCancel.addEventListener('click', closePinGate);
+  pinRecCancel.addEventListener('click', closePinGate);
+  pinNewCancel.addEventListener('click', closePinGate);
 
+  // 1) verificar PIN principal (6 dígitos)
   pinGateOk.addEventListener('click', async () => {
     const pin = pinGateInput.value.trim();
-    if (!/^\d{4}$/.test(pin)) { pinGateErr.textContent = 'digite 4 dígitos'; return; }
+    if (!/^\d{6}$/.test(pin)) { pinGateErr.textContent = 'digite 6 dígitos'; return; }
     pinGateOk.disabled = true;
     try {
       const jwt = sessionStorage.getItem(SESSION_KEY);
@@ -1289,8 +1315,7 @@
         closePinGate();
         openArea();
       } else if (data.locked) {
-        currentUser.pinLocked = true;
-        showPinReset();
+        showGateState('rec');
       } else {
         pinGateErr.textContent = 'incorreto — restam ' + data.remaining + ' tentativa' + (data.remaining === 1 ? '' : 's');
         pinGateInput.value = '';
@@ -1303,16 +1328,47 @@
     }
   });
 
-  pinResetOk.addEventListener('click', async () => {
-    const pin = pinResetInput.value.trim();
-    if (!/^\d{4}$/.test(pin)) { pinResetErr.textContent = 'digite 4 dígitos'; return; }
-    pinResetOk.disabled = true;
+  // 2) verificar PIN de recuperação (4 dígitos)
+  pinRecOk.addEventListener('click', async () => {
+    const pin = pinRecInput.value.trim();
+    if (!/^\d{4}$/.test(pin)) { pinRecErr.textContent = 'digite 4 dígitos'; return; }
+    pinRecOk.disabled = true;
     try {
       const jwt = sessionStorage.getItem(SESSION_KEY);
       const r = await window.fetch(WORKER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jwt, action: 'resetPin', pin })
+        body: JSON.stringify({ jwt, action: 'verifyPin2', pin })
+      });
+      const data = await r.json();
+      if (data.ok) {
+        showGateState('new');
+      } else if (data.error === 'no_pin2') {
+        pinRecErr.textContent = 'você não definiu um PIN de recuperação.';
+      } else {
+        pinRecErr.textContent = 'PIN de recuperação incorreto.';
+        pinRecInput.value = '';
+        pinRecInput.focus();
+      }
+    } catch (e) {
+      pinRecErr.textContent = 'falha na verificação';
+    } finally {
+      pinRecOk.disabled = false;
+    }
+  });
+
+  // 3) definir novo PIN principal (6 dígitos)
+  pinNewOk.addEventListener('click', async () => {
+    const pin = pinNewInput.value.trim();
+    if (!/^\d{6}$/.test(pin)) { pinNewErr.textContent = 'digite 6 dígitos'; return; }
+    const rec = pinRecInput.value.trim();
+    pinNewOk.disabled = true;
+    try {
+      const jwt = sessionStorage.getItem(SESSION_KEY);
+      const r = await window.fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jwt, action: 'resetPin', pin, rec })
       });
       const data = await r.json();
       if (data.ok) {
@@ -1322,46 +1378,72 @@
         closePinGate();
         openArea();
       } else {
-        pinResetErr.textContent = data.error || 'falha';
+        pinNewErr.textContent = 'falha: ' + (data.error || 'tente de novo');
       }
     } catch (e) {
-      pinResetErr.textContent = 'falha na redefinição';
+      pinNewErr.textContent = 'falha na redefinição';
     } finally {
-      pinResetOk.disabled = false;
+      pinNewOk.disabled = false;
     }
   });
 
   // ---------- PIN do perfil ----------
-  const pinInputEl = document.getElementById('pin-input');
-  const pinSaveEl  = document.getElementById('pin-save');
+  const pinInputEl  = document.getElementById('pin-input');
+  const pinSaveEl   = document.getElementById('pin-save');
+  const pin2InputEl = document.getElementById('pin2-input');
+  const pin2SaveEl  = document.getElementById('pin2-save');
+
+  async function savePin(kind, input, btn, label) {
+    const pin = input.value.trim();
+    const len = kind === 'pin' ? 6 : 4;
+    if (!new RegExp('^\\d{' + len + '}$').test(pin)) {
+      toast(label + ' precisa ter ' + len + ' dígitos', true);
+      return;
+    }
+    const jwt = sessionStorage.getItem(SESSION_KEY);
+    if (!jwt) { toast('sessão expirada', true); return; }
+    btn.disabled = true;
+    try {
+      const r = await window.fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jwt, action: kind === 'pin' ? 'setPin' : 'setPin2', pin })
+      });
+      if (!r.ok) throw new Error('http ' + r.status);
+      if (kind === 'pin') {
+        currentUser.hasPin = true;
+        currentUser.pinLocked = false;
+        input.placeholder = '••••••';
+      } else {
+        currentUser.hasPin2 = true;
+        input.placeholder = '••••';
+      }
+      input.value = '';
+      toast(label + ' salvo');
+    } catch (e) {
+      toast('falha: ' + e.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
   if (pinInputEl && pinSaveEl) {
     pinInputEl.addEventListener('input', () => {
-      pinInputEl.value = pinInputEl.value.replace(/\D/g, '').slice(0, 4);
+      pinInputEl.value = pinInputEl.value.replace(/\D/g, '').slice(0, 6);
     });
     pinInputEl.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') { e.preventDefault(); pinSaveEl.click(); }
     });
-    pinSaveEl.addEventListener('click', async () => {
-      const pin = pinInputEl.value.trim();
-      if (!/^\d{4}$/.test(pin)) { toast('pin precisa ter 4 dígitos', true); return; }
-      const jwt = sessionStorage.getItem(SESSION_KEY);
-      if (!jwt) { toast('sessão expirada', true); return; }
-      try {
-        const r = await window.fetch(WORKER_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jwt, setPin: pin })
-        });
-        if (!r.ok) throw new Error('http ' + r.status);
-        currentUser.hasPin = true;
-        currentUser.pinLocked = false;
-        pinInputEl.value = '';
-        pinInputEl.placeholder = '••••';
-        toast('pin salvo');
-      } catch (e) {
-        toast('falha: ' + e.message, true);
-      }
+    pinSaveEl.addEventListener('click', () => savePin('pin', pinInputEl, pinSaveEl, 'pin'));
+  }
+  if (pin2InputEl && pin2SaveEl) {
+    pin2InputEl.addEventListener('input', () => {
+      pin2InputEl.value = pin2InputEl.value.replace(/\D/g, '').slice(0, 4);
     });
+    pin2InputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); pin2SaveEl.click(); }
+    });
+    pin2SaveEl.addEventListener('click', () => savePin('pin2', pin2InputEl, pin2SaveEl, 'recuperação'));
   }
 
   // ---------- monta a UI admin ----------
@@ -1704,6 +1786,7 @@
     if (path === '/area') {
       if (!currentUser) { showView('login'); return; }
       if (!viewArea.classList.contains('hidden')) { renderArea(); return; }
+      if (currentUser.hasPin && !areaUnlocked) { openPinGate(); return; }
       openArea();
     } else {
       if (!currentUser) { showView('login'); return; }
