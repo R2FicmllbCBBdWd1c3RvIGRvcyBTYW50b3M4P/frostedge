@@ -366,6 +366,21 @@
   }
   .admin-btn:hover{background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)}
 
+  .admin-search{
+    width:100%;
+    background:rgba(10,10,12,.6);
+    border:1px solid var(--line-2);
+    border-radius:8px;
+    padding:7px 11px;
+    color:var(--text);
+    font-size:12.5px;
+    font-family:inherit;
+    margin:0 0 12px;
+    transition:border-color .15s;
+  }
+  .admin-search:focus{outline:none;border-color:var(--accent)}
+  .admin-search::placeholder{color:var(--dim)}
+
   .admin-users{display:flex;flex-direction:column;gap:10px}
   .admin-row{
     display:flex;align-items:center;gap:12px;
@@ -655,7 +670,6 @@
     <h1 class="area-title">Minha <em>área</em></h1>
     <p class="area-sub">dados da sua conta e acessos liberados.</p>
 
-    <!-- tabs e painéis admin são criados dinamicamente pelo JS se isAdmin --> 
     <div class="area-tabs" id="area-tabs">
       <button class="area-tab selected" data-tab="perfil">Perfil</button>
     </div>
@@ -851,7 +865,6 @@
       blocks: data.blocks || []
     };
 
-    // monta a UI admin — igual aos blocos, só depois do Worker confirmar
     if (currentUser.isAdmin && !adminMounted) {
       adminMounted = true;
       mountAdminUI();
@@ -1045,13 +1058,12 @@
     selectTab(e.currentTarget.dataset.tab);
   }
 
-  // ---------- monta a UI admin (só pós-confirmação) ----------
+  // ---------- monta a UI admin ----------
   function mountAdminUI() {
     const tabsBar = document.getElementById('area-tabs');
     const areaBody = document.getElementById('view-area-body');
     if (!tabsBar || !areaBody) return;
 
-    // tab "Acesso"
     const tabBtn = document.createElement('button');
     tabBtn.className = 'area-tab';
     tabBtn.dataset.tab = 'acesso';
@@ -1059,7 +1071,6 @@
     tabBtn.textContent = 'Acesso';
     tabsBar.appendChild(tabBtn);
 
-    // painel completo
     const panel = document.createElement('div');
     panel.className = 'area-panel hidden';
     panel.dataset.panel = 'acesso';
@@ -1087,6 +1098,9 @@
 
       <div class="area-card">
         <h3>Acessos</h3>
+        <input id="admin-search" class="admin-search" type="text"
+               placeholder="buscar por nome ou email…"
+               autocomplete="off" spellcheck="false">
         <div class="admin-users" id="admin-users">
           <div class="admin-empty">carregando…</div>
         </div>
@@ -1096,7 +1110,6 @@
 
     wireTabs();
 
-    // listener do form
     document.getElementById('admin-add-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const form = e.target;
@@ -1114,6 +1127,8 @@
         toast('falha: ' + e.message, true);
       }
     });
+
+    document.getElementById('admin-search').addEventListener('input', applyAdminFilter);
   }
 
   // ---------- admin ----------
@@ -1171,6 +1186,16 @@
     }
   }
 
+  function applyAdminFilter() {
+    const input = document.getElementById('admin-search');
+    if (!input) return;
+    const term = input.value.trim().toLowerCase();
+    document.querySelectorAll('#admin-users .admin-row').forEach(row => {
+      const hay = row.dataset.search || '';
+      row.style.display = (!term || hay.includes(term)) ? '' : 'none';
+    });
+  }
+
   function renderAdminUsers() {
     const list = document.getElementById('admin-users');
     if (!list) return;
@@ -1182,6 +1207,7 @@
     for (const p of adminData.people) {
       const row = document.createElement('div');
       row.className = 'admin-row';
+      row.dataset.search = ((p.name || '') + ' ' + (p.email || '')).toLowerCase();
 
       const meta = document.createElement('div');
       meta.className = 'admin-meta';
@@ -1232,9 +1258,9 @@
       row.append(meta, chips, del);
       list.appendChild(row);
     }
+    applyAdminFilter();
   }
 
-  // wire inicial das tabs (perfil já existe)
   wireTabs();
 
   // ---------- rota ----------
