@@ -293,6 +293,76 @@
   .area-actions{margin-top:22px}
   .area-actions .btn{width:100%;justify-content:center;padding:12px 16px}
 
+  /* ---------- ENTRADA DA ÁREA (animação) ---------- */
+  @keyframes areaIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: none; }
+  }
+  #view-area-body.animate .area-back,
+  #view-area-body.animate .area-title,
+  #view-area-body.animate .area-sub,
+  #view-area-body.animate .area-card,
+  #view-area-body.animate .area-actions,
+  #view-area-body.animate .area-tag {
+    animation: areaIn .55s cubic-bezier(.2,.8,.2,1) both;
+  }
+  #view-area-body.animate .area-back  { animation-delay: 0s; }
+  #view-area-body.animate .area-title { animation-delay: .05s; }
+  #view-area-body.animate .area-sub   { animation-delay: .10s; }
+  #view-area-body.animate .area-card:nth-of-type(1) { animation-delay: .16s; }
+  #view-area-body.animate .area-card:nth-of-type(2) { animation-delay: .24s; }
+  #view-area-body.animate .area-tag:nth-child(1) { animation-delay: .30s; }
+  #view-area-body.animate .area-tag:nth-child(2) { animation-delay: .34s; }
+  #view-area-body.animate .area-tag:nth-child(3) { animation-delay: .38s; }
+  #view-area-body.animate .area-tag:nth-child(4) { animation-delay: .42s; }
+  #view-area-body.animate .area-tag:nth-child(5) { animation-delay: .46s; }
+  #view-area-body.animate .area-tag:nth-child(6) { animation-delay: .50s; }
+  #view-area-body.animate .area-actions { animation-delay: .40s; }
+
+  /* ---------- LOADER DA ÁREA ---------- */
+  #area-loader {
+    position: fixed; inset: 0; z-index: 9998;
+    background: rgba(10,10,12,.72);
+    -webkit-backdrop-filter: blur(8px) saturate(.8);
+            backdrop-filter: blur(8px) saturate(.8);
+    display: grid; place-items: center;
+    opacity: 0; visibility: hidden;
+    transition: opacity .35s ease, visibility .35s ease;
+    pointer-events: none;
+  }
+  #area-loader.show {
+    opacity: 1; visibility: visible;
+    pointer-events: all;
+  }
+  #area-loader.hidden { display: none; }
+
+  .area-loader-card {
+    background: rgba(19,19,24,.94);
+    border: 1px solid var(--line-2);
+    border-radius: 16px;
+    padding: 36px 40px 30px;
+    width: 320px; text-align: center;
+    box-shadow: 0 24px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(59,130,246,.08);
+    animation: loaderPop .35s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes loaderPop {
+    from { opacity: 0; transform: translateY(8px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+  }
+  .area-loader-card .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid rgba(96,165,250,.18);
+    border-top-color: var(--accent-2);
+    margin: 0 auto;
+  }
+  .area-loader-card h3 {
+    margin: 18px 0 4px; font-size: 18px; font-weight: 600;
+    color: var(--text); letter-spacing: -.2px;
+  }
+  .area-loader-card .exec-sub {
+    margin: 0; color: var(--dim); font-size: 12.5px;
+  }
+
   /* ---------- ESTADOS ---------- */
   .center{display:grid;place-items:center;min-height:100vh;text-align:center;padding:24px;position:relative;z-index:2}
   .panel{background:linear-gradient(180deg, rgba(19,19,24,.94), rgba(15,15,18,.94));
@@ -305,7 +375,7 @@
   .err{color:var(--danger);font-size:13px;margin-top:14px;min-height:18px}
   .hidden{display:none !important}
 
-  /* ---------- POPUP ---------- */
+  /* ---------- POPUP EXEC ---------- */
   #exec-overlay {
     position: fixed; inset: 0; z-index: 9999;
     background: rgba(10,10,12,.72);
@@ -470,7 +540,16 @@
   </div>
 </section>
 
-<!-- ====================== POPUP ====================== -->
+<!-- ====================== LOADER ÁREA ====================== -->
+<div id="area-loader" class="hidden">
+  <div class="area-loader-card">
+    <div class="spinner"></div>
+    <h3>Abrindo área<span class="dots"><span>.</span><span>.</span><span>.</span></span></h3>
+    <p class="exec-sub" id="area-loader-sub">carregando seus dados</p>
+  </div>
+</div>
+
+<!-- ====================== POPUP EXEC ====================== -->
 <div id="exec-overlay" class="hidden">
   <div class="exec-modal">
     <div class="exec-body">
@@ -510,8 +589,12 @@
   const execClose   = document.getElementById('exec-close');
   const execEmail   = document.getElementById('exec-email');
 
+  const areaLoader  = document.getElementById('area-loader');
+  const areaLoaderSub = document.getElementById('area-loader-sub');
+
   const payloads = new Map();
   let currentUser = null;
+  let areaOpenTimer = null;
 
   // ---------- helpers ----------
   function jwtEmail(jwt) {
@@ -589,7 +672,7 @@
     return el;
   }
 
-  // ---------- popup ----------
+  // ---------- popup exec ----------
   function openExec(name) {
     execEmail.textContent = name || '—';
     execRunning.classList.remove('hidden');
@@ -648,7 +731,29 @@
     if (e.target === execOverlay) closeExec();
   });
 
-  // ---------- rota ----------
+  // ---------- loader da área ----------
+  function showAreaLoader() {
+    areaLoaderSub.textContent = currentUser && currentUser.name
+      ? 'carregando dados de ' + currentUser.name
+      : 'carregando seus dados';
+    areaLoader.classList.remove('hidden');
+    void areaLoader.offsetWidth;      // força reflow pro transition pegar
+    areaLoader.classList.add('show');
+  }
+
+  function hideAreaLoader() {
+    areaLoader.classList.remove('show');
+    setTimeout(() => areaLoader.classList.add('hidden'), 380);
+  }
+
+  function playAreaEntrance() {
+    const body = document.getElementById('view-area-body');
+    body.classList.remove('animate');
+    void body.offsetWidth;            // força reflow pra reanimar
+    body.classList.add('animate');
+  }
+
+  // ---------- view ----------
   function showView(name) {
     viewLogin.classList.add('hidden');
     viewSite.classList.add('hidden');
@@ -676,12 +781,28 @@
     });
   }
 
-  function route() {
-    const path = location.pathname.replace(/\/+$/, '') || '/';
-    if (path === '/area') {
-      if (!currentUser) { showView('login'); return; }
+  // abre a área com loader + animação
+  function openArea() {
+    if (areaOpenTimer) return;
+    showAreaLoader();
+    areaOpenTimer = setTimeout(() => {
       renderArea();
       showView('area');
+      playAreaEntrance();
+      hideAreaLoader();
+      areaOpenTimer = null;
+    }, 650);
+  }
+
+  // ---------- rota ----------
+  function route() {
+    const path = location.pathname.replace(/\/+$/, '') || '/';
+
+    if (path === '/area') {
+      if (!currentUser) { showView('login'); return; }
+      // já está aberto — só re-renderiza, sem loader
+      if (!viewArea.classList.contains('hidden')) { renderArea(); return; }
+      openArea();
     } else {
       if (currentUser) showView('site');
       else             showView('login');
