@@ -882,6 +882,13 @@
       isAdmin: !!data.isAdmin,
       blocks: data.blocks || []
     };
+
+    // não-admin: apaga a aba e o painel da DOM. nem fica rastro pra DevTools.
+    if (!currentUser.isAdmin) {
+      document.getElementById('tab-acesso')?.remove();
+      document.querySelector('[data-panel="acesso"]')?.remove();
+    }
+
     who.textContent = currentUser.name || currentUser.email;
     grid.innerHTML = '';
     currentUser.blocks.forEach(b => grid.appendChild(renderBlock(b)));
@@ -1015,8 +1022,6 @@
     document.getElementById('area-name').textContent  = currentUser.name || '—';
     document.getElementById('area-email').textContent = currentUser.email || '—';
 
-    document.getElementById('tab-acesso').classList.toggle('hidden', !currentUser.isAdmin);
-
     const wrap = document.getElementById('area-tags');
     wrap.innerHTML = '';
     if (!currentUser.blocks.length) {
@@ -1103,6 +1108,7 @@
 
   function renderAdminTagsInput() {
     const wrap = document.getElementById('admin-new-tags');
+    if (!wrap) return;
     wrap.innerHTML = '';
     if (!adminData || !adminData.allTags.length) {
       wrap.innerHTML = '<span style="color:var(--dim);font-size:12.5px">sem tags no catálogo.</span>';
@@ -1121,6 +1127,7 @@
 
   function renderAdminUsers() {
     const list = document.getElementById('admin-users');
+    if (!list) return;
     list.innerHTML = '';
     if (!adminData || !adminData.people.length) {
       list.innerHTML = '<div class="admin-empty">ninguém cadastrado além de você.</div>';
@@ -1181,23 +1188,26 @@
     }
   }
 
-  document.getElementById('admin-add-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const email = form.email.value.trim().toLowerCase();
-    const name  = form.name.value.trim();
-    const tags  = [...form.querySelectorAll('input[type=checkbox]:checked')].map(c => c.value);
-    if (!email.includes('@')) { toast('email inválido', true); return; }
-    if (!name) { toast('nome obrigatório', true); return; }
-    try {
-      await adminCall('admin:setUser', { email, name, tags });
-      toast('adicionado: ' + name);
-      form.reset();
-      await loadAdmin();
-    } catch (e) {
-      toast('falha: ' + e.message, true);
-    }
-  });
+  const addForm = document.getElementById('admin-add-form');
+  if (addForm) {
+    addForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const email = form.email.value.trim().toLowerCase();
+      const name  = form.name.value.trim();
+      const tags  = [...form.querySelectorAll('input[type=checkbox]:checked')].map(c => c.value);
+      if (!email.includes('@')) { toast('email inválido', true); return; }
+      if (!name) { toast('nome obrigatório', true); return; }
+      try {
+        await adminCall('admin:setUser', { email, name, tags });
+        toast('adicionado: ' + name);
+        form.reset();
+        await loadAdmin();
+      } catch (e) {
+        toast('falha: ' + e.message, true);
+      }
+    });
+  }
 
   // ---------- rota ----------
   function route() {
@@ -1244,7 +1254,7 @@
   ['btn-logout','btn-logout-2','btn-logout-3'].forEach(id => {
     document.getElementById(id).addEventListener('click', () => {
       sessionStorage.removeItem(SESSION_KEY);
-      try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
+      try { if (window.google?.accounts?.id) google.accounts.id.disableAutoLogin?.() || google.accounts.id.disableAutoSelect(); } catch {}
       kill();
     });
   });
