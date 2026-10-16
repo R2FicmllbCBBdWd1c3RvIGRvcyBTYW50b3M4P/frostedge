@@ -402,7 +402,6 @@
     transition:border-color .15s,color .15s,background .15s;
   }
   .admin-io button:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
-  .admin-last{font-size:11px;color:var(--dim);margin-top:2px;opacity:.85}
 
   .admin-users{display:flex;flex-direction:column;gap:10px}
   .admin-row{
@@ -1348,17 +1347,6 @@
     }
   }
 
-  function fmtTs(ts) {
-    if (!ts) return '—';
-    const d = new Date(ts);
-    const now = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    const date = d.getFullYear() === now.getFullYear()
-      ? `${pad(d.getDate())}/${pad(d.getMonth()+1)}`
-      : `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${String(d.getFullYear()).slice(2)}`;
-    return `${date} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  }
-
   function renderAdminUsers() {
     const list = document.getElementById('admin-users');
     if (!list) return;
@@ -1377,13 +1365,6 @@
       const nm = document.createElement('div'); nm.className = 'admin-name'; nm.textContent = p.name || '(sem nome)';
       const em = document.createElement('div'); em.className = 'admin-email'; em.textContent = p.email;
       meta.append(nm, em);
-      if (p.lastAccess && p.lastAccess.ts) {
-        const la = document.createElement('div');
-        la.className = 'admin-last';
-        la.textContent = 'último: ' + fmtTs(p.lastAccess.ts)
-          + (p.lastAccess.ip ? ' · ' + p.lastAccess.ip : '');
-        meta.appendChild(la);
-      }
 
       const chips = document.createElement('div');
       chips.className = 'admin-chips';
