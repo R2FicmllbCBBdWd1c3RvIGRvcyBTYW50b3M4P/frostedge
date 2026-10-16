@@ -653,7 +653,6 @@
   .exec-close:hover { background: var(--accent-2); }
   .exec-close.hidden { display: none; }
 
-  /* ---------- TERMOS ---------- */
   #terms-overlay {
     position: fixed; inset: 0; z-index: 10000;
     background: rgba(10,10,12,.78);
@@ -1046,85 +1045,100 @@
   let areaOpenTimer = null;
   let adminData = null;
   let adminMounted = false;
-  let termsMode = 'view';   // 'accept' (obrigatório) ou 'view' (só leitura)
+  let termsMode = 'view';
 
   // ═══════════════════════════════════════════════════════════════════
   //  TEXTOS DOS TERMOS
   // ═══════════════════════════════════════════════════════════════════
   const TERMS_GENERAL = `
-    <h4>1. Aceitação integral e vinculante</h4>
-    <p>Ao marcar a caixa de concordância e pressionar <em>"Concordar e continuar"</em>, você (<strong>"Usuário"</strong>) declara ter lido, compreendido e aceito, de forma livre, expressa, informada e irrevogável, a totalidade destes Termos de Uso, bem como todas as políticas, avisos e condições específicas de cada bloco disponibilizado nesta plataforma (coletivamente, <strong>"Termos"</strong>).</p>
-    <p>Caso não concorde, no todo ou em parte, com quaisquer disposições destes Termos, o Usuário deverá interromper imediatamente o uso da plataforma, ficando vedado o acesso às funcionalidades.</p>
+    <h4>1. Definições</h4>
+    <p>Para fins destes Termos, aplicam-se as seguintes definições:</p>
+    <ul>
+      <li><strong>"Plataforma"</strong> — o site Lynx, suas ferramentas, scripts, códigos, interface e funcionalidades, disponibilizados no domínio do projeto;</li>
+      <li><strong>"Bloco"</strong> — cada módulo ou ferramenta individual disponibilizado dentro da Plataforma, com finalidade e termos específicos próprios;</li>
+      <li><strong>"Usuário"</strong> — a pessoa física autorizada a acessar a Plataforma, identificada por conta Google previamente cadastrada pelo administrador;</li>
+      <li><strong>"Administrador"</strong> — o responsável pela Plataforma, com poderes para conceder, revogar e restringir acessos;</li>
+      <li><strong>"Parte Isenta"</strong> — o Administrador, seus criadores, mantenedores, colaboradores e quaisquer pessoas físicas ou jurídicas vinculadas ao projeto;</li>
+      <li><strong>"Termos"</strong> — o presente documento, bem como os termos específicos de cada Bloco, considerados em conjunto e de forma indivisível;</li>
+      <li><strong>"Conteúdo"</strong> — dados, textos, códigos, materiais e informações de qualquer natureza disponibilizados ou acessados por meio da Plataforma.</li>
+    </ul>
 
-    <h4>2. Objeto e natureza do serviço</h4>
-    <p>A plataforma <strong>Lynx</strong> (doravante <em>"Plataforma"</em>) disponibiliza ferramentas de automação, scripts e utilitários destinados a apoiar o Usuário em atividades diversas, incluindo (mas não se limitando a) navegação assistida e automação de tarefas. A Plataforma é fornecida <strong>"no estado em que se encontra"</strong> (<em>as-is</em>), sem garantias de qualquer natureza, expressas ou implícitas, incluindo, sem limitação, garantias de comercialização, adequação a propósito específico, disponibilidade ininterrupta, ausência de erros ou conformidade com expectativas do Usuário.</p>
+    <h4>2. Aceitação integral e vinculante</h4>
+    <p>Ao marcar a caixa de concordância e pressionar <em>"Concordar e continuar"</em>, o Usuário declara ter lido, compreendido e aceito, de forma livre, expressa, informada e irrevogável, a totalidade destes Termos, bem como todas as políticas, avisos e condições específicas de cada Bloco (coletivamente, <strong>"Termos"</strong>).</p>
+    <p>Caso não concorde, no todo ou em parte, com quaisquer disposições destes Termos, o Usuário deverá interromper imediatamente o uso da Plataforma, ficando vedado o acesso às funcionalidades.</p>
 
-    <h4>3. Elegibilidade e responsabilidade pela conta</h4>
-    <p>O acesso é pessoal, intransferível e vinculado à conta Google previamente autorizada pelo administrador da Plataforma. O Usuário é integralmente responsável por:</p>
+    <h4>3. Objeto e natureza do serviço</h4>
+    <p>A Plataforma <strong>Lynx</strong> disponibiliza ferramentas de automação, scripts e utilitários destinados a apoiar o Usuário em atividades diversas, incluindo (mas não se limitando a) navegação assistida e automação de tarefas. A Plataforma é fornecida <strong>"no estado em que se encontra"</strong> (<em>as-is</em>), sem garantias de qualquer natureza, expressas ou implícitas, incluindo, sem limitação, garantias de comercialização, adequação a propósito específico, disponibilidade ininterrupta, ausência de erros ou conformidade com expectativas do Usuário.</p>
+
+    <h4>4. Elegibilidade e responsabilidade pela conta</h4>
+    <p>O acesso é pessoal, intransferível e vinculado à conta Google previamente autorizada pelo Administrador. O Usuário é integralmente responsável por:</p>
     <ul>
       <li>Manter a confidencialidade e segurança de suas credenciais de acesso;</li>
       <li>Todas as atividades realizadas em sua conta, ainda que por terceiros, com ou sem seu consentimento;</li>
-      <li>Notificar imediatamente o administrador em caso de uso não autorizado de sua conta.</li>
+      <li>Notificar imediatamente o Administrador em caso de uso não autorizado de sua conta.</li>
     </ul>
 
-    <h4>4. Verificação obrigatória dos termos específicos de cada bloco</h4>
-    <p>O Usuário reconhece e concorda que <strong>cada bloco disponibilizado possui termos de uso próprios</strong>, os quais podem estabelecer restrições, obrigações e vedações específicas adicionalmente a estes Termos gerais. É <strong>obrigação indeclinável do Usuário</strong> consultar, ler e compreender integralmente os termos específicos de cada bloco antes de utilizá-lo.</p>
-    <p>Ao utilizar qualquer bloco, o Usuário declara automaticamente que leu, compreendeu e concorda com os termos específicos aplicáveis àquele bloco, independentemente de confirmação adicional. <span class="warn">O uso de qualquer bloco implica aceitação plena e irrestrita dos respectivos termos específicos.</span></p>
+    <h4>5. Verificação obrigatória dos termos específicos de cada Bloco</h4>
+    <p>O Usuário reconhece e concorda que <strong>cada Bloco disponibilizado possui termos de uso próprios</strong>, os quais podem estabelecer restrições, obrigações e vedações específicas adicionalmente a estes Termos gerais. É <strong>obrigação indeclinável do Usuário</strong> consultar, ler e compreender integralmente os termos específicos de cada Bloco antes de utilizá-lo.</p>
+    <p>Ao utilizar qualquer Bloco, o Usuário declara automaticamente que leu, compreendeu e concorda com os termos específicos aplicáveis àquele Bloco, independentemente de confirmação adicional. <span class="warn">O uso de qualquer Bloco implica aceitação plena e irrestrita dos respectivos termos específicos.</span></p>
 
-    <h4>5. Isenção total de responsabilidade da Plataforma</h4>
-    <p>A Plataforma, seus criadores, administradores, mantenedores, colaboradores e quaisquer pessoas físicas ou jurídicas a ela vinculadas (coletivamente, <strong>"Parte Isenta"</strong>) <strong>NÃO POSSUEM QUALQUER RESPONSABILIDADE</strong> sobre:</p>
+    <h4>6. Isenção total de responsabilidade da Plataforma</h4>
+    <p>A Parte Isenta <strong>NÃO POSSUI QUALQUER RESPONSABILIDADE</strong> sobre:</p>
     <ul>
       <li>O uso que o Usuário fizer das ferramentas, scripts e códigos disponibilizados;</li>
       <li>Quaisquer consequências diretas, indiretas, incidentais, especiais, exemplares ou punitivas decorrentes do uso da Plataforma;</li>
       <li>Danos de qualquer natureza a dispositivos, dados, contas, reputação ou terceiros;</li>
       <li>Eventuais penalidades, suspensões ou sanções aplicadas por plataformas de terceiros em razão do uso das ferramentas;</li>
-      <li>Violacões de termos de serviço, contratos ou legislações aplicáveis cometidas pelo Usuário;</li>
+      <li>Violações de termos de serviço, contratos ou legislações aplicáveis cometidas pelo Usuário;</li>
       <li>Perdas financeiras, lucros cessantes, danos morais ou qualquer outro prejuízo.</li>
     </ul>
     <p>O Usuário assume <strong>integral, exclusiva e total responsabilidade</strong> por todo e qualquer ato praticado com o uso da Plataforma e suas ferramentas, isentando a Parte Isenta de toda e qualquer reclamação, ação judicial ou extrajudicial, presente ou futura.</p>
 
-    <h4>6. Uso permitido e vedações gerais</h4>
+    <h4>7. Uso permitido e vedações gerais</h4>
     <p>É expressamente vedado ao Usuário, sem limitação:</p>
     <ul>
       <li>Utilizar a Plataforma para fins ilícitos, criminosos ou contrários à ordem pública e aos bons costumes;</li>
       <li>Praticar qualquer ato que viole direitos de terceiros, incluindo direitos autorais, de imagem, de propriedade intelectual, privacidade ou personalidade;</li>
-      <li>Revender, sublicenciar, redistribuir ou comercializar o acesso sem autorização expressa e escrita do administrador;</li>
+      <li>Revender, sublicenciar, redistribuir ou comercializar o acesso sem autorização expressa e escrita do Administrador;</li>
       <li>Tentar contornar, burlar, desabilitar ou interferir em mecanismos de segurança, controle de acesso ou autenticação da Plataforma;</li>
       <li>Utilizar a Plataforma para assediar, ameaçar, perseguir ou causar dano a qualquer pessoa;</li>
       <li>Empregar as ferramentas em atividades que possam causar dano a sistemas, redes ou dados de terceiros.</li>
     </ul>
 
-    <h4>7. Revogação unilateral do acesso</h4>
-    <p>O administrador da Plataforma reserva-se o direito de, a seu exclusivo critério e <strong>sem necessidade de aviso prévio, justificativa ou motivação</strong>, suspender, revogar, restringir ou encerrar o acesso de qualquer Usuário, temporária ou permanentemente, especialmente em caso de:</p>
+    <h4>8. Revogação unilateral do acesso</h4>
+    <p>O Administrador reserva-se o direito de, a seu exclusivo critério e <strong>sem necessidade de aviso prévio, justificativa ou motivação</strong>, suspender, revogar, restringir ou encerrar o acesso de qualquer Usuário, temporária ou permanentemente, especialmente em caso de:</p>
     <ul>
-      <li>Violação de qualquer disposição destes Termos, gerais ou específicos de bloco;</li>
+      <li>Violação de qualquer disposição destes Termos, gerais ou específicos de Bloco;</li>
       <li>Suspeita fundamentada de uso indevido, abusivo ou malicioso;</li>
       <li>Requisição de autoridade competente;</li>
       <li>Descontinuação do serviço, no todo ou em parte;</li>
-      <li>Qualquer outro motivo que o administrador julgar pertinente.</li>
+      <li>Qualquer outro motivo que o Administrador julgar pertinente.</li>
     </ul>
     <p>A revogação do acesso não gera direito a indenização, reembolso, restituição ou qualquer compensação de qualquer natureza ao Usuário.</p>
 
-    <h4>8. Propriedade intelectual</h4>
-    <p>Salvo disposição específica em contrário nos termos de um bloco individual, todos os direitos sobre a Plataforma, seu código-fonte, design, marca e conteúdo permanecem de titularidade exclusiva do administrador ou de seus respectivos licenciantes. O acesso concedido não transfere ao Usuário qualquer direito de propriedade sobre a Plataforma.</p>
+    <h4>9. Propriedade intelectual</h4>
+    <p>Salvo disposição específica em contrário nos termos de um Bloco individual, todos os direitos sobre a Plataforma, seu código-fonte, design, marca e conteúdo permanecem de titularidade exclusiva do Administrador ou de seus respectivos licenciantes. O acesso concedido não transfere ao Usuário qualquer direito de propriedade sobre a Plataforma.</p>
 
-    <h4>9. Privacidade e tratamento de dados</h4>
+    <h4>10. Privacidade e tratamento de dados</h4>
     <p>A Plataforma coleta e armazena apenas as informações estritamente necessárias ao seu funcionamento, incluindo: identificação da conta Google autorizada, preferências de uso (como tema escolhido) e registros de aceitação destes Termos. Tais dados são armazenados em infraestrutura de terceiros e não são compartilhados, vendidos ou cedidos a terceiros, exceto por determinação legal ou judicial.</p>
 
-    <h4>10. Modificação dos termos</h4>
-    <p>Estes Termos podem ser alterados, atualizados, complementados ou substituídos a qualquer momento, a exclusivo critério do administrador, sem aviso prévio. A versão vigente estará sempre disponível na Plataforma. O uso continuado após a publicação de alterações constitui aceitação tácita das novas disposições.</p>
+    <h4>11. Modificação dos termos</h4>
+    <p>Estes Termos podem ser alterados, atualizados, complementados ou substituídos a qualquer momento, a exclusivo critério do Administrador, sem aviso prévio. A versão vigente estará sempre disponível na Plataforma. O uso continuado após a publicação de alterações constitui aceitação tácita das novas disposições.</p>
 
-    <h4>11. Independência das cláusulas (severabilidade)</h4>
+    <h4>12. Independência das cláusulas (severabilidade)</h4>
     <p>Caso qualquer disposição destes Termos seja considerada nula, inválida ou inexequível por autoridade competente, as demais disposições permanecerão em pleno vigor e efeito, e a disposição afetada será interpretada de modo a refletir, na máxima extensão possível, a intenção original das partes.</p>
 
-    <h4>12. Não renúncia</h4>
-    <p>A tolerância, omissão ou não exercício, por parte do administrador, de qualquer direito previsto nestes Termos não constitui renúncia, novação ou modificação do respectivo direito, podendo ser exercido a qualquer tempo.</p>
+    <h4>13. Não renúncia</h4>
+    <p>A tolerância, omissão ou não exercício, por parte do Administrador, de qualquer direito previsto nestes Termos não constitui renúncia, novação ou modificação do respectivo direito, podendo ser exercido a qualquer tempo.</p>
 
-    <h4>13. Lei aplicável e foro</h4>
-    <p>Estes Termos são regidos pelas leis da República Federativa do Brasil. Eventuais controvérsias serão resolvidas no foro do domicílio do administrador da Plataforma, com renúncia expressa pelo Usuário a qualquer outro, por mais privilegiado que seja.</p>
+    <h4>14. Lei aplicável e foro</h4>
+    <p>Estes Termos são regidos pelas leis da República Federativa do Brasil. Eventuais controvérsias serão resolvidas no foro do domicílio do Administrador da Plataforma, com renúncia expressa pelo Usuário a qualquer outro, por mais privilegiado que seja.</p>
 
-    <h4>14. Contato</h4>
-    <p>Para dúvidas, solicitações ou comunicações relativas a estes Termos, o Usuário deverá entrar em contato pelos canais oficiais de suporte da Plataforma.</p>
+    <h4>15. Contato</h4>
+    <p>Para dúvidas, solicitações ou comunicações relativas a estes Termos, o Usuário deverá entrar em contato pelos canais oficiais de suporte da Plataforma:</p>
+    <ul>
+      <li><strong>Telefone / WhatsApp:</strong> +55 45 98820-8796</li>
+    </ul>
 
     <p style="margin-top:24px;color:var(--dim);font-size:12px;text-align:center">
       Última atualização: outubro de 2026<br>
@@ -1199,25 +1213,25 @@
     <ul>
       <li>O modo, a finalidade ou o contexto em que o Usuário utiliza o código;</li>
       <li>Quaisquer consequências, danos ou prejuízos decorrentes do uso do código;</li>
-      <li>Violacões de termos de terceiros, contratos ou legislações cometidas pelo Usuário;</li>
+      <li>Violações de termos de terceiros, contratos ou legislações cometidas pelo Usuário;</li>
       <li>Resultados obtidos por meio do uso da ferramenta, sejam eles esperados ou não.</li>
     </ul>
     <p>O Usuário assume <strong>integral, exclusiva e total responsabilidade</strong> por todo e qualquer uso que faça do código, isentando expressamente o criador e administrador de qualquer reclamação, ação ou responsabilização, presente ou futura.</p>
 
     <h4>4. Reembolso e revogação unilateral</h4>
-    <p>O administrador reserva-se o direito de, <strong>a seu exclusivo critério e sem necessidade de aviso prévio, justificativa ou motivação</strong>:</p>
+    <p>O Administrador reserva-se o direito de, <strong>a seu exclusivo critério e sem necessidade de aviso prévio, justificativa ou motivação</strong>:</p>
     <ul>
       <li>Realizar o <strong>reembolso</strong> do valor pago pelo Usuário;</li>
       <li><strong>Revogar</strong> o acesso do Usuário ao bloco;</li>
       <li>Suspender, restringir ou encerrar o fornecimento do serviço, no todo ou em parte.</li>
     </ul>
-    <p>Tal medida poderá ser adotada em caso de violação destes Termos, uso indevido do código, suspeita fundamentada de conduta irregular, descontinuação do serviço ou qualquer outro motivo que o administrador julgar pertinente. A revogação e o eventual reembolso não geram qualquer direito a compensação adicional, indenização ou reparação por parte do Usuário.</p>
+    <p>Tal medida poderá ser adotada em caso de violação destes Termos, uso indevido do código, suspeita fundamentada de conduta irregular, descontinuação do serviço ou qualquer outro motivo que o Administrador julgar pertinente. A revogação e o eventual reembolso não geram qualquer direito a compensação adicional, indenização ou reparação por parte do Usuário.</p>
 
     <h4>5. Uso permitido</h4>
     <p>O Usuário compromete-se a utilizar este bloco exclusivamente para finalidades lícitas, éticas e legítimas, abstendo-se de empregá-lo em:</p>
     <ul>
       <li>Atividades criminosas, fraudulentas ou ilícitas de qualquer natureza;</li>
-      <li>Violacões de direitos autorais, de propriedade intelectual ou de privacidade de terceiros;</li>
+      <li>Violações de direitos autorais, de propriedade intelectual ou de privacidade de terceiros;</li>
       <li>Compartilhamento, revenda ou redistribuição do acesso sem autorização expressa;</li>
       <li>Qualquer uso que cause dano a terceiros.</li>
     </ul>
@@ -1317,7 +1331,6 @@
   //  MODAL DE TERMOS
   // ═══════════════════════════════════════════════════════════════════
   function openTerms(opts) {
-    // opts: { mode: 'view'|'accept', title, subtitle, content, onAccept }
     termsMode = opts.mode || 'view';
     termsTitle.textContent = opts.title || 'Termos de uso';
     termsSubtitle.textContent = opts.subtitle || '';
@@ -1337,12 +1350,11 @@
     }
 
     termsOverlay.classList.remove('hidden');
-    // guarda callback
     termsAccept._onAccept = opts.onAccept || null;
   }
 
   function closeTerms() {
-    if (termsMode === 'accept') return;  // não pode fechar sem aceitar
+    if (termsMode === 'accept') return;
     termsOverlay.classList.add('hidden');
   }
 
@@ -1372,7 +1384,6 @@
     termsAccept.textContent = 'Concordar e continuar';
   });
 
-  // botão "Termos de uso" de cada card — modal de visualização
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.btn-terms');
     if (!btn) return;
@@ -1451,9 +1462,7 @@
     grid.innerHTML = '';
     currentUser.blocks.forEach(b => grid.appendChild(renderBlock(b)));
 
-    // ── gate de termos ──────────────────────────────────────────────
     if (!currentUser.termsAccepted) {
-      // não mostra o site até aceitar
       viewSite.classList.add('hidden');
       viewArea.classList.add('hidden');
       viewLogin.classList.add('hidden');
@@ -1470,7 +1479,6 @@
       return;
     }
 
-    // termos aceitos — segue o fluxo normal
     route();
   }
 
@@ -2066,10 +2074,7 @@
   //  ROTA
   // ═══════════════════════════════════════════════════════════════════
   function route() {
-    // gate de termos — se não aceitou, fica no modal
-    if (currentUser && !currentUser.termsAccepted) {
-      return;
-    }
+    if (currentUser && !currentUser.termsAccepted) return;
 
     const path = location.pathname.replace(/\/+$/, '') || '/';
 
