@@ -872,9 +872,15 @@
     if (!r.ok) {
       const err = await r.json().catch(() => ({}));
       sessionStorage.removeItem(SESSION_KEY);
-      loginErr.textContent = err.error === 'no_authorized_block'
-        ? 'sua conta não tem nenhum bloco autorizado.'
-        : 'sem acesso.';
+      if (err.error === 'not_found') {
+        loginErr.textContent = 'seu email não está cadastrado no painel de acesso.';
+      } else if (err.error === 'no_authorized_block') {
+        loginErr.textContent = 'sua conta não tem nenhum bloco autorizado.';
+      } else if (err.error && err.error.startsWith('no_binding_')) {
+        loginErr.textContent = 'configuração do servidor incompleta (' + err.error + ').';
+      } else {
+        loginErr.textContent = 'sem acesso.';
+      }
       kill();
       return;
     }
