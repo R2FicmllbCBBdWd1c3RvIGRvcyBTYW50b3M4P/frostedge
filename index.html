@@ -386,7 +386,6 @@
   .area-tab:hover{color:var(--text)}
   .area-tab.selected{color:var(--accent-2);border-bottom-color:var(--accent)}
 
-  /* ---------- SUBTABS ADMIN ---------- */
   .admin-subtabs{
     display:flex;gap:4px;margin:0 0 20px;
     border-bottom:1px solid var(--line);
@@ -403,7 +402,6 @@
   .admin-panel{display:none}
   .admin-panel.active{display:block}
 
-  /* ---------- FORMULÁRIOS ---------- */
   .admin-form{display:flex;flex-direction:column;gap:14px}
   .admin-field{display:flex;flex-direction:column;gap:6px}
   .admin-field label{font-size:11px;font-weight:600;color:var(--dim);letter-spacing:1.2px;text-transform:uppercase}
@@ -453,7 +451,6 @@
   .admin-search:focus{outline:none;border-color:var(--accent)}
   .admin-search::placeholder{color:var(--dim)}
 
-  /* filtro de tags */
   .admin-tag-filter{
     display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px;
   }
@@ -536,7 +533,6 @@
 
   .admin-empty{color:var(--dim);font-size:13px;padding:8px 0}
 
-  /* ---------- HISTÓRICO ---------- */
   .hist-search-wrap{ margin:0 0 14px; }
   .hist-list{
     display:flex;flex-direction:column;gap:8px;
@@ -563,8 +559,6 @@
   .hist-icon.h-kill    { background:rgba(224,82,82,.12);  color:#e05252; }
   .hist-icon.h-kill_s  { background:rgba(250,204,21,.12); color:#fbbf24; }
   .hist-icon.h-tags    { background:rgba(139,92,246,.12); color:#a78bfa; }
-  .hist-icon.h-block   { background:rgba(224,82,82,.15);  color:#e05252; }
-  .hist-icon.h-unblock { background:rgba(16,185,129,.15); color:#34d399; }
 
   .hist-body{flex:1;min-width:0}
   .hist-line1{font-size:13px;color:var(--text);line-height:1.4}
@@ -573,7 +567,6 @@
   .hist-line2{font-size:11px;color:var(--dim);margin-top:3px}
   .hist-email{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:11.5px}
 
-  /* ---------- KILL ---------- */
   .kill-form{display:flex;flex-direction:column;gap:14px}
   .kill-options{
     display:flex;flex-direction:column;gap:8px;
@@ -606,10 +599,6 @@
   .kill-text b{display:block;font-size:13px;color:var(--text);font-weight:600;margin-bottom:2px}
   .kill-text span{font-size:11.5px;color:var(--dim);line-height:1.45}
 
-  .kill-pending-title{
-    margin:22px 0 10px;font-size:11px;font-weight:600;
-    color:var(--dim);letter-spacing:1.4px;text-transform:uppercase;
-  }
   .kill-pending-list{
     display:flex;flex-direction:column;gap:8px;
     max-height:280px;overflow-y:auto;
@@ -629,7 +618,6 @@
   }
   .kill-row-mode.soft{background:rgba(250,204,21,.12);color:#fbbf24}
   .kill-row-mode.hard{background:rgba(224,82,82,.12);color:#e05252}
-  .kill-row-mode.block{background:rgba(224,82,82,.2);color:#ff7b7b}
   .kill-row-btn{
     padding:5px 10px;border-radius:8px;flex-shrink:0;
     background:transparent;border:1px solid var(--line-2);
@@ -1195,10 +1183,8 @@
   let adminData = null;
   let adminMounted = false;
   let termsMode = 'view';
-  let adminActiveTab = 'acessos';
   let adminSelectedTags = new Set();
   let killSelectedMode = null;
-  let histSelectedEmail = null;
 
   // ═══════════════════════════════════════════════════════════════════
   //  TEXTOS DOS TERMOS
@@ -1605,7 +1591,7 @@
       await enter(resp.credential);
     } catch (e) {
       loginErr.textContent = 'conta não autorizada.';
-      kill_now();
+      kill();
     }
   };
 
@@ -1634,7 +1620,7 @@
       } else {
         loginErr.textContent = 'sem acesso.';
       }
-      kill_now();
+      kill();
       return;
     }
 
@@ -1925,15 +1911,12 @@
   //  SUBTABS ADMIN
   // ═══════════════════════════════════════════════════════════════════
   function selectAdminTab(name) {
-    adminActiveTab = name;
     document.querySelectorAll('.admin-subtab').forEach(t =>
       t.classList.toggle('selected', t.dataset.subtab === name));
     document.querySelectorAll('.admin-panel').forEach(p =>
       p.classList.toggle('active', p.dataset.panel === name));
-
-    if (name === 'acessos')   { loadAdmin(); }
-    if (name === 'historico') { /* carrega por digitação */ }
-    if (name === 'kill')      { loadKills(); loadBlocked(); }
+    if (name === 'acessos')   loadAdmin();
+    if (name === 'kill')      loadKills();
   }
 
   function wireAdminTabs() {
@@ -1970,7 +1953,7 @@
       });
       sessionStorage.removeItem(SESSION_KEY);
       try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
-      kill_now();
+      kill();
     } catch (e) {
       alert('falha ao revogar: ' + e.message);
     }
@@ -1998,7 +1981,7 @@
       <div class="admin-subtabs">
         <button class="admin-subtab selected" data-subtab="acessos">Acessos</button>
         <button class="admin-subtab" data-subtab="historico">Histórico</button>
-        <button class="admin-subtab" data-subtab="kill">Desligar navegador</button>
+        <button class="admin-subtab" data-subtab="kill">Desligar sessão</button>
       </div>
 
       <div class="admin-panel active" data-panel="acessos">
@@ -2066,7 +2049,10 @@
 
       <div class="admin-panel" data-panel="kill">
         <div class="area-card">
-          <h3>Desligar navegador</h3>
+          <h3>Desligar sessão</h3>
+          <p style="color:var(--dim);font-size:12.5px;margin:0 0 16px">
+            Derruba a aba onde a pessoa está logada no site. Ela pode logar de novo normalmente.
+          </p>
           <form class="kill-form" id="kill-form">
             <div class="admin-field">
               <label for="kill-email">email @escola</label>
@@ -2079,22 +2065,15 @@
                 <button type="button" class="kill-opt" data-mode="soft">
                   <span class="kill-radio"></span>
                   <span class="kill-text">
-                    <b>só fechar o navegador</b>
-                    <span>a pessoa é jogada pra tela de login, mas pode reabrir e já estar logada</span>
+                    <b>só fechar a sessão</b>
+                    <span>derruba a aba atual. se a pessoa reabrir o site, ainda está logada</span>
                   </span>
                 </button>
                 <button type="button" class="kill-opt danger" data-mode="hard">
                   <span class="kill-radio"></span>
                   <span class="kill-text">
                     <b>fechar e deslogar</b>
-                    <span>a pessoa é jogada pra tela de login e a sessão é apagada. precisa logar com Google de novo</span>
-                  </span>
-                </button>
-                <button type="button" class="kill-opt danger" data-mode="block">
-                  <span class="kill-radio"></span>
-                  <span class="kill-text">
-                    <b>fechar e bloquear máquina</b>
-                    <span>mata o navegador agora e bloqueia a reabertura até você liberar manualmente</span>
+                    <span>derruba a aba atual e apaga a sessão. precisa logar com Google de novo</span>
                   </span>
                 </button>
               </div>
@@ -2107,13 +2086,6 @@
           <h3>Desligamentos pendentes</h3>
           <div class="kill-pending-list" id="kill-pending-list">
             <div class="admin-empty">nenhum desligamento pendente.</div>
-          </div>
-        </div>
-
-        <div class="area-card">
-          <h3>Máquinas bloqueadas</h3>
-          <div class="kill-pending-list" id="blocked-list">
-            <div class="admin-empty">nenhuma máquina bloqueada.</div>
           </div>
         </div>
       </div>
@@ -2159,7 +2131,6 @@
           document.getElementById('hist-count').textContent = '';
           return;
         }
-        histSelectedEmail = val;
         loadHistory(val);
       }, 400);
     });
@@ -2179,7 +2150,7 @@
       if (!email.includes('@')) { toast('email inválido', true); return; }
       if (!killSelectedMode) { toast('escolha um modo', true); return; }
 
-      const labels = { soft: 'só fechar', hard: 'fechar e deslogar', block: 'fechar e bloquear máquina' };
+      const labels = { soft: 'só fechar a sessão', hard: 'fechar e deslogar' };
       if (!confirm(`${labels[killSelectedMode]} para ${email}?`)) return;
 
       try {
@@ -2190,7 +2161,6 @@
         document.querySelectorAll('.kill-opt').forEach(o => o.classList.remove('selected'));
         document.getElementById('kill-submit').disabled = true;
         await loadKills();
-        await loadBlocked();
       } catch (err) {
         toast('falha: ' + err.message, true);
       }
@@ -2542,22 +2512,12 @@
       case 'kill_soft':
         iconClass = 'h-kill_s';
         iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/>';
-        line1 = 'navegador fechado' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : '');
+        line1 = 'sessão derrubada' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : '');
         break;
       case 'kill_hard':
         iconClass = 'h-kill';
         iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/>';
-        line1 = 'fechado e deslogado' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : '');
-        break;
-      case 'block':
-        iconClass = 'h-block';
-        iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>';
-        line1 = 'máquina bloqueada' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : '');
-        break;
-      case 'unblock':
-        iconClass = 'h-unblock';
-        iconSvg = '<path d="M20 6 9 17l-5-5"/>';
-        line1 = 'máquina liberada' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : '');
+        line1 = 'sessão derrubada e deslogada' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : '');
         break;
       default:
         line1 = escapeHtml(ev.type || '?');
@@ -2576,7 +2536,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════
-  //  KILL / BLOCK
+  //  KILL (só sessão)
   // ═══════════════════════════════════════════════════════════════════
   async function loadKills() {
     const list = document.getElementById('kill-pending-list');
@@ -2593,7 +2553,7 @@
       for (const k of kills) {
         const row = document.createElement('div');
         row.className = 'kill-row';
-        const modeLabel = k.mode === 'block' ? 'bloquear' : (k.mode === 'hard' ? 'deslogar' : 'fechar');
+        const modeLabel = k.mode === 'hard' ? 'deslogar' : 'fechar';
         row.innerHTML = `
           <div class="kill-row-meta">
             <div class="kill-row-email">${escapeHtml(k.email)}</div>
@@ -2622,54 +2582,10 @@
     }
   }
 
-  async function loadBlocked() {
-    const list = document.getElementById('blocked-list');
-    if (!list) return;
-    list.innerHTML = '<div class="admin-empty">carregando…</div>';
-    try {
-      const r = await adminCall('admin:listBlocked');
-      const blocked = r.blocked || [];
-      list.innerHTML = '';
-      if (!blocked.length) {
-        list.innerHTML = '<div class="admin-empty">nenhuma máquina bloqueada.</div>';
-        return;
-      }
-      for (const b of blocked) {
-        const row = document.createElement('div');
-        row.className = 'kill-row';
-        row.innerHTML = `
-          <div class="kill-row-meta">
-            <div class="kill-row-email">${escapeHtml(b.email)}</div>
-            <div class="kill-row-sub">bloqueado ${escapeHtml(fmtRelative(b.ts))}${b.by ? ' por ' + escapeHtml(b.by) : ''}${b.reason ? ' · ' + escapeHtml(b.reason) : ''}</div>
-          </div>
-          <span class="kill-row-mode block">bloqueado</span>
-        `;
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'kill-row-btn';
-        btn.textContent = 'liberar';
-        btn.addEventListener('click', async () => {
-          try {
-            await adminCall('admin:unblock', { email: b.email });
-            toast('liberado: ' + b.email);
-            await loadBlocked();
-            await loadKills();
-          } catch (e) {
-            toast('falha: ' + e.message, true);
-          }
-        });
-        row.appendChild(btn);
-        list.appendChild(row);
-      }
-    } catch (e) {
-      list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>';
-    }
-  }
-
   wireTabs();
 
   // ═══════════════════════════════════════════════════════════════════
-  //  POLLING — dois timers: kill (4s) e estado (20s)
+  //  POLLING — kill 4s, estado 20s
   // ═══════════════════════════════════════════════════════════════════
   let killPollTimer  = null;
   let statePollTimer = null;
@@ -2691,38 +2607,22 @@
     } catch { return null; }
   }
 
-  async function _handleKill(kill, blocked) {
+  async function _handleKill(kill) {
     stopPolling();
-    if (blocked) {
+    if (kill.mode === 'hard') {
       try { sessionStorage.removeItem(SESSION_KEY); } catch {}
-      const t = document.createElement('div');
-      t.style.cssText = 'position:fixed;inset:0;background:rgba(5,5,6,.96);display:grid;' +
-        'place-items:center;z-index:10002;color:#e8e8ea;font-family:Inter,system-ui,sans-serif;' +
-        'text-align:center;padding:24px;';
-      t.innerHTML = '<div style="max-width:520px">' +
-        '<div style="font-size:18px;font-weight:600;color:#e05252">acesso bloqueado pelo administrador</div>' +
-        '<div style="color:#8a8a94;font-size:13.5px;margin-top:12px">esta máquina não poderá reabrir o site até ser liberada</div>' +
-        '</div>';
-      document.body.appendChild(t);
-      setTimeout(() => kill_now(), 1800);
-      return;
     }
-    if (kill) {
-      if (kill.mode === 'hard') {
-        try { sessionStorage.removeItem(SESSION_KEY); } catch {}
-      }
-      const t = document.createElement('div');
-      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);' +
-        'background:rgba(19,19,24,.96);border:1px solid #26262e;border-radius:10px;' +
-        'padding:12px 20px;color:#e8e8ea;font-size:13.5px;box-shadow:0 12px 40px rgba(0,0,0,.55);' +
-        'z-index:10002;transition:opacity .2s;';
-      t.textContent = kill.mode === 'hard'
-        ? 'sessão encerrada pelo administrador.'
-        : 'navegador fechado pelo administrador.';
-      document.body.appendChild(t);
-      setTimeout(() => { t.style.opacity = '0'; }, 1300);
-      setTimeout(() => kill_now(), 1600);
-    }
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);' +
+      'background:rgba(19,19,24,.96);border:1px solid #26262e;border-radius:10px;' +
+      'padding:12px 20px;color:#e8e8ea;font-size:13.5px;box-shadow:0 12px 40px rgba(0,0,0,.55);' +
+      'z-index:10002;transition:opacity .2s;';
+    t.textContent = kill.mode === 'hard'
+      ? 'sessão encerrada pelo administrador.'
+      : 'navegador fechado pelo administrador.';
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; }, 1300);
+    setTimeout(() => kill_now(), 1600);
   }
 
   async function pollKill() {
@@ -2733,7 +2633,7 @@
 
     if (data.kill) {
       try { await _post({ jwt, action: 'ackKill' }); } catch {}
-      await _handleKill(data.kill, data.blocked);
+      await _handleKill(data.kill);
       return;
     }
   }
@@ -2746,7 +2646,7 @@
 
     if (data.kill) {
       try { await _post({ jwt, action: 'ackKill' }); } catch {}
-      await _handleKill(data.kill, data.blocked);
+      await _handleKill(data.kill);
       return;
     }
 
@@ -2832,11 +2732,16 @@
   // ═══════════════════════════════════════════════════════════════════
   //  LOGOUT
   // ═══════════════════════════════════════════════════════════════════
+  function kill() {
+    try { window.__guardKill && window.__guardKill('app_kill'); }
+    catch { try { location.replace('about:blank'); } catch {} }
+  }
+
   ['btn-logout','btn-logout-2','btn-logout-3'].forEach(id => {
     document.getElementById(id).addEventListener('click', () => {
       sessionStorage.removeItem(SESSION_KEY);
       try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
-      kill_now();
+      kill();
     });
   });
 
