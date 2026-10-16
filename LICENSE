@@ -6,11 +6,12 @@ Copyright (c) 2026 Lynx. Todos os direitos reservados.
 ================================================================================
 
 Este software, seu código-fonte, estrutura, lógica, design, layout, interface,
-catálogo de blocos, sistema de autenticação, painel administrativo e demais
-componentes (coletivamente, "Software") constituem propriedade intelectual
-exclusiva do titular dos direitos autorais, protegidos pela Lei de Direitos
-Autorais (Lei nº 9.610/98), pela Lei de Propriedade Industrial (Lei nº 9.279/96),
-pela Lei do Software (Lei nº 9.609/98) e pelas demais legislações aplicáveis.
+catálogo de blocos, sistema de autenticação, painel administrativo, payloads,
+scripts internos e demais componentes (coletivamente, "Software") constituem
+propriedade intelectual exclusiva do titular dos direitos autorais, protegidos
+pela Lei de Direitos Autorais (Lei nº 9.610/98), pela Lei de Propriedade
+Industrial (Lei nº 9.279/96), pela Lei do Software (Lei nº 9.609/98) e pelas
+demais legislações aplicáveis.
 
 O Software NÃO é open-source. Todos os direitos são reservados.
 
@@ -32,8 +33,15 @@ estritamente necessários ao funcionamento oficial da plataforma. Especificament
   c) Esta permissão NÃO autoriza o usuário a se declarar autor, coautor,
      mantenedor, contribuidor ou representante do Software.
 
+  d) O acesso aos Blocos (payloads, scripts e códigos individuais
+     disponibilizados dentro da plataforma) é concedido INDIVIDUALMENTE,
+     NOMINALMENTE e de forma EXPRESSA pelo Administrador. A concessão de
+     acesso a um Bloco específico NÃO implica concessão de acesso a
+     quaisquer outros Blocos, nem autorização para uso fora do contexto
+     da plataforma oficial.
+
 ================================================================================
-3. VEDAÇÕES EXPRESSAS
+3. VEDAÇÕES EXPRESSAS GERAIS
 ================================================================================
 
 É EXPRESSAMENTE PROIBIDO ao usuário, sem autorização prévia, expressa e escrita
@@ -65,14 +73,110 @@ do titular dos direitos autorais:
   g) VAZAR DADOS — capturar, extrair, expor, publicar ou compartilhar com
      terceiros dados internos do Software, incluindo, sem limitação, a lista
      de usuários autorizados, e-mails, nomes, preferências, registros de
-     acesso, catálogo de blocos, payloads, chaves, tokens, endpoints ou
-     qualquer outra informação técnica dela extraída.
+     acesso, catálogo de blocos, chaves, tokens, endpoints ou qualquer outra
+     informação técnica dela extraída.
 
 ================================================================================
-4. VIOLAÇÕES — CONSEQUÊNCIAS
+4. PROTEÇÃO ESPECÍFICA DOS BLOCOS (PAYLOADS E CÓDIGOS INTERNOS)
 ================================================================================
 
-A prática de qualquer das condutas vedadas na Cláusula 3 constitui:
+Os Blocos disponibilizados pela plataforma — incluindo, sem limitação, seus
+payloads, scripts internos, códigos executáveis, automações, listas de
+instruções e quaisquer componentes acessados após autenticação — constituem
+INFORMAÇÃO CONFIDENCIAL E PROPRIETÁRIA, de titularidade exclusiva do
+Administrador.
+
+O acesso a um Bloco é CONDICIONADO À AUTORIZAÇÃO EXPRESSA, INDIVIDUAL E NOMINAL
+do Administrador, concedida por meio do painel de controle da plataforma. A
+autorização:
+
+  a) É pessoal, intransferível, revogável a qualquer momento e vinculada
+     exclusivamente à conta Google cadastrada pelo Administrador;
+
+  b) NÃO constitui venda, cessão, licenciamento, doação ou qualquer forma
+     de transferência de titularidade sobre o Bloco, seu código ou seus
+     componentes;
+
+  c) NÃO autoriza o usuário a obter, extrair, copiar ou reter o código do
+     Bloco fora do contexto de utilização da plataforma oficial;
+
+  d) NÃO se estende a terceiros, sendo o usuário o único e exclusivo
+     responsável por impedir o acesso indevido por parte de quem quer que
+     seja que utilize sua conta ou dispositivo.
+
+É EXPRESSAMENTE PROIBIDO, sob qualquer meio, pretexto ou justificativa:
+
+  I)   OBTER OS CÓDIGOS SEM AUTORIZAÇÃO — tentar acessar, capturar, extrair,
+       copiar, baixar ou de qualquer forma obter os códigos, payloads ou
+       scripts dos Blocos sem que haja autorização prévia, expressa e nominal
+       do Administrador;
+
+  II)  BURLAR O CONTROLE DE ACESSO — contornar, driblar, desabilitar,
+       interceptar, fraudar ou de qualquer forma burlar o sistema de
+       autenticação, autorização ou entrega de payloads da plataforma, com
+       a finalidade de obter acesso a Blocos para os quais não possui
+       autorização;
+
+  III) CAPTURAR PAYLOADS NÃO AUTORIZADOS — interceptar, gravar, extrair ou
+       reter, por qualquer meio técnico (incluindo, sem limitação, inspeção
+       de tráfego, engenharia reversa, uso de ferramentas de desenvolvedor,
+       modificação do cliente, scripts externos ou automações paralelas),
+       o conteúdo de Blocos para os quais não detém autorização expressa;
+
+  IV)  COMPARTILHAR BLOCOS AUTORIZADOS — redistribuir, publicar, vender,
+       doar, emprestar, sublicenciar ou de qualquer forma tornar acessível
+       a terceiros os códigos dos Blocos aos quais possui autorização
+       pessoal, ainda que sem finalidade comercial;
+
+  V)   REPLICAR OU ADAPTAR BLOCOS — reconstruir, replicar, adaptar,
+       modificar ou criar obras derivadas dos códigos dos Blocos, ainda que
+       a partir de acesso legítimo, sem autorização prévia, expressa e
+       escrita do Administrador;
+
+  VI)  USAR BLOCOS FORA DO CONTEXTO AUTORIZADO — empregar os códigos dos
+       Blocos em contextos, finalidades, projetos, produtos ou serviços
+       diversos daqueles expressamente autorizados pelo Administrador.
+
+A prática de qualquer das condutas acima constitui:
+
+  - VIOLAÇÃO DE SEGREDO COMERCIAL, nos termos da Lei de Propriedade
+    Industrial (Lei nº 9.279/96);
+
+  - VIOLAÇÃO DE DIREITO AUTORAL, nos termos da Lei de Direitos Autorais
+    (Lei nº 9.610/98);
+
+  - CONDUTA EQUIPARADA A FURTO, APROPRIAÇÃO INDÉBITA, ESTELIONATO OU
+    CONCORRÊNCIA DESLEAL, quando aplicável, nos termos do Código Penal
+    brasileiro;
+
+  - ATO ILÍCITO CIVIL, ensejando reparação por perdas e danos, nos termos
+    dos arts. 186, 187, 927 e seguintes do Código Civil brasileiro;
+
+e será TRATADA JUDICIALMENTE, COM AS MEDIDAS CABÍVEIS, incluindo:
+
+  i)   Ação judicial para reparação de danos materiais e morais, apuração
+       de lucros cessantes e cessação imediata da conduta ilícita;
+
+  ii)  Notificação às autoridades competentes (autoridades policiais,
+       Ministério Público, ANPD, quando couber), com apresentação de
+       evidências técnicas;
+
+  iii) Notificação às plataformas de hospedagem, aos provedores de serviço
+       e às demais partes envolvidas, solicitando remoção de conteúdo,
+       suspensão de contas e demais providências cabíveis;
+
+  iv)  Revogação imediata e definitiva do acesso do infrator à plataforma,
+       sem direito a reembolso, indenização ou compensação de qualquer
+       natureza;
+
+  v)   Adoção de todas as medidas legais cabíveis para proteger os direitos
+       do Administrador e dos demais usuários da plataforma.
+
+================================================================================
+5. VIOLAÇÕES GERAIS — CONSEQUÊNCIAS
+================================================================================
+
+A prática de qualquer das condutas vedadas nas Cláusulas 3 ou 4 constitui:
 
   a) ILÍCITO CIVIL — ensejando ação judicial cabível para reparação de danos
      materiais e morais, nos termos dos arts. 186, 187, 927 e seguintes do
@@ -100,7 +204,7 @@ A prática de qualquer das condutas vedadas na Cláusula 3 constitui:
      conteúdo, suspensão de contas e demais providências cabíveis.
 
 ================================================================================
-5. AUSÊNCIA DE GARANTIAS
+6. AUSÊNCIA DE GARANTIAS
 ================================================================================
 
 O Software é fornecido "NO ESTADO EM QUE SE ENCONTRA" (as-is), sem garantias
@@ -116,17 +220,18 @@ cessantes, interrupção de atividade ou qualquer outro prejuízo, decorrentes
 do uso ou da impossibilidade de uso do Software.
 
 ================================================================================
-6. RESCISÃO
+7. RESCISÃO
 ================================================================================
 
 Esta licença é eficaz enquanto o usuário cumprir integralmente seus termos.
 Qualquer violação a rescinde automaticamente e de pleno direito, sem
 necessidade de notificação, obrigando o infrator a cessar imediatamente
-qualquer uso do Software e a destruir todas as cópias eventualmente
-realizadas.
+qualquer uso do Software, a destruir todas as cópias eventualmente realizadas
+e a abster-se de reter, compartilhar ou utilizar qualquer informação extraída
+do Software ou dos Blocos.
 
 ================================================================================
-7. LEI APLICÁVEL E FORO
+8. LEI APLICÁVEL E FORO
 ================================================================================
 
 Esta licença é regida pelas leis da República Federativa do Brasil. Eventuais
@@ -135,10 +240,10 @@ autorais, com renúncia expressa pelo usuário a qualquer outro, por mais
 privilegiado que seja.
 
 ================================================================================
-8. CONTATO
+9. CONTATO
 ================================================================================
 
-Para dúvidas, solicitações de autorização, denúncias de violação ou
+Para dúvidas, solicitações de autorização de uso, denúncias de violação ou
 comunicações relativas a esta licença:
 
   Telefone / WhatsApp: +55 45 98820-8796
