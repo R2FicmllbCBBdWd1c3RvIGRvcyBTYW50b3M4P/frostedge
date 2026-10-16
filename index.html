@@ -386,6 +386,24 @@
   .area-tab:hover{color:var(--text)}
   .area-tab.selected{color:var(--accent-2);border-bottom-color:var(--accent)}
 
+  /* ---------- SUBTABS ADMIN ---------- */
+  .admin-subtabs{
+    display:flex;gap:4px;margin:0 0 20px;
+    border-bottom:1px solid var(--line);
+  }
+  .admin-subtab{
+    padding:8px 14px;background:none;border:none;
+    color:var(--dim);font-size:12.5px;font-weight:500;cursor:pointer;
+    border-bottom:2px solid transparent;margin-bottom:-1px;
+    font-family:inherit;transition:color .15s,border-color .15s;
+  }
+  .admin-subtab:hover{color:var(--text)}
+  .admin-subtab.selected{color:var(--accent-2);border-bottom-color:var(--accent)}
+
+  .admin-panel{display:none}
+  .admin-panel.active{display:block}
+
+  /* ---------- FORMULÁRIOS ---------- */
   .admin-form{display:flex;flex-direction:column;gap:14px}
   .admin-field{display:flex;flex-direction:column;gap:6px}
   .admin-field label{font-size:11px;font-weight:600;color:var(--dim);letter-spacing:1.2px;text-transform:uppercase}
@@ -415,6 +433,10 @@
     cursor:pointer;font-family:inherit;transition:background .15s,box-shadow .2s;
   }
   .admin-btn:hover{background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)}
+  .admin-btn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.4)}
+
+  .admin-btn-danger{background:#b03030;color:#fff}
+  .admin-btn-danger:hover{background:#e05252;box-shadow:0 6px 22px rgba(224,82,82,.35)}
 
   .admin-search{
     width:100%;
@@ -431,19 +453,40 @@
   .admin-search:focus{outline:none;border-color:var(--accent)}
   .admin-search::placeholder{color:var(--dim)}
 
+  /* filtro de tags */
+  .admin-tag-filter{
+    display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px;
+  }
+  .admin-tag-chip{
+    padding:5px 11px;border-radius:999px;
+    border:1px solid var(--line-2);background:transparent;
+    color:var(--dim);font-size:11.5px;font-weight:500;
+    cursor:pointer;font-family:inherit;
+    transition:border-color .15s,background .15s,color .15s;
+  }
+  .admin-tag-chip:hover{border-color:#33333d;color:var(--text)}
+  .admin-tag-chip.on{
+    border-color:var(--accent);
+    background:rgba(var(--glow-rgb),.12);
+    color:var(--accent-2);
+  }
+  .admin-tag-clear{
+    padding:5px 11px;border-radius:999px;
+    border:1px solid transparent;background:transparent;
+    color:var(--dim);font-size:11px;font-weight:500;
+    cursor:pointer;font-family:inherit;
+    transition:color .15s;
+  }
+  .admin-tag-clear:hover{color:var(--text)}
+  .admin-tag-clear.hidden{display:none}
+
   .admin-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 14px;gap:12px}
   .admin-head h3{margin:0}
   .admin-head-left{display:flex;align-items:baseline;gap:10px}
   .admin-count{
-    font-size:11.5px;
-    color:var(--dim);
-    font-weight:500;
-    letter-spacing:.3px;
+    font-size:11.5px;color:var(--dim);font-weight:500;letter-spacing:.3px;
   }
-  .admin-count b{
-    color:var(--accent-2);
-    font-weight:600;
-  }
+  .admin-count b{ color:var(--accent-2); font-weight:600; }
   .admin-io{display:flex;gap:6px}
   .admin-io button{
     background:transparent;border:1px solid var(--line-2);color:var(--dim);
@@ -453,7 +496,13 @@
   }
   .admin-io button:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
 
-  .admin-users{display:flex;flex-direction:column;gap:10px}
+  .admin-users{
+    display:flex;flex-direction:column;gap:10px;
+    max-height:520px;overflow-y:auto;
+    scrollbar-width:none;-ms-overflow-style:none;
+  }
+  .admin-users::-webkit-scrollbar{display:none}
+
   .admin-row{
     display:flex;align-items:center;gap:12px;
     padding:12px 14px;border-radius:12px;
@@ -486,6 +535,109 @@
   .admin-del:hover{border-color:rgba(224,82,82,.55);color:#e05252;background:rgba(224,82,82,.08)}
 
   .admin-empty{color:var(--dim);font-size:13px;padding:8px 0}
+
+  /* ---------- HISTÓRICO ---------- */
+  .hist-search-wrap{ margin:0 0 14px; }
+  .hist-list{
+    display:flex;flex-direction:column;gap:8px;
+    max-height:560px;overflow-y:auto;
+    scrollbar-width:none;-ms-overflow-style:none;
+  }
+  .hist-list::-webkit-scrollbar{display:none}
+  .hist-item{
+    display:flex;align-items:flex-start;gap:12px;
+    padding:10px 14px;border-radius:10px;
+    background:rgba(10,10,12,.4);border:1px solid var(--line);
+  }
+  .hist-icon{
+    width:28px;height:28px;border-radius:8px;
+    display:grid;place-items:center;flex-shrink:0;
+    background:rgba(var(--glow-rgb),.10);
+    color:var(--accent-2);
+  }
+  .hist-icon svg{width:14px;height:14px}
+  .hist-icon.h-login   { background:rgba(59,130,246,.12); color:#60a5fa; }
+  .hist-icon.h-copy    { background:rgba(59,130,246,.12); color:#60a5fa; }
+  .hist-icon.h-terms_a { background:rgba(16,185,129,.12); color:#34d399; }
+  .hist-icon.h-terms_r { background:rgba(224,82,82,.12);  color:#e05252; }
+  .hist-icon.h-kill    { background:rgba(224,82,82,.12);  color:#e05252; }
+  .hist-icon.h-kill_s  { background:rgba(250,204,21,.12); color:#fbbf24; }
+  .hist-icon.h-tags    { background:rgba(139,92,246,.12); color:#a78bfa; }
+  .hist-icon.h-block   { background:rgba(224,82,82,.15);  color:#e05252; }
+  .hist-icon.h-unblock { background:rgba(16,185,129,.15); color:#34d399; }
+
+  .hist-body{flex:1;min-width:0}
+  .hist-line1{font-size:13px;color:var(--text);line-height:1.4}
+  .hist-line1 strong{font-weight:600}
+  .hist-line1 em{font-style:normal;color:var(--accent-2);font-weight:500}
+  .hist-line2{font-size:11px;color:var(--dim);margin-top:3px}
+  .hist-email{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:11.5px}
+
+  /* ---------- KILL ---------- */
+  .kill-form{display:flex;flex-direction:column;gap:14px}
+  .kill-options{
+    display:flex;flex-direction:column;gap:8px;
+    margin:4px 0 4px;
+  }
+  .kill-opt{
+    display:flex;align-items:flex-start;gap:10px;
+    padding:11px 13px;border-radius:10px;
+    border:1px solid var(--line-2);background:rgba(10,10,12,.5);
+    cursor:pointer;font-family:inherit;text-align:left;
+    transition:border-color .15s,background .15s;
+  }
+  .kill-opt:hover{border-color:#33333d;background:rgba(21,21,26,.5)}
+  .kill-opt.selected{border-color:var(--accent);background:rgba(var(--glow-rgb),.08)}
+  .kill-opt.selected.danger{border-color:rgba(224,82,82,.6);background:rgba(224,82,82,.08)}
+  .kill-radio{
+    margin-top:2px;flex-shrink:0;
+    width:14px;height:14px;border-radius:50%;
+    border:2px solid var(--line-2);
+    display:grid;place-items:center;
+    transition:border-color .15s;
+  }
+  .kill-opt.selected .kill-radio{border-color:var(--accent)}
+  .kill-opt.selected.danger .kill-radio{border-color:#e05252}
+  .kill-opt.selected .kill-radio::after{
+    content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);
+  }
+  .kill-opt.selected.danger .kill-radio::after{background:#e05252}
+  .kill-text{flex:1}
+  .kill-text b{display:block;font-size:13px;color:var(--text);font-weight:600;margin-bottom:2px}
+  .kill-text span{font-size:11.5px;color:var(--dim);line-height:1.45}
+
+  .kill-pending-title{
+    margin:22px 0 10px;font-size:11px;font-weight:600;
+    color:var(--dim);letter-spacing:1.4px;text-transform:uppercase;
+  }
+  .kill-pending-list{
+    display:flex;flex-direction:column;gap:8px;
+    max-height:280px;overflow-y:auto;
+    scrollbar-width:none;-ms-overflow-style:none;
+  }
+  .kill-pending-list::-webkit-scrollbar{display:none}
+  .kill-row{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 14px;border-radius:10px;
+    background:rgba(10,10,12,.4);border:1px solid var(--line);
+  }
+  .kill-row-meta{flex:1;min-width:0}
+  .kill-row-email{font-size:12.5px;color:var(--text);word-break:break-all;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+  .kill-row-sub{font-size:11px;color:var(--dim);margin-top:2px}
+  .kill-row-mode{
+    padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:600;flex-shrink:0;
+  }
+  .kill-row-mode.soft{background:rgba(250,204,21,.12);color:#fbbf24}
+  .kill-row-mode.hard{background:rgba(224,82,82,.12);color:#e05252}
+  .kill-row-mode.block{background:rgba(224,82,82,.2);color:#ff7b7b}
+  .kill-row-btn{
+    padding:5px 10px;border-radius:8px;flex-shrink:0;
+    background:transparent;border:1px solid var(--line-2);
+    color:var(--dim);font-size:11.5px;font-weight:500;
+    cursor:pointer;font-family:inherit;
+    transition:border-color .15s,color .15s,background .15s;
+  }
+  .kill-row-btn:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
 
   .admin-toast{
     position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
@@ -721,7 +873,9 @@
     font-size: 13.5px;
     line-height: 1.7;
     color: #d4d4d8;
+    scrollbar-width:none;-ms-overflow-style:none;
   }
+  .terms-content::-webkit-scrollbar{display:none}
   .terms-content h4 {
     margin: 0 0 8px; font-size: 13.5px; font-weight: 600;
     color: var(--text); letter-spacing: -.1px;
@@ -733,10 +887,6 @@
   .terms-content strong { color: var(--text); font-weight: 600; }
   .terms-content em { color: var(--accent-2); font-style: normal; font-weight: 500; }
   .terms-content .warn { color: #e05252; font-weight: 600; }
-  .terms-content::-webkit-scrollbar { width: 8px; }
-  .terms-content::-webkit-scrollbar-track { background: transparent; }
-  .terms-content::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 4px; }
-  .terms-content::-webkit-scrollbar-thumb:hover { background: #33333d; }
 
   .terms-footer {
     padding: 16px 26px 22px;
@@ -884,13 +1034,12 @@
     </button>
 
     <h1 class="area-title">Minha <em>área</em></h1>
-    <p class="area-sub">Dados da sua conta</p>
+    <p class="area-sub">dados da sua conta e acessos liberados.</p>
 
     <div class="area-tabs" id="area-tabs">
       <button class="area-tab selected" data-tab="perfil">Perfil</button>
     </div>
 
-    <!-- ============ PAINEL: PERFIL ============ -->
     <div class="area-panel" data-panel="perfil">
       <div class="area-card">
         <h3>Conta</h3>
@@ -928,12 +1077,12 @@
       <div class="area-card">
         <h3>Termos de uso</h3>
         <div class="area-row">
-          <span class="k">Status</span>
+          <span class="k">status</span>
           <span class="v" id="terms-status">—</span>
         </div>
         <div class="terms-section-actions">
-          <button class="terms-btn-sm" id="btn-view-terms" type="button">Ver termos</button>
-          <button class="terms-btn-sm danger" id="btn-revoke-terms" type="button">Revogar aceite</button>
+          <button class="terms-btn-sm" id="btn-view-terms" type="button">ver termos</button>
+          <button class="terms-btn-sm danger" id="btn-revoke-terms" type="button">revogar aceite</button>
         </div>
       </div>
 
@@ -1046,11 +1195,15 @@
   let adminData = null;
   let adminMounted = false;
   let termsMode = 'view';
+  let adminActiveTab = 'acessos';
+  let adminSelectedTags = new Set();
+  let killSelectedMode = null;
+  let histSelectedEmail = null;
 
   // ═══════════════════════════════════════════════════════════════════
   //  TEXTOS DOS TERMOS
   // ═══════════════════════════════════════════════════════════════════
-    const TERMS_GENERAL = `
+  const TERMS_GENERAL = `
     <h4>1. Definições</h4>
     <p>Para fins destes Termos, aplicam-se as seguintes definições:</p>
     <ul>
@@ -1215,7 +1368,7 @@
     </p>
   `;
 
-    const TERMS_ESCRITOR = `
+  const TERMS_ESCRITOR = `
     <h4>Termos de Uso — Bloco "Escritor Baiano"</h4>
     <p style="color:var(--dim);font-size:12.5px;margin-bottom:16px">Automação e cópia rápida de texto — serviço pago.</p>
 
@@ -1333,6 +1486,15 @@
     return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} às ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
+  function fmtRelative(ts) {
+    if (!ts) return '—';
+    const diff = Date.now() - ts;
+    if (diff < 60_000) return 'agora';
+    if (diff < 3_600_000) return Math.floor(diff / 60_000) + ' min';
+    if (diff < 86_400_000) return Math.floor(diff / 3_600_000) + 'h';
+    return fmtDate(ts);
+  }
+
   // ═══════════════════════════════════════════════════════════════════
   //  TEMA
   // ═══════════════════════════════════════════════════════════════════
@@ -1443,7 +1605,7 @@
       await enter(resp.credential);
     } catch (e) {
       loginErr.textContent = 'conta não autorizada.';
-      kill();
+      kill_now();
     }
   };
 
@@ -1472,7 +1634,7 @@
       } else {
         loginErr.textContent = 'sem acesso.';
       }
-      kill();
+      kill_now();
       return;
     }
 
@@ -1514,6 +1676,7 @@
     }
 
     route();
+    startPolling();
   }
 
   async function acceptTerms() {
@@ -1531,6 +1694,7 @@
       currentUser.termsAcceptedAt = data.acceptedAt || Date.now();
       termsOverlay.classList.add('hidden');
       route();
+      startPolling();
     } catch (e) {
       alert('falha ao registrar aceite: ' + e.message);
     }
@@ -1588,6 +1752,18 @@
     }
   }
 
+  function logCopyToWorker(tag) {
+    const jwt = sessionStorage.getItem(SESSION_KEY);
+    if (!jwt) return;
+    try {
+      window.fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jwt, action: 'logCopy', tag })
+      }).catch(() => {});
+    } catch {}
+  }
+
   grid.addEventListener('click', async (e) => {
     const btn = e.target.closest('.cta');
     if (!btn) return;
@@ -1606,6 +1782,7 @@
     }
 
     const ok = await copyToClipboard(payload);
+    if (ok) logCopyToWorker(tag);
     await new Promise(r => setTimeout(r, 1400));
     finishExec();
     if (!ok) {
@@ -1724,7 +1901,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════
-  //  TABS
+  //  TABS PRINCIPAIS
   // ═══════════════════════════════════════════════════════════════════
   function selectTab(name) {
     document.querySelectorAll('.area-tab').forEach(t =>
@@ -1742,6 +1919,31 @@
   }
   function onTabClick(e) {
     selectTab(e.currentTarget.dataset.tab);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  SUBTABS ADMIN
+  // ═══════════════════════════════════════════════════════════════════
+  function selectAdminTab(name) {
+    adminActiveTab = name;
+    document.querySelectorAll('.admin-subtab').forEach(t =>
+      t.classList.toggle('selected', t.dataset.subtab === name));
+    document.querySelectorAll('.admin-panel').forEach(p =>
+      p.classList.toggle('active', p.dataset.panel === name));
+
+    if (name === 'acessos')   { loadAdmin(); }
+    if (name === 'historico') { /* carrega por digitação */ }
+    if (name === 'kill')      { loadKills(); loadBlocked(); }
+  }
+
+  function wireAdminTabs() {
+    document.querySelectorAll('.admin-subtab').forEach(t => {
+      t.removeEventListener('click', onAdminTabClick);
+      t.addEventListener('click', onAdminTabClick);
+    });
+  }
+  function onAdminTabClick(e) {
+    selectAdminTab(e.currentTarget.dataset.subtab);
   }
 
   // ═══════════════════════════════════════════════════════════════════
@@ -1768,7 +1970,7 @@
       });
       sessionStorage.removeItem(SESSION_KEY);
       try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
-      kill();
+      kill_now();
     } catch (e) {
       alert('falha ao revogar: ' + e.message);
     }
@@ -1793,50 +1995,133 @@
     panel.className = 'area-panel hidden';
     panel.dataset.panel = 'acesso';
     panel.innerHTML = `
-      <div class="area-card">
-        <h3>Adicionar acesso</h3>
-        <form class="admin-form" id="admin-add-form">
-          <div class="admin-field">
-            <label for="admin-new-email">email @escola</label>
-            <input id="admin-new-email" name="email" type="email" required
-                   placeholder="nome.sobrenome@escola.pr.gov.br" autocomplete="off" spellcheck="false">
-          </div>
-          <div class="admin-field">
-            <label for="admin-new-name">nome</label>
-            <input id="admin-new-name" name="name" type="text" required
-                   placeholder="Nome" autocomplete="off" spellcheck="false">
-          </div>
-          <div class="admin-field">
-            <label>blocos liberados</label>
-            <div class="admin-tag-checks" id="admin-new-tags"></div>
-          </div>
-          <button class="admin-btn" type="submit">Adicionar</button>
-        </form>
+      <div class="admin-subtabs">
+        <button class="admin-subtab selected" data-subtab="acessos">Acessos</button>
+        <button class="admin-subtab" data-subtab="historico">Histórico</button>
+        <button class="admin-subtab" data-subtab="kill">Desligar navegador</button>
       </div>
 
-      <div class="area-card">
-        <div class="admin-head">
-          <div class="admin-head-left">
-            <h3>Acessos</h3>
-            <span class="admin-count" id="admin-count"></span>
+      <div class="admin-panel active" data-panel="acessos">
+        <div class="area-card">
+          <h3>Adicionar acesso</h3>
+          <form class="admin-form" id="admin-add-form">
+            <div class="admin-field">
+              <label for="admin-new-email">email @escola</label>
+              <input id="admin-new-email" name="email" type="email" required
+                     placeholder="nome.sobrenome@escola.pr.gov.br" autocomplete="off" spellcheck="false">
+            </div>
+            <div class="admin-field">
+              <label for="admin-new-name">nome</label>
+              <input id="admin-new-name" name="name" type="text" required
+                     placeholder="Nome" autocomplete="off" spellcheck="false">
+            </div>
+            <div class="admin-field">
+              <label>blocos liberados</label>
+              <div class="admin-tag-checks" id="admin-new-tags"></div>
+            </div>
+            <button class="admin-btn" type="submit">Adicionar</button>
+          </form>
+        </div>
+
+        <div class="area-card">
+          <div class="admin-head">
+            <div class="admin-head-left">
+              <h3>Acessos</h3>
+              <span class="admin-count" id="admin-count"></span>
+            </div>
+            <div class="admin-io">
+              <button id="admin-export" type="button">exportar</button>
+              <button id="admin-import" type="button">importar</button>
+              <input id="admin-import-file" type="file" accept="application/json" style="display:none">
+            </div>
           </div>
-          <div class="admin-io">
-            <button id="admin-export" type="button">exportar</button>
-            <button id="admin-import" type="button">importar</button>
-            <input id="admin-import-file" type="file" accept="application/json" style="display:none">
+          <div class="admin-tag-filter" id="admin-tag-filter"></div>
+          <input id="admin-search" class="admin-search" type="text"
+                 placeholder="buscar por nome ou email…"
+                 autocomplete="off" spellcheck="false">
+          <div class="admin-users" id="admin-users">
+            <div class="admin-empty">carregando…</div>
           </div>
         </div>
-        <input id="admin-search" class="admin-search" type="text"
-               placeholder="buscar por nome ou email…"
-               autocomplete="off" spellcheck="false">
-        <div class="admin-users" id="admin-users">
-          <div class="admin-empty">carregando…</div>
+      </div>
+
+      <div class="admin-panel" data-panel="historico">
+        <div class="area-card">
+          <div class="admin-head">
+            <div class="admin-head-left">
+              <h3>Histórico de uso</h3>
+              <span class="admin-count" id="hist-count"></span>
+            </div>
+          </div>
+          <div class="hist-search-wrap">
+            <input id="hist-search" class="admin-search" type="text"
+                   placeholder="email da pessoa…"
+                   autocomplete="off" spellcheck="false" style="margin:0">
+          </div>
+          <div class="hist-list" id="hist-list">
+            <div class="admin-empty">digite um email acima para ver o histórico.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-panel" data-panel="kill">
+        <div class="area-card">
+          <h3>Desligar navegador</h3>
+          <form class="kill-form" id="kill-form">
+            <div class="admin-field">
+              <label for="kill-email">email @escola</label>
+              <input id="kill-email" name="email" type="email" required
+                     placeholder="nome.sobrenome@escola.pr.gov.br" autocomplete="off" spellcheck="false">
+            </div>
+            <div class="admin-field">
+              <label>modo</label>
+              <div class="kill-options" id="kill-options">
+                <button type="button" class="kill-opt" data-mode="soft">
+                  <span class="kill-radio"></span>
+                  <span class="kill-text">
+                    <b>só fechar o navegador</b>
+                    <span>a pessoa é jogada pra tela de login, mas pode reabrir e já estar logada</span>
+                  </span>
+                </button>
+                <button type="button" class="kill-opt danger" data-mode="hard">
+                  <span class="kill-radio"></span>
+                  <span class="kill-text">
+                    <b>fechar e deslogar</b>
+                    <span>a pessoa é jogada pra tela de login e a sessão é apagada. precisa logar com Google de novo</span>
+                  </span>
+                </button>
+                <button type="button" class="kill-opt danger" data-mode="block">
+                  <span class="kill-radio"></span>
+                  <span class="kill-text">
+                    <b>fechar e bloquear máquina</b>
+                    <span>mata o navegador agora e bloqueia a reabertura até você liberar manualmente</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+            <button class="admin-btn admin-btn-danger" type="submit" id="kill-submit" disabled>executar</button>
+          </form>
+        </div>
+
+        <div class="area-card">
+          <h3>Desligamentos pendentes</h3>
+          <div class="kill-pending-list" id="kill-pending-list">
+            <div class="admin-empty">nenhum desligamento pendente.</div>
+          </div>
+        </div>
+
+        <div class="area-card">
+          <h3>Máquinas bloqueadas</h3>
+          <div class="kill-pending-list" id="blocked-list">
+            <div class="admin-empty">nenhuma máquina bloqueada.</div>
+          </div>
         </div>
       </div>
     `;
     areaBody.appendChild(panel);
 
     wireTabs();
+    wireAdminTabs();
 
     document.getElementById('admin-add-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -1862,6 +2147,54 @@
       document.getElementById('admin-import-file').click();
     });
     document.getElementById('admin-import-file').addEventListener('change', doImport);
+
+    let histTimer = null;
+    document.getElementById('hist-search').addEventListener('input', (e) => {
+      clearTimeout(histTimer);
+      const val = e.target.value.trim().toLowerCase();
+      histTimer = setTimeout(() => {
+        if (!val || !val.includes('@')) {
+          document.getElementById('hist-list').innerHTML =
+            '<div class="admin-empty">digite um email acima para ver o histórico.</div>';
+          document.getElementById('hist-count').textContent = '';
+          return;
+        }
+        histSelectedEmail = val;
+        loadHistory(val);
+      }, 400);
+    });
+
+    document.querySelectorAll('.kill-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.kill-opt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        killSelectedMode = opt.dataset.mode;
+        document.getElementById('kill-submit').disabled = false;
+      });
+    });
+
+    document.getElementById('kill-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('kill-email').value.trim().toLowerCase();
+      if (!email.includes('@')) { toast('email inválido', true); return; }
+      if (!killSelectedMode) { toast('escolha um modo', true); return; }
+
+      const labels = { soft: 'só fechar', hard: 'fechar e deslogar', block: 'fechar e bloquear máquina' };
+      if (!confirm(`${labels[killSelectedMode]} para ${email}?`)) return;
+
+      try {
+        await adminCall('admin:killSession', { email, mode: killSelectedMode });
+        toast('comando enviado: ' + email);
+        e.target.reset();
+        killSelectedMode = null;
+        document.querySelectorAll('.kill-opt').forEach(o => o.classList.remove('selected'));
+        document.getElementById('kill-submit').disabled = true;
+        await loadKills();
+        await loadBlocked();
+      } catch (err) {
+        toast('falha: ' + err.message, true);
+      }
+    });
   }
 
   // ═══════════════════════════════════════════════════════════════════
@@ -1896,6 +2229,7 @@
     try {
       adminData = await adminCall('admin:list');
       renderAdminTagsInput();
+      renderAdminTagFilter();
       renderAdminUsers();
       updateAdminCount();
     } catch (e) {
@@ -1929,6 +2263,40 @@
       label.append(cb, document.createTextNode(tag));
       wrap.appendChild(label);
     }
+  }
+
+  function renderAdminTagFilter() {
+    const wrap = document.getElementById('admin-tag-filter');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    if (!adminData || !adminData.allTags || !adminData.allTags.length) return;
+
+    for (const tag of adminData.allTags) {
+      const c = document.createElement('button');
+      c.type = 'button';
+      c.className = 'admin-tag-chip' + (adminSelectedTags.has(tag) ? ' on' : '');
+      c.textContent = tag;
+      c.addEventListener('click', () => {
+        if (adminSelectedTags.has(tag)) adminSelectedTags.delete(tag);
+        else                             adminSelectedTags.add(tag);
+        c.classList.toggle('on');
+        const clearBtn = wrap.querySelector('.admin-tag-clear');
+        if (clearBtn) clearBtn.classList.toggle('hidden', adminSelectedTags.size === 0);
+        applyAdminFilter();
+      });
+      wrap.appendChild(c);
+    }
+    const clearBtn = document.createElement('button');
+    clearBtn.type = 'button';
+    clearBtn.className = 'admin-tag-clear' + (adminSelectedTags.size === 0 ? ' hidden' : '');
+    clearBtn.textContent = 'limpar filtros';
+    clearBtn.addEventListener('click', () => {
+      adminSelectedTags.clear();
+      wrap.querySelectorAll('.admin-tag-chip').forEach(c => c.classList.remove('on'));
+      clearBtn.classList.add('hidden');
+      applyAdminFilter();
+    });
+    wrap.appendChild(clearBtn);
   }
 
   function normalize(s) {
@@ -1992,9 +2360,14 @@
     const input = document.getElementById('admin-search');
     if (!input) return;
     const term = input.value.trim();
+
     document.querySelectorAll('#admin-users .admin-row').forEach(row => {
       const hay = row.dataset.search || '';
-      row.style.display = fuzzyMatch(term, hay) ? '' : 'none';
+      const tags = (row.dataset.tags || '').split('|').filter(Boolean);
+
+      const tagsOk = [...adminSelectedTags].every(t => tags.includes(t));
+      const searchOk = fuzzyMatch(term, hay);
+      row.style.display = (tagsOk && searchOk) ? '' : 'none';
     });
   }
 
@@ -2049,6 +2422,7 @@
       const row = document.createElement('div');
       row.className = 'admin-row';
       row.dataset.search = ((p.name || '') + ' ' + (p.email || '')).toLowerCase();
+      row.dataset.tags = (p.tags || []).join('|');
 
       const meta = document.createElement('div');
       meta.className = 'admin-meta';
@@ -2068,13 +2442,16 @@
           if (set.has(tag)) set.delete(tag); else set.add(tag);
           p.tags = [...set];
           c.classList.toggle('on');
+          row.dataset.tags = p.tags.join('|');
           try {
             await adminCall('admin:setUser', { email: p.email, name: p.name || '', tags: p.tags });
             toast(tag + (c.classList.contains('on') ? ' liberado' : ' removido') + ' → ' + (p.name || p.email));
+            applyAdminFilter();
           } catch (e) {
             c.classList.toggle('on');
             if (set.has(tag)) set.delete(tag); else set.add(tag);
             p.tags = [...set];
+            row.dataset.tags = p.tags.join('|');
             toast('falha: ' + e.message, true);
           }
         });
@@ -2102,7 +2479,315 @@
     applyAdminFilter();
   }
 
+  // ═══════════════════════════════════════════════════════════════════
+  //  HISTÓRICO
+  // ═══════════════════════════════════════════════════════════════════
+  async function loadHistory(email) {
+    const list = document.getElementById('hist-list');
+    const countEl = document.getElementById('hist-count');
+    if (!list) return;
+    list.innerHTML = '<div class="admin-empty">carregando…</div>';
+    try {
+      const r = await adminCall('admin:history', { email, limit: 200 });
+      const events = r.events || [];
+      list.innerHTML = '';
+      if (!events.length) {
+        list.innerHTML = '<div class="admin-empty">nenhum evento registrado para essa pessoa.</div>';
+        countEl.textContent = '';
+        return;
+      }
+      countEl.innerHTML = `<b>${events.length}</b> evento${events.length === 1 ? '' : 's'}`;
+      for (const ev of events) {
+        list.appendChild(renderHistItem(ev, email));
+      }
+    } catch (e) {
+      list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>';
+    }
+  }
+
+  function renderHistItem(ev, email) {
+    const row = document.createElement('div');
+    row.className = 'hist-item';
+
+    let iconClass = 'h-login';
+    let iconSvg   = '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>';
+    let line1     = '';
+
+    switch (ev.type) {
+      case 'login':
+        iconClass = 'h-login';
+        iconSvg = '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>';
+        line1 = 'fez login no site';
+        break;
+      case 'copy':
+        iconClass = 'h-copy';
+        iconSvg = '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>';
+        line1 = 'copiou o bloco <em>' + escapeHtml(ev.tag || '?') + '</em>';
+        break;
+      case 'terms_accept':
+        iconClass = 'h-terms_a';
+        iconSvg = '<path d="M20 6 9 17l-5-5"/>';
+        line1 = 'aceitou os termos de uso';
+        break;
+      case 'terms_revoke':
+        iconClass = 'h-terms_r';
+        iconSvg = '<path d="M18 6 6 18M6 6l12 12"/>';
+        line1 = 'revogou o aceite dos termos';
+        break;
+      case 'tags_update':
+        iconClass = 'h-tags';
+        iconSvg = '<path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2"/>';
+        line1 = 'tags atualizadas' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : '');
+        break;
+      case 'kill_soft':
+        iconClass = 'h-kill_s';
+        iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/>';
+        line1 = 'navegador fechado' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : '');
+        break;
+      case 'kill_hard':
+        iconClass = 'h-kill';
+        iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/>';
+        line1 = 'fechado e deslogado' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : '');
+        break;
+      case 'block':
+        iconClass = 'h-block';
+        iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>';
+        line1 = 'máquina bloqueada' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : '');
+        break;
+      case 'unblock':
+        iconClass = 'h-unblock';
+        iconSvg = '<path d="M20 6 9 17l-5-5"/>';
+        line1 = 'máquina liberada' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : '');
+        break;
+      default:
+        line1 = escapeHtml(ev.type || '?');
+    }
+
+    row.innerHTML = `
+      <div class="hist-icon ${iconClass}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${iconSvg}</svg>
+      </div>
+      <div class="hist-body">
+        <div class="hist-line1">${line1}</div>
+        <div class="hist-line2">${escapeHtml(fmtDate(ev.ts))} · <span class="hist-email">${escapeHtml(email)}</span></div>
+      </div>
+    `;
+    return row;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  KILL / BLOCK
+  // ═══════════════════════════════════════════════════════════════════
+  async function loadKills() {
+    const list = document.getElementById('kill-pending-list');
+    if (!list) return;
+    list.innerHTML = '<div class="admin-empty">carregando…</div>';
+    try {
+      const r = await adminCall('admin:listKills');
+      const kills = r.kills || [];
+      list.innerHTML = '';
+      if (!kills.length) {
+        list.innerHTML = '<div class="admin-empty">nenhum desligamento pendente.</div>';
+        return;
+      }
+      for (const k of kills) {
+        const row = document.createElement('div');
+        row.className = 'kill-row';
+        const modeLabel = k.mode === 'block' ? 'bloquear' : (k.mode === 'hard' ? 'deslogar' : 'fechar');
+        row.innerHTML = `
+          <div class="kill-row-meta">
+            <div class="kill-row-email">${escapeHtml(k.email)}</div>
+            <div class="kill-row-sub">enviado ${escapeHtml(fmtRelative(k.ts))}${k.by ? ' por ' + escapeHtml(k.by) : ''}</div>
+          </div>
+          <span class="kill-row-mode ${k.mode}">${modeLabel}</span>
+        `;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'kill-row-btn';
+        btn.textContent = 'limpar';
+        btn.addEventListener('click', async () => {
+          try {
+            await adminCall('admin:clearKill', { email: k.email });
+            toast('limpo: ' + k.email);
+            await loadKills();
+          } catch (e) {
+            toast('falha: ' + e.message, true);
+          }
+        });
+        row.appendChild(btn);
+        list.appendChild(row);
+      }
+    } catch (e) {
+      list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>';
+    }
+  }
+
+  async function loadBlocked() {
+    const list = document.getElementById('blocked-list');
+    if (!list) return;
+    list.innerHTML = '<div class="admin-empty">carregando…</div>';
+    try {
+      const r = await adminCall('admin:listBlocked');
+      const blocked = r.blocked || [];
+      list.innerHTML = '';
+      if (!blocked.length) {
+        list.innerHTML = '<div class="admin-empty">nenhuma máquina bloqueada.</div>';
+        return;
+      }
+      for (const b of blocked) {
+        const row = document.createElement('div');
+        row.className = 'kill-row';
+        row.innerHTML = `
+          <div class="kill-row-meta">
+            <div class="kill-row-email">${escapeHtml(b.email)}</div>
+            <div class="kill-row-sub">bloqueado ${escapeHtml(fmtRelative(b.ts))}${b.by ? ' por ' + escapeHtml(b.by) : ''}${b.reason ? ' · ' + escapeHtml(b.reason) : ''}</div>
+          </div>
+          <span class="kill-row-mode block">bloqueado</span>
+        `;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'kill-row-btn';
+        btn.textContent = 'liberar';
+        btn.addEventListener('click', async () => {
+          try {
+            await adminCall('admin:unblock', { email: b.email });
+            toast('liberado: ' + b.email);
+            await loadBlocked();
+            await loadKills();
+          } catch (e) {
+            toast('falha: ' + e.message, true);
+          }
+        });
+        row.appendChild(btn);
+        list.appendChild(row);
+      }
+    } catch (e) {
+      list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>';
+    }
+  }
+
   wireTabs();
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  POLLING — dois timers: kill (4s) e estado (20s)
+  // ═══════════════════════════════════════════════════════════════════
+  let killPollTimer  = null;
+  let statePollTimer = null;
+  let blocksSnapshot = '';
+
+  function snapshotOf(list) {
+    return (list || []).slice().sort().join('|');
+  }
+
+  async function _post(payload) {
+    try {
+      const r = await window.fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!r.ok) return null;
+      return await r.json();
+    } catch { return null; }
+  }
+
+  async function _handleKill(kill, blocked) {
+    stopPolling();
+    if (blocked) {
+      try { sessionStorage.removeItem(SESSION_KEY); } catch {}
+      const t = document.createElement('div');
+      t.style.cssText = 'position:fixed;inset:0;background:rgba(5,5,6,.96);display:grid;' +
+        'place-items:center;z-index:10002;color:#e8e8ea;font-family:Inter,system-ui,sans-serif;' +
+        'text-align:center;padding:24px;';
+      t.innerHTML = '<div style="max-width:520px">' +
+        '<div style="font-size:18px;font-weight:600;color:#e05252">acesso bloqueado pelo administrador</div>' +
+        '<div style="color:#8a8a94;font-size:13.5px;margin-top:12px">esta máquina não poderá reabrir o site até ser liberada</div>' +
+        '</div>';
+      document.body.appendChild(t);
+      setTimeout(() => kill_now(), 1800);
+      return;
+    }
+    if (kill) {
+      if (kill.mode === 'hard') {
+        try { sessionStorage.removeItem(SESSION_KEY); } catch {}
+      }
+      const t = document.createElement('div');
+      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);' +
+        'background:rgba(19,19,24,.96);border:1px solid #26262e;border-radius:10px;' +
+        'padding:12px 20px;color:#e8e8ea;font-size:13.5px;box-shadow:0 12px 40px rgba(0,0,0,.55);' +
+        'z-index:10002;transition:opacity .2s;';
+      t.textContent = kill.mode === 'hard'
+        ? 'sessão encerrada pelo administrador.'
+        : 'navegador fechado pelo administrador.';
+      document.body.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; }, 1300);
+      setTimeout(() => kill_now(), 1600);
+    }
+  }
+
+  async function pollKill() {
+    const jwt = sessionStorage.getItem(SESSION_KEY);
+    if (!jwt) return;
+    const data = await _post({ jwt, action: 'checkState' });
+    if (!data || !data.ok) return;
+
+    if (data.kill) {
+      try { await _post({ jwt, action: 'ackKill' }); } catch {}
+      await _handleKill(data.kill, data.blocked);
+      return;
+    }
+  }
+
+  async function pollState() {
+    const jwt = sessionStorage.getItem(SESSION_KEY);
+    if (!jwt) return;
+    const data = await _post({ jwt, action: 'checkState' });
+    if (!data || !data.ok) return;
+
+    if (data.kill) {
+      try { await _post({ jwt, action: 'ackKill' }); } catch {}
+      await _handleKill(data.kill, data.blocked);
+      return;
+    }
+
+    const now = snapshotOf(data.tags);
+    if (now !== blocksSnapshot) {
+      stopPolling();
+      const t = document.createElement('div');
+      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);' +
+        'background:rgba(19,19,24,.96);border:1px solid #26262e;border-radius:10px;' +
+        'padding:11px 18px;color:#e8e8ea;font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.5);' +
+        'z-index:10002;transition:opacity .2s;';
+      t.textContent = 'suas permissões mudaram, atualizando…';
+      document.body.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; }, 900);
+      setTimeout(() => location.reload(), 1200);
+    }
+  }
+
+  function startPolling() {
+    stopPolling();
+    if (!currentUser) return;
+    blocksSnapshot = snapshotOf(currentUser.blocks.map(b => b.tag));
+    killPollTimer  = setInterval(pollKill, 4000);
+    statePollTimer = setInterval(pollState, 20000);
+    document.addEventListener('visibilitychange', onVisibilityForPoll);
+  }
+
+  function onVisibilityForPoll() {
+    if (document.visibilityState === 'visible') { pollKill(); pollState(); }
+  }
+
+  function stopPolling() {
+    if (killPollTimer)  { clearInterval(killPollTimer);  killPollTimer  = null; }
+    if (statePollTimer) { clearInterval(statePollTimer); statePollTimer = null; }
+    document.removeEventListener('visibilitychange', onVisibilityForPoll);
+  }
+
+  function kill_now() {
+    try { window.__guardKill && window.__guardKill('admin_kill'); }
+    catch { try { location.replace('about:blank'); } catch {} }
+  }
 
   // ═══════════════════════════════════════════════════════════════════
   //  ROTA
@@ -2147,16 +2832,11 @@
   // ═══════════════════════════════════════════════════════════════════
   //  LOGOUT
   // ═══════════════════════════════════════════════════════════════════
-  function kill() {
-    try { window.__guardKill && window.__guardKill('app_kill'); }
-    catch { try { location.replace('about:blank'); } catch {} }
-  }
-
   ['btn-logout','btn-logout-2','btn-logout-3'].forEach(id => {
     document.getElementById(id).addEventListener('click', () => {
       sessionStorage.removeItem(SESSION_KEY);
       try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
-      kill();
+      kill_now();
     });
   });
 
