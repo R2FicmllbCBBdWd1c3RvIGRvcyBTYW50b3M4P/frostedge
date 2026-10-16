@@ -1,22 +1,152 @@
-CUSTOM PROPRIETARY SOFTWARE LICENSE AGREEMENT
+LICENÇA DE USO RESTRITO — TODOS OS DIREITOS RESERVADOS
+Copyright (c) 2026 Lynx. Todos os direitos reservados.
 
-Copyright (c) 2026. All Rights Reserved.
+================================================================================
+1. NATUREZA
+================================================================================
 
-NOTICE TO USER: PLEASE READ THIS CONTRACT CAREFULLY. BY USING, COPYING, OR DISTRIBUTING ALL OR ANY PORTION OF THIS SOFTWARE, YOU ACCEPT ALL THE TERMS AND CONDITIONS OF THIS AGREEMENT.
+Este software, seu código-fonte, estrutura, lógica, design, layout, interface,
+catálogo de blocos, sistema de autenticação, painel administrativo e demais
+componentes (coletivamente, "Software") constituem propriedade intelectual
+exclusiva do titular dos direitos autorais, protegidos pela Lei de Direitos
+Autorais (Lei nº 9.610/98), pela Lei de Propriedade Industrial (Lei nº 9.279/96),
+pela Lei do Software (Lei nº 9.609/98) e pelas demais legislações aplicáveis.
 
-1. PROHIBITION OF UNAUTHORIZED MODIFICATION AND DISTRIBUTION
-This software and its source code are proprietary. You are strictly prohibited from modifying, altering, adapting, translating, decompiling, reverse engineering, or creating derivative works based upon the software. You may not distribute, lease, sub-license, rent, or sell the software, source code, or any accompanying installers to any third party.
+O Software NÃO é open-source. Todos os direitos são reservados.
 
-2. MANDATORY AUTHORIZATION AND DISTRIBUTION PATHWAY
-The only authorized method to obtain, run, or distribute this software is through the official website authorization process. Any individual or entity seeking to use or deploy this software must:
-a) Visit the Creator's official website.
-b) Apply for and receive explicit authorization from the Creator.
-c) Obtain the software and its authorized installer directly through the approved website interface.
+================================================================================
+2. CONCESSÃO LIMITADA
+================================================================================
 
-Any installer, executable, or source code obtained through other channels (including but not limited to third-party mirrors, unauthorized forks, or direct file sharing) is considered an illegal, unauthorized copy, and its use constitutes copyright infringement.
+Nenhum direito é concedido ao usuário final por meio deste documento além dos
+estritamente necessários ao funcionamento oficial da plataforma. Especificamente:
 
-3. NO COMMERCIAL SALE
-Under no circumstances may this code, software, or its installer be sold, monetized, or bundled with commercial products without a separate, written commercial agreement signed by the Creator.
+  a) O acesso ao Software por meio da plataforma oficial em funcionamento
+     constitui mera permissão de uso pessoal, limitada, revogável, não
+     exclusiva e intransferível.
 
-4. DISCLAIMER OF WARRANTY
-THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  b) Esta permissão NÃO transfere ao usuário qualquer titularidade, direito
+     de propriedade, participação societária, direito autoral ou licença
+     sobre o Software ou qualquer de seus componentes.
+
+  c) Esta permissão NÃO autoriza o usuário a se declarar autor, coautor,
+     mantenedor, contribuidor ou representante do Software.
+
+================================================================================
+3. VEDAÇÕES EXPRESSAS
+================================================================================
+
+É EXPRESSAMENTE PROIBIDO ao usuário, sem autorização prévia, expressa e escrita
+do titular dos direitos autorais:
+
+  a) COPIAR — reproduzir, duplicar, arquivar, espelhar ou replicar o Software,
+     no todo ou em parte, em qualquer meio, físico ou digital;
+
+  b) MODIFICAR — adaptar, editar, traduzir, transformar, remover avisos de
+     copyright, descompilar, desobfuscar ou criar obras derivadas do Software,
+     no todo ou em parte;
+
+  c) DISTRIBUIR — publicar, compartilhar, transmitir, sublicenciar, alugar,
+     arrendar, vender, revender ou tornar acessível a terceiros, em qualquer
+     meio, o Software ou qualquer fragmento dele;
+
+  d) EXPLORAR COMERCIALMENTE — utilizar o Software, no todo ou em parte, para
+     fins comerciais, incluindo integração em produtos ou serviços próprios,
+     oferta como serviço a terceiros ou qualquer modalidade de monetização;
+
+  e) REALIZAR ENGENHARIA REVERSA — reconstruir, deduzir, extrair ou tentar
+     compreender a lógica interna, o funcionamento, a arquitetura ou os
+     algoritmos do Software por qualquer meio;
+
+  f) MINAR A SEGURANÇA — burlar, contornar, desabilitar ou interferir em
+     mecanismos de autenticação, autorização, controle de acesso, proteção
+     contra cópia ou qualquer outro sistema de segurança do Software;
+
+  g) VAZAR DADOS — capturar, extrair, expor, publicar ou compartilhar com
+     terceiros dados internos do Software, incluindo, sem limitação, a lista
+     de usuários autorizados, e-mails, nomes, preferências, registros de
+     acesso, catálogo de blocos, payloads, chaves, tokens, endpoints ou
+     qualquer outra informação técnica dela extraída.
+
+================================================================================
+4. VIOLAÇÕES — CONSEQUÊNCIAS
+================================================================================
+
+A prática de qualquer das condutas vedadas na Cláusula 3 constitui:
+
+  a) ILÍCITO CIVIL — ensejando ação judicial cabível para reparação de danos
+     materiais e morais, nos termos dos arts. 186, 187, 927 e seguintes do
+     Código Civil brasileiro;
+
+  b) ILÍCITO PENAL — quando aplicável, ensejando responsabilização criminal
+     por violação de direito autoral, violação de segredo comercial,
+     concorrência desleal e condutas equiparadas, nos termos das Leis
+     nº 9.610/98, nº 9.279/96 e do Código Penal brasileiro;
+
+  c) VIOLAÇÃO DE PROTEÇÃO DE DADOS — quando envolver dados pessoais de
+     usuários, ensejando notificação à Autoridade Nacional de Proteção de
+     Dados (ANPD), ao Ministério Público e às autoridades policiais
+     competentes, nos termos da Lei Geral de Proteção de Dados (Lei
+     nº 13.709/18);
+
+  d) REVOGAÇÃO DE ACESSO — o titular reserva-se o direito de revogar,
+     suspender ou encerrar, imediata e definitivamente, o acesso do infrator
+     à plataforma oficial, sem direito a reembolso, indenização ou
+     compensação de qualquer natureza;
+
+  e) NOTIFICAÇÕES — o titular poderá notificar as plataformas de hospedagem
+     (GitHub, Cloudflare ou outras), os provedores de serviço e as
+     autoridades competentes sobre a violação, solicitando remoção de
+     conteúdo, suspensão de contas e demais providências cabíveis.
+
+================================================================================
+5. AUSÊNCIA DE GARANTIAS
+================================================================================
+
+O Software é fornecido "NO ESTADO EM QUE SE ENCONTRA" (as-is), sem garantias
+de qualquer natureza, expressas ou implícitas, incluindo, sem limitação,
+garantias de comercialização, adequação a propósito específico, disponibilidade
+ininterrupta, ausência de erros ou não violação de direitos de terceiros.
+
+Em nenhuma hipótese o titular dos direitos autorais, seus criadores,
+mantenedores, colaboradores ou qualquer pessoa vinculada ao projeto será
+responsável por quaisquer danos diretos, indiretos, incidentais, especiais,
+exemplares ou consequentes, incluindo, sem limitação, perda de dados, lucros
+cessantes, interrupção de atividade ou qualquer outro prejuízo, decorrentes
+do uso ou da impossibilidade de uso do Software.
+
+================================================================================
+6. RESCISÃO
+================================================================================
+
+Esta licença é eficaz enquanto o usuário cumprir integralmente seus termos.
+Qualquer violação a rescinde automaticamente e de pleno direito, sem
+necessidade de notificação, obrigando o infrator a cessar imediatamente
+qualquer uso do Software e a destruir todas as cópias eventualmente
+realizadas.
+
+================================================================================
+7. LEI APLICÁVEL E FORO
+================================================================================
+
+Esta licença é regida pelas leis da República Federativa do Brasil. Eventuais
+controvérsias serão resolvidas no foro do domicílio do titular dos direitos
+autorais, com renúncia expressa pelo usuário a qualquer outro, por mais
+privilegiado que seja.
+
+================================================================================
+8. CONTATO
+================================================================================
+
+Para dúvidas, solicitações de autorização, denúncias de violação ou
+comunicações relativas a esta licença:
+
+  Telefone / WhatsApp: +55 45 98820-8796
+
+================================================================================
+
+Ao utilizar, acessar ou interagir de qualquer forma com o Software, o usuário
+declara ter lido, compreendido e concordado integralmente com os termos desta
+licença.
+
+Copyright (c) 2026 Lynx. Todos os direitos reservados.
