@@ -467,15 +467,15 @@
       voltar
     </button>
     <h1 class="area-title">Minha <em>área</em></h1>
-    <p class="area-sub">dados da sua conta e acessos liberados.</p>
+    <p class="area-sub">Dados da conta</p>
     <div class="area-tabs" id="area-tabs">
       <button class="area-tab selected" data-tab="perfil">Perfil</button>
     </div>
     <div class="area-panel" data-panel="perfil">
       <div class="area-card">
         <h3>Conta</h3>
-        <div class="area-row"><span class="k">nome</span><span class="v" id="area-name">—</span></div>
-        <div class="area-row"><span class="k">email</span><span class="v" id="area-email">—</span></div>
+        <div class="area-row"><span class="k">Nome</span><span class="v" id="area-name">—</span></div>
+        <div class="area-row"><span class="k">Email</span><span class="v" id="area-email">—</span></div>
       </div>
       <div class="area-card">
         <h3>Acessos liberados</h3>
@@ -484,18 +484,18 @@
       <div class="area-card">
         <h3>Aparência</h3>
         <div class="theme-row">
-          <button class="theme-swatch" data-theme="azul"><span class="dot" style="background:#3b82f6;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(59,130,246,.45)"></span>azul</button>
-          <button class="theme-swatch" data-theme="roxo"><span class="dot" style="background:#8b5cf6;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(139,92,246,.45)"></span>roxo</button>
-          <button class="theme-swatch" data-theme="verde"><span class="dot" style="background:#10b981;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(16,185,129,.45)"></span>verde</button>
-          <button class="theme-swatch" data-theme="vermelho"><span class="dot" style="background:#ef4444;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(239,68,68,.45)"></span>vermelho</button>
+          <button class="theme-swatch" data-theme="azul"><span class="dot" style="background:#3b82f6;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(59,130,246,.45)"></span>Azul</button>
+          <button class="theme-swatch" data-theme="roxo"><span class="dot" style="background:#8b5cf6;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(139,92,246,.45)"></span>Roxo</button>
+          <button class="theme-swatch" data-theme="verde"><span class="dot" style="background:#10b981;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(16,185,129,.45)"></span>Verde</button>
+          <button class="theme-swatch" data-theme="vermelho"><span class="dot" style="background:#ef4444;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(239,68,68,.45)"></span>Vermelho</button>
         </div>
       </div>
       <div class="area-card">
         <h3>Termos de uso</h3>
-        <div class="area-row"><span class="k">status</span><span class="v" id="terms-status">—</span></div>
+        <div class="area-row"><span class="k">Status</span><span class="v" id="terms-status">—</span></div>
         <div class="terms-section-actions">
-          <button class="terms-btn-sm" id="btn-view-terms" type="button">ver termos</button>
-          <button class="terms-btn-sm danger" id="btn-revoke-terms" type="button">revogar aceite</button>
+          <button class="terms-btn-sm" id="btn-view-terms" type="button">Ver termos</button>
+          <button class="terms-btn-sm danger" id="btn-revoke-terms" type="button">Revogar aceite</button>
         </div>
       </div>
       <div class="area-actions">
@@ -1357,7 +1357,7 @@
             '</div>',
           '</div>',
           '<div class="admin-tag-filter" id="admin-tag-filter"></div>',
-          '<input id="admin-search" class="admin-search" type="text" placeholder="buscar por nome ou email…" autocomplete="off" spellcheck="false">',
+          '<input id="admin-search" class="admin-search" type="text" placeholder="Buscar por nome ou email…" autocomplete="off" spellcheck="false">',
           '<div class="admin-users" id="admin-users">',
             '<div class="admin-empty">carregando…</div>',
           '</div>',
@@ -1373,10 +1373,10 @@
             '</div>',
           '</div>',
           '<div class="hist-search-wrap">',
-            '<input id="hist-search" class="admin-search" type="text" placeholder="email da pessoa…" autocomplete="off" spellcheck="false" style="margin:0">',
+            '<input id="hist-search" class="admin-search" type="text" placeholder="nome.sobrenome@escola.pr.gov.br" autocomplete="off" spellcheck="false" style="margin:0">',
           '</div>',
           '<div class="hist-list" id="hist-list">',
-            '<div class="admin-empty">digite um email acima para ver o histórico.</div>',
+            '<div class="admin-empty">Digite um email acima para ver o histórico.</div>',
           '</div>',
         '</div>',
       '</div>',
@@ -1396,26 +1396,26 @@
                 '<button type="button" class="kill-opt" data-mode="soft">',
                   '<span class="kill-radio"></span>',
                   '<span class="kill-text">',
-                    '<b>só fechar a sessão</b>',
-                    '<span>derruba a aba atual. se a pessoa reabrir o site, ainda está logada</span>',
+                    '<b>Fechar a sessão</b>',
+                    '<span>Derruba a aba atual. Se a pessoa reabrir o site, ainda está logada</span>',
                   '</span>',
                 '</button>',
                 '<button type="button" class="kill-opt danger" data-mode="hard">',
                   '<span class="kill-radio"></span>',
                   '<span class="kill-text">',
                     '<b>fechar e deslogar</b>',
-                    '<span>derruba a aba atual e apaga a sessão. precisa logar com Google de novo</span>',
+                    '<span>Derruba a aba atual e apaga a sessão. Precisa logar com Google de novo</span>',
                   '</span>',
                 '</button>',
               '</div>',
             '</div>',
-            '<button class="admin-btn admin-btn-danger" type="submit" id="kill-submit" disabled>executar</button>',
+            '<button class="admin-btn admin-btn-danger" type="submit" id="kill-submit" disabled>Executar</button>',
           '</form>',
         '</div>',
         '<div class="area-card">',
           '<h3>Desligamentos pendentes</h3>',
           '<div class="kill-pending-list" id="kill-pending-list">',
-            '<div class="admin-empty">nenhum desligamento pendente.</div>',
+            '<div class="admin-empty">Nenhum desligamento pendente.</div>',
           '</div>',
         '</div>',
       '</div>'
@@ -1537,7 +1537,7 @@
     const el = document.getElementById('admin-count');
     if (!el) return;
     const total = adminData && adminData.count != null ? adminData.count : (adminData && adminData.people ? adminData.people.length : 0);
-    el.innerHTML = '<b>' + total + '</b> pessoa' + (total === 1 ? '' : 's');
+    el.innerHTML = '<b>' + total + '</b>   pessoa' + (total === 1 ? '' : 's');
   }
 
   function renderAdminTagsInput() {
