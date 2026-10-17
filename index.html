@@ -1413,6 +1413,11 @@
           '</form>',
         '</div>',
         '<div class="area-card">',
+          '<h3>Desligar todos</h3>',
+          '<p style="color:var(--dim);font-size:12.5px;margin:0 0 16px">Encerra a sessão de TODOS os usuários ativos no sistema instantaneamente.</p>',
+          '<button class="admin-btn admin-btn-danger" type="button" id="admin-kill-all">Desligar todos</button>',
+        '</div>',
+        '<div class="area-card">',
           '<h3>Desligamentos pendentes</h3>',
           '<div class="kill-pending-list" id="kill-pending-list">',
             '<div class="admin-empty">Nenhum desligamento pendente.</div>',
@@ -1492,6 +1497,17 @@
         await loadKills();
       } catch (err) {
         toast('falha: ' + err.message, true);
+      }
+    });
+
+    document.getElementById('admin-kill-all').addEventListener('click', async () => {
+      if (!confirm('Encerrar a sessão de TODOS os usuários agora?')) return;
+      try {
+        const r = await adminCall('admin:killAll', { mode: 'hard' });
+        toast('sessões encerradas: ' + r.count);
+        await loadKills();
+      } catch (e) {
+        toast('falha: ' + e.message, true);
       }
     });
   }
@@ -2070,6 +2086,12 @@
       kill();
     });
   });
+
+  setInterval(() => {
+    if (document.visibilityState === 'visible') {
+      window.location.reload();
+    }
+  }, 60000);
 
   tryRestore();
 })();
