@@ -2005,9 +2005,38 @@
     setTimeout(() => kill_now(), 1600);
   }
 
+    function applyBlocksDiff(incoming) {
+    const incomingMap = new Map((incoming || []).map(b => [b.tag, b]));
+    const removed = [];
+
+    for (const b of (currentUser.blocks || [])) {
+      if (!incomingMap.has(b.tag)) {
+        removed.push(b);
+      }
+    }
+
+    if (!removed.length) return;
+
+    currentUser.blocks = incoming || [];
+
+    for (const b of removed) {
+      const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
+      if (card) {
+        card.style.transition = 'opacity .25s, transform .25s';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(.95)';
+        setTimeout(() => card.remove(), 260);
+      }
+      payloads.delete(b.tag);
+    }
+
+    showMiniToast('permissões atualizadas · -' + removed.map(b => b.tag).join(', '));
+  }
+
   async function pollTick() {
     const jwt = sessionStorage.getItem(SESSION_KEY);
     if (!jwt) return;
+    
     const data = await _post({ jwt, action: 'checkState' });
     if (!data || !data.ok) return;
 
@@ -2018,6 +2047,13 @@
     }
 
     applyBlocksDiff(data.blocks || []);
+  }
+
+  function startPolling() {
+    stopPolling();
+    if (!currentUser) return;
+    pollTimer = setInterval(pollTick, 20000);
+    document.addEventListener('visibilitychange', onVisibilityForPoll);
   }
 
   function startPolling() {
@@ -2086,12 +2122,6 @@
       kill();
     });
   });
-
-  setInterval(() => {
-    if (document.visibilityState === 'visible') {
-      window.location.reload();
-    }
-  }, 60000);
 
   tryRestore();
 })();
