@@ -350,6 +350,138 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
   .terms-content{padding:16px 16px;font-size:13px}
   .terms-footer{padding:12px 16px 16px}
 }
+/* ── MODAL DE VERSÃO DO LYNX ── */
+.version-modal {
+  background: linear-gradient(160deg, var(--panel-hi) 0%, var(--panel) 70%);
+  border: 1px solid var(--line-2);
+  border-radius: 20px;
+  padding: 42px 36px;
+  width: 100%;
+  max-width: 620px;
+  text-align: center;
+  box-shadow: 0 30px 100px rgba(0,0,0,.7), 0 0 0 1px rgba(var(--glow-rgb),.08), inset 0 1px rgba(255,255,255,.05);
+  animation: execIn .35s cubic-bezier(.2,.8,.2,1);
+  position: relative;
+  overflow: hidden;
+}
+.version-modal::before {
+  content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%);
+  width: 80%; height: 50%; background: radial-gradient(ellipse, rgba(var(--glow-rgb),.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.version-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  color: var(--text);
+  margin: 0 0 8px;
+  letter-spacing: -.5px;
+  position: relative;
+}
+.version-title b { color: var(--accent-2); font-weight: 800; }
+.version-sub {
+  color: var(--dim);
+  font-size: 14px;
+  margin-bottom: 32px;
+  position: relative;
+}
+.version-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 28px;
+  position: relative;
+}
+.version-card {
+  background: rgba(10,10,12,.6);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px 20px;
+  text-align: left;
+  cursor: pointer;
+  transition: all .25s cubic-bezier(.2,.8,.2,1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.version-card:hover {
+  border-color: rgba(var(--glow-rgb), .5);
+  background: var(--panel-hi);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(var(--glow-rgb),.2);
+}
+.v-glow {
+  position: absolute; top: 0; right: 0; width: 100px; height: 100px;
+  background: radial-gradient(circle at top right, rgba(var(--glow-rgb),.15), transparent 70%);
+  opacity: 0; transition: opacity .3s;
+}
+.version-card:hover .v-glow { opacity: 1; }
+.v-icon {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  background: rgba(var(--glow-rgb), .1);
+  border: 1px solid rgba(var(--glow-rgb), .2);
+  display: grid; place-items: center;
+  margin-bottom: 16px;
+  color: var(--accent-2);
+  transition: transform .3s, background .3s, color .3s;
+}
+.v-icon svg { width: 22px; height: 22px; }
+.version-card:hover .v-icon {
+  background: var(--accent);
+  color: #fff;
+  transform: scale(1.05);
+  border-color: var(--accent);
+}
+.version-card h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--text);
+  margin: 0 0 8px;
+  letter-spacing: -.2px;
+}
+.version-card p {
+  color: var(--dim);
+  font-size: 12.5px;
+  line-height: 1.5;
+  margin: 0 0 20px;
+  flex: 1;
+}
+.v-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+  color: var(--slate);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  align-self: flex-start;
+  letter-spacing: .3px;
+}
+.version-card:hover .v-badge {
+  background: rgba(var(--glow-rgb), .1);
+  border-color: rgba(var(--glow-rgb), .3);
+  color: var(--accent-2);
+}
+.version-cancel {
+  background: transparent;
+  border: none;
+  color: var(--slate);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font-body);
+  padding: 8px 16px;
+  transition: color .15s;
+  position: relative;
+}
+.version-cancel:hover { color: var(--text); }
+@media (max-width: 600px) {
+  .version-options { grid-template-columns: 1fr; }
+  .version-modal { padding: 32px 24px; }
+}
+  
 </style>
 </head>
 <body>
