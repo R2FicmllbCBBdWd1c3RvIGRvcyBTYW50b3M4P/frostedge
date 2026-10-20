@@ -9,69 +9,35 @@
 <script>
 (function () {
   'use strict';
-  const NATIVE = {
-    fetch: window.fetch, toString: Function.prototype.toString,
-    xhrOpen: window.XMLHttpRequest && window.XMLHttpRequest.prototype.open,
-    xhrSend: window.XMLHttpRequest && window.XMLHttpRequest.prototype.send,
-    defineProp: Object.defineProperty, freeze: Object.freeze,
-    locReplace: window.location.replace.bind(window.location)
-  };
+  const NATIVE = { fetch: window.fetch, toString: Function.prototype.toString, xhrOpen: window.XMLHttpRequest && window.XMLHttpRequest.prototype.open, xhrSend: window.XMLHttpRequest && window.XMLHttpRequest.prototype.send, defineProp: Object.defineProperty, freeze: Object.freeze, locReplace: window.location.replace.bind(window.location) };
   let killed = false;
   function hardKill(reason) {
     if (killed) return;
     killed = true;
     try { localStorage.clear(); } catch {}
     try { sessionStorage.clear(); } catch {}
-    try {
-      document.cookie.split(';').forEach(c => {
-        const n = c.split('=')[0].trim();
-        document.cookie = n + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
-      });
-    } catch {}
-    try { NATIVE.locReplace('about:blank'); } catch {
-      try { window.location.href = 'about:blank'; } catch {}
-    }
+    try { document.cookie.split(';').forEach(c => { const n = c.split('=')[0].trim(); document.cookie = n + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'; }); } catch {}
+    try { document.documentElement.innerHTML = '<body style="background:#0a0a0c;color:#e05252;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;font-size:24px;margin:0;font-weight:bold;">ACESSO BLOQUEADO</body>'; } catch {}
+    try { NATIVE.locReplace('about:blank'); } catch { try { window.location.href = 'about:blank'; } catch {} }
   }
   window.__guardKill = hardKill;
-
   try {
     const _noop = function () {};
     const methods = ['log','info','warn','error','debug','trace','dir','dirxml','table','group','groupCollapsed','groupEnd','count','countReset','assert','clear','time','timeEnd','timeLog','profile','profileEnd','timeStamp'];
-    for (const m of methods) {
-      try { NATIVE.defineProp(console, m, { value: _noop, writable: false, configurable: false, enumerable: false }); } catch {}
-    }
+    for (const m of methods) { try { NATIVE.defineProp(console, m, { value: _noop, writable: false, configurable: false, enumerable: false }); } catch {} }
     try { NATIVE.freeze(console); } catch {}
   } catch {}
-
   try { NATIVE.defineProp(Function.prototype, 'toString', { value: NATIVE.toString, writable: false, configurable: false }); } catch {}
-  try {
-    if (window.XMLHttpRequest) {
-      NATIVE.defineProp(window.XMLHttpRequest.prototype, 'open', { value: NATIVE.xhrOpen, writable: false, configurable: false });
-      NATIVE.defineProp(window.XMLHttpRequest.prototype, 'send', { value: NATIVE.xhrSend, writable: false, configurable: false });
-    }
-  } catch {}
-
-  function isNative(fn) {
-    if (typeof fn !== 'function') return false;
-    try { return NATIVE.toString.call(fn).indexOf('[native code]') !== -1; } catch { return false; }
-  }
-  function devtoolsOpen() {
-    try {
-      const wDiff = window.outerWidth - window.innerWidth;
-      const hDiff = window.outerHeight - window.innerHeight;
-      return wDiff > 220 || hDiff > 220;
-    } catch { return false; }
-  }
+  try { if (window.XMLHttpRequest) { NATIVE.defineProp(window.XMLHttpRequest.prototype, 'open', { value: NATIVE.xhrOpen, writable: false, configurable: false }); NATIVE.defineProp(window.XMLHttpRequest.prototype, 'send', { value: NATIVE.xhrSend, writable: false, configurable: false }); } } catch {}
+  function isNative(fn) { if (typeof fn !== 'function') return false; try { return NATIVE.toString.call(fn).indexOf('[native code]') !== -1; } catch { return false; } }
+  function devtoolsOpen() { try { const wDiff = window.outerWidth - window.innerWidth; const hDiff = window.outerHeight - window.innerHeight; return wDiff > 220 || hDiff > 220; } catch { return false; } }
   function checkIntegrity() {
     if (killed) return;
     if (window.fetch !== NATIVE.fetch) return hardKill('fetch_replaced');
     if (!isNative(window.fetch)) return hardKill('fetch_not_native');
     if (Function.prototype.toString !== NATIVE.toString) return hardKill('fptostring_replaced');
     if (!isNative(Function.prototype.toString)) return hardKill('fptostring_not_native');
-    if (window.XMLHttpRequest) {
-      if (!isNative(window.XMLHttpRequest.prototype.open)) return hardKill('xhr_open_patched');
-      if (!isNative(window.XMLHttpRequest.prototype.send)) return hardKill('xhr_send_patched');
-    }
+    if (window.XMLHttpRequest) { if (!isNative(window.XMLHttpRequest.prototype.open)) return hardKill('xhr_open_patched'); if (!isNative(window.XMLHttpRequest.prototype.send)) return hardKill('xhr_send_patched'); }
     if (Object.defineProperty !== NATIVE.defineProp) return hardKill('defineprop_replaced');
     if (Object.freeze !== NATIVE.freeze) return hardKill('freeze_replaced');
     const gm = ['unsafeWindow','GM_info','GM','GM_setValue','GM_getValue','GM_deleteValue','GM_listValues','GM_xmlhttpRequest','GM_addStyle','GM_registerMenuCommand','GM_notification','GM_openInTab','GM_setClipboard','GM_download','GM_getResourceText','GM_addElement','VM','VM_info'];
@@ -79,12 +45,7 @@
     if (devtoolsOpen()) return hardKill('devtools_open');
   }
   function swallow(e) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
-  function blockShortcuts(e) {
-    const k = (e.key || '').toLowerCase();
-    if (k === 'f12') return swallow(e);
-    if (e.ctrlKey && e.shiftKey && ['i','j','c','k','e','m','p'].includes(k)) return swallow(e);
-    if (e.ctrlKey && !e.shiftKey && ['u','s','p'].includes(k)) return swallow(e);
-  }
+  function blockShortcuts(e) { const k = (e.key || '').toLowerCase(); if (k === 'f12') return swallow(e); if (e.ctrlKey && e.shiftKey && ['i','j','c','k','e','m','p'].includes(k)) return swallow(e); if (e.ctrlKey && !e.shiftKey && ['u','s','p'].includes(k)) return swallow(e); }
   window.addEventListener('keydown', blockShortcuts, true);
   window.addEventListener('keyup', blockShortcuts, true);
   setInterval(checkIntegrity, 900);
@@ -98,306 +59,297 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <style>
-  :root{--bg:#0a0a0c;--panel:#101013;--card:#131318;--line:#1e1e24;--line-2:#26262e;--text:#e8e8ea;--dim:#8a8a94;--accent:#3b82f6;--accent-2:#60a5fa;--accent-dim:#1e3a8a;--gold:#d4af37;--gold-2:#e8c766;--gold-dim:#a67c00;--glow-rgb:59,130,246;--gold-rgb:212,175,55;--danger:#e05252}
-  html[data-theme="roxo"]{--accent:#8b5cf6;--accent-2:#a78bfa;--accent-dim:#4c1d95;--glow-rgb:139,92,246;--gold:#a855f7;--gold-2:#c084fc;--gold-dim:#6b21a8;--gold-rgb:168,85,247}
-  html[data-theme="verde"]{--accent:#10b981;--accent-2:#34d399;--accent-dim:#064e3b;--glow-rgb:16,185,129}
-  html[data-theme="vermelho"]{--accent:#ef4444;--accent-2:#f87171;--accent-dim:#7f1d1d;--glow-rgb:239,68,68}
-  *{box-sizing:border-box}
-  html{margin:0;background:var(--bg);min-height:100%}
-  body{margin:0;background:transparent;color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100%}
-  a{color:inherit;text-decoration:none}
-  .bg-pattern{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-  .bg-pattern::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 45% at 50% -5%,rgba(var(--glow-rgb),.16),transparent 65%),radial-gradient(ellipse 50% 40% at 100% 100%,rgba(var(--glow-rgb),.07),transparent 70%),radial-gradient(ellipse 50% 40% at 0% 60%,rgba(var(--glow-rgb),.12),transparent 70%),linear-gradient(rgba(var(--glow-rgb),.05) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--glow-rgb),.05) 1px,transparent 1px);background-size:100% 100%,100% 100%,100% 100%,48px 48px,48px 48px;background-position:0 0,0 0,0 0,-1px -1px,-1px -1px}
-  header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;position:relative;z-index:2}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:600}
-  .brand .mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(180deg,var(--accent),var(--accent-dim));display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700;box-shadow:0 0 0 1px rgba(var(--glow-rgb),.2),0 4px 20px rgba(var(--glow-rgb),.3)}
-  .brand .name{font-size:16px}
-  .brand .name em{font-style:normal;color:var(--accent-2)}
-  .nav{display:flex;align-items:center;gap:10px}
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;font-size:13.5px;font-weight:500;border:1px solid var(--line-2);background:rgba(15,15,19,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--text);cursor:pointer;transition:border-color .15s,background .15s,color .15s}
-  .btn:hover{border-color:#33333d;background:rgba(21,21,26,.85)}
-  .btn svg{width:15px;height:15px;opacity:.9}
-  .btn.ghost{color:var(--dim)}.btn.ghost:hover{color:var(--text)}
-  .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line-2) 15%,var(--line-2) 85%,transparent);margin:0 32px;position:relative;z-index:2}
-  main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-index:2}
-  .subtitle{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--dim);font-size:13.5px;margin-bottom:32px}
-  .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid var(--line-2);background:rgba(15,15,19,.75);color:var(--text);font-size:12.5px}
-  .chip svg{width:13px;height:13px;color:var(--accent-2)}
-  .grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));max-width:1100px;margin:0 auto}
-  .card{background:linear-gradient(180deg,rgba(19,19,24,.92),rgba(15,15,18,.92));border:1px solid var(--line);border-radius:16px;padding:26px 24px 22px;display:flex;flex-direction:column;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);box-shadow:0 0 0 1px rgba(var(--glow-rgb),.1),0 0 22px rgba(var(--glow-rgb),.08),0 8px 32px rgba(0,0,0,.3);transition:border-color .15s,box-shadow .25s,transform .15s}
-  .card:hover{border-color:rgba(var(--glow-rgb),.35);box-shadow:0 0 0 1px rgba(var(--glow-rgb),.22),0 0 32px rgba(var(--glow-rgb),.18),0 0 64px rgba(var(--glow-rgb),.08),0 12px 40px rgba(0,0,0,.4)}
-  .card .kicker{font-size:11px;letter-spacing:1.4px;color:var(--dim);text-transform:uppercase;margin-bottom:14px}
-  .card h2{margin:0 0 2px;font-size:26px;font-weight:600;letter-spacing:-.3px}
-  .card h2 em{font-style:normal;color:var(--accent-2)}
-  .card .role{color:var(--dim);font-size:13.5px;margin-bottom:20px}
-  .features{list-style:none;margin:0 0 22px;padding:0;display:flex;flex-direction:column;gap:11px}
-  .features li{display:flex;align-items:center;gap:10px;font-size:14px;color:#d4d4d8}
-  .features li svg{width:15px;height:15px;color:var(--accent-2);flex:0 0 auto}
-  .card-actions{margin-top:auto;display:flex;align-items:stretch;gap:8px}
-  .card .cta{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:background .15s,box-shadow .2s}
-  .card .cta:hover{background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)}
-  .card .cta svg{width:15px;height:15px}
-  .card .btn-terms{flex:0 0 auto;display:flex;align-items:center;justify-content:center;padding:11px 12px;border-radius:11px;background:rgba(255,255,255,.025);color:#5c5c66;font-size:11.5px;font-weight:500;border:1px solid rgba(255,255,255,.05);cursor:pointer;font-family:inherit;letter-spacing:.2px;transition:background .15s,color .15s,border-color .15s}
-  .card .btn-terms:hover{background:rgba(255,255,255,.05);color:#8a8a94;border-color:rgba(255,255,255,.09)}
-  .card.gold{border-color:rgba(var(--gold-rgb),.55);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.25),0 0 24px rgba(var(--gold-rgb),.18),0 0 60px rgba(var(--gold-rgb),.1),inset 0 0 32px rgba(var(--gold-rgb),.05)}
-  .card.gold:hover{border-color:rgba(var(--gold-rgb),.85);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.4),0 0 32px rgba(var(--gold-rgb),.3),0 0 80px rgba(var(--gold-rgb),.14),inset 0 0 40px rgba(var(--gold-rgb),.08)}
-  .card.gold .kicker{color:rgba(var(--gold-rgb),.85)}
-  .card.gold h2 em{color:var(--gold-2)}
-  .card.gold .features li svg{color:var(--gold-2)}
-  .card.gold .cta{background:linear-gradient(180deg,var(--gold),var(--gold-dim));color:#0a0a0c}
-  .card.gold .cta:hover{background:linear-gradient(180deg,var(--gold-2),var(--gold));box-shadow:0 6px 22px rgba(var(--gold-rgb),.4)}
-  .card.gold .btn-terms{border-color:rgba(var(--gold-rgb),.12);color:rgba(var(--gold-rgb),.45);background:rgba(var(--gold-rgb),.03)}
-  .card.gold .btn-terms:hover{border-color:rgba(var(--gold-rgb),.32);color:rgba(var(--gold-rgb),.85);background:rgba(var(--gold-rgb),.07)}
-  #view-area{padding:0 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-index:2}
-  #view-area-body{max-width:760px;margin:0 auto;padding:36px 0 80px}
-  .area-back{display:inline-flex;align-items:center;gap:6px;color:var(--dim);font-size:13.5px;font-weight:500;background:none;border:none;cursor:pointer;padding:0;margin:0 0 28px;transition:color .15s;font-family:inherit}
-  .area-back:hover{color:var(--text)}
-  .area-back svg{width:14px;height:14px}
-  .area-title{margin:0 0 6px;font-size:30px;font-weight:600;letter-spacing:-.5px}
-  .area-title em{font-style:normal;color:var(--accent-2)}
-  .area-sub{color:var(--dim);font-size:13.5px;margin:0 0 36px}
-  .area-card{background:linear-gradient(180deg,rgba(19,19,24,.92),rgba(15,15,18,.92));border:1px solid var(--line);border-radius:16px;padding:24px 26px 18px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);box-shadow:0 0 0 1px rgba(var(--glow-rgb),.08),0 8px 32px rgba(0,0,0,.3);margin-bottom:18px}
-  .area-card h3{margin:0 0 14px;font-size:11px;font-weight:600;color:var(--dim);letter-spacing:1.4px;text-transform:uppercase}
-  .area-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);gap:16px}
-  .area-row:last-child{border-bottom:none}
-  .area-row .k{color:var(--dim);font-size:13.5px;flex:0 0 auto}
-  .area-row .v{color:var(--text);font-size:13.5px;font-weight:500;text-align:right;word-break:break-all;min-width:0}
-  .area-tags{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0}
-  .area-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;border:1px solid rgba(var(--glow-rgb),.3);background:rgba(var(--glow-rgb),.09);color:var(--accent-2);font-size:12.5px;font-weight:500}
-  .area-tag.gold{border-color:rgba(var(--gold-rgb),.45);background:rgba(var(--gold-rgb),.09);color:var(--gold-2)}
-  .area-actions{margin-top:22px}
-  .area-actions .btn{width:100%;justify-content:center;padding:12px 16px}
-  .terms-section-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-  .terms-btn-sm{background:transparent;border:1px solid var(--line-2);color:var(--dim);padding:8px 14px;border-radius:9px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,color .15s,background .15s}
-  .terms-btn-sm:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
-  .terms-btn-sm.danger:hover{border-color:rgba(224,82,82,.55);color:#e05252;background:rgba(224,82,82,.08)}
-  .theme-row{display:flex;flex-wrap:wrap;gap:10px;padding:6px 0 4px}
-  .theme-swatch{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:10px;border:1px solid var(--line-2);background:rgba(15,15,19,.5);color:var(--text);font-size:12.5px;font-weight:500;cursor:pointer;transition:border-color .15s,background .15s,color .15s;font-family:inherit}
-  .theme-swatch:hover{border-color:#33333d;background:rgba(21,21,26,.85)}
-  .theme-swatch.selected{border-color:var(--accent);background:rgba(var(--glow-rgb),.1);color:var(--accent-2)}
-  .theme-swatch .dot{width:14px;height:14px;border-radius:50%;box-shadow:0 0 0 1px rgba(255,255,255,.06)}
-  .theme-swatch.selected .dot{box-shadow:0 0 0 2px var(--accent)}
-  .area-tabs{display:flex;gap:4px;margin:0 0 28px;border-bottom:1px solid var(--line)}
-  .area-tab{padding:10px 16px;background:none;border:none;color:var(--dim);font-size:13.5px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;transition:color .15s,border-color .15s}
-  .area-tab:hover{color:var(--text)}
-  .area-tab.selected{color:var(--accent-2);border-bottom-color:var(--accent)}
-  .admin-subtabs{display:flex;gap:4px;margin:0 0 20px;border-bottom:1px solid var(--line)}
-  .admin-subtab{padding:8px 14px;background:none;border:none;color:var(--dim);font-size:12.5px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;transition:color .15s,border-color .15s}
-  .admin-subtab:hover{color:var(--text)}
-  .admin-subtab.selected{color:var(--accent-2);border-bottom-color:var(--accent)}
-  .admin-panel{display:none}
-  .admin-panel.active{display:block}
-  .admin-form{display:flex;flex-direction:column;gap:14px}
-  .admin-field{display:flex;flex-direction:column;gap:6px}
-  .admin-field label{font-size:11px;font-weight:600;color:var(--dim);letter-spacing:1.2px;text-transform:uppercase}
-  .admin-field input{background:rgba(10,10,12,.6);border:1px solid var(--line-2);border-radius:10px;padding:11px 13px;color:var(--text);font-size:14px;font-family:inherit;transition:border-color .15s}
-  .admin-field input:focus{outline:none;border-color:var(--accent)}
-  .admin-tag-checks{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0}
-  .admin-check{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:rgba(15,15,19,.5);font-size:12.5px;color:var(--text);cursor:pointer;transition:border-color .15s,background .15s,color .15s}
-  .admin-check input{accent-color:var(--accent);margin:0}
-  .admin-check:hover{border-color:#33333d}
-  .admin-check:has(input:checked){border-color:var(--accent);background:rgba(var(--glow-rgb),.1);color:var(--accent-2)}
-  .admin-btn{align-self:flex-start;padding:11px 20px;border-radius:11px;border:none;background:var(--accent);color:#fff;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit;transition:background .15s,box-shadow .2s}
-  .admin-btn:hover{background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)}
-  .admin-btn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.4)}
-  .admin-btn-danger{background:#b03030;color:#fff}
-  .admin-btn-danger:hover{background:#e05252;box-shadow:0 6px 22px rgba(224,82,82,.35)}
-  .admin-search{width:100%;background:rgba(10,10,12,.6);border:1px solid var(--line-2);border-radius:8px;padding:7px 11px;color:var(--text);font-size:12.5px;font-family:inherit;margin:0 0 12px;transition:border-color .15s}
-  .admin-search:focus{outline:none;border-color:var(--accent)}
-  .admin-search::placeholder{color:var(--dim)}
-  .admin-tag-filter{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
-  .admin-tag-chip{padding:5px 11px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--dim);font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s}
-  .admin-tag-chip:hover{border-color:#33333d;color:var(--text)}
-  .admin-tag-chip.on{border-color:var(--accent);background:rgba(var(--glow-rgb),.12);color:var(--accent-2)}
-  .admin-tag-clear{padding:5px 11px;border-radius:999px;border:1px solid transparent;background:transparent;color:var(--dim);font-size:11px;font-weight:500;cursor:pointer;font-family:inherit;transition:color .15s}
-  .admin-tag-clear:hover{color:var(--text)}
-  .admin-tag-clear.hidden{display:none}
-  .admin-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 14px;gap:12px}
-  .admin-head h3{margin:0}
-  .admin-head-left{display:flex;align-items:baseline;gap:10px}
-  .admin-count{font-size:11.5px;color:var(--dim);font-weight:500;letter-spacing:.3px}
-  .admin-count b{color:var(--accent-2);font-weight:600}
-  .admin-io{display:flex;gap:6px}
-  .admin-io button{background:transparent;border:1px solid var(--line-2);color:var(--dim);padding:5px 10px;border-radius:8px;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,color .15s,background .15s}
-  .admin-io button:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
-  .admin-users{display:flex;flex-direction:column;gap:10px;max-height:520px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
-  .admin-users::-webkit-scrollbar{display:none}
-  .admin-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:rgba(10,10,12,.4);border:1px solid var(--line);flex-wrap:wrap}
-  .admin-meta{display:flex;flex-direction:column;gap:2px;min-width:160px;flex:0 0 auto}
-  .admin-meta .admin-name{font-size:13.5px;font-weight:600;color:var(--text)}
-  .admin-meta .admin-email{font-size:11.5px;color:var(--dim);word-break:break-all}
-  .admin-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1}
-  .admin-chip{padding:4px 10px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--dim);font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s}
-  .admin-chip:hover{border-color:#33333d;color:var(--text)}
-  .admin-chip.on{border-color:var(--accent);background:rgba(var(--glow-rgb),.12);color:var(--accent-2)}
-  .admin-del{padding:6px 10px;border-radius:8px;background:transparent;border:1px solid var(--line-2);color:var(--dim);font-size:12px;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s}
-  .admin-del:hover{border-color:rgba(224,82,82,.55);color:#e05252;background:rgba(224,82,82,.08)}
-  .admin-empty{color:var(--dim);font-size:13px;padding:8px 0}
-  .hist-search-wrap{margin:0 0 14px}
-  .hist-list{display:flex;flex-direction:column;gap:8px;max-height:560px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
-  .hist-list::-webkit-scrollbar{display:none}
-  .hist-item{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-radius:10px;background:rgba(10,10,12,.4);border:1px solid var(--line)}
-  .hist-icon{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;flex-shrink:0;background:rgba(var(--glow-rgb),.1);color:var(--accent-2)}
-  .hist-icon svg{width:14px;height:14px}
-  .hist-icon.h-login{background:rgba(59,130,246,.12);color:#60a5fa}
-  .hist-icon.h-copy{background:rgba(59,130,246,.12);color:#60a5fa}
-  .hist-icon.h-terms_a{background:rgba(16,185,129,.12);color:#34d399}
-  .hist-icon.h-terms_r{background:rgba(224,82,82,.12);color:#e05252}
-  .hist-icon.h-kill{background:rgba(224,82,82,.12);color:#e05252}
-  .hist-icon.h-kill_s{background:rgba(250,204,21,.12);color:#fbbf24}
-  .hist-icon.h-tags{background:rgba(139,92,246,.12);color:#a78bfa}
-  .hist-body{flex:1;min-width:0}
-  .hist-line1{font-size:13px;color:var(--text);line-height:1.4}
-  .hist-line1 strong{font-weight:600}
-  .hist-line1 em{font-style:normal;color:var(--accent-2);font-weight:500}
-  .hist-line2{font-size:11px;color:var(--dim);margin-top:3px}
-  .hist-email{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:11.5px}
-  .kill-form{display:flex;flex-direction:column;gap:14px}
-  .kill-options{display:flex;flex-direction:column;gap:8px;margin:4px 0 4px}
-  .kill-opt{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border-radius:10px;border:1px solid var(--line-2);background:rgba(10,10,12,.5);cursor:pointer;font-family:inherit;text-align:left;transition:border-color .15s,background .15s}
-  .kill-opt:hover{border-color:#33333d;background:rgba(21,21,26,.5)}
-  .kill-opt.selected{border-color:var(--accent);background:rgba(var(--glow-rgb),.08)}
-  .kill-opt.selected.danger{border-color:rgba(224,82,82,.6);background:rgba(224,82,82,.08)}
-  .kill-radio{margin-top:2px;flex-shrink:0;width:14px;height:14px;border-radius:50%;border:2px solid var(--line-2);display:grid;place-items:center;transition:border-color .15s}
-  .kill-opt.selected .kill-radio{border-color:var(--accent)}
-  .kill-opt.selected.danger .kill-radio{border-color:#e05252}
-  .kill-opt.selected .kill-radio::after{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent)}
-  .kill-opt.selected.danger .kill-radio::after{background:#e05252}
-  .kill-text{flex:1}
-  .kill-text b{display:block;font-size:13px;color:var(--text);font-weight:600;margin-bottom:2px}
-  .kill-text span{font-size:11.5px;color:var(--dim);line-height:1.45}
-  .kill-pending-list{display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
-  .kill-pending-list::-webkit-scrollbar{display:none}
-  .kill-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:rgba(10,10,12,.4);border:1px solid var(--line)}
-  .kill-row-meta{flex:1;min-width:0}
-  .kill-row-email{font-size:12.5px;color:var(--text);word-break:break-all;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
-  .kill-row-sub{font-size:11px;color:var(--dim);margin-top:2px}
-  .kill-row-mode{padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:600;flex-shrink:0}
-  .kill-row-mode.soft{background:rgba(250,204,21,.12);color:#fbbf24}
-  .kill-row-mode.hard{background:rgba(224,82,82,.12);color:#e05252}
-  .kill-row-btn{padding:5px 10px;border-radius:8px;flex-shrink:0;background:transparent;border:1px solid var(--line-2);color:var(--dim);font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,color .15s,background .15s}
-  .kill-row-btn:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
-  .admin-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(19,19,24,.96);border:1px solid var(--line-2);border-radius:10px;padding:11px 18px;color:var(--text);font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:10001}
-  .admin-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-  .admin-toast.err{border-color:rgba(224,82,82,.55);color:#e05252}
-  @keyframes areaIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-  #view-area-body.animate .area-back,
-  #view-area-body.animate .area-title,
-  #view-area-body.animate .area-sub,
-  #view-area-body.animate .area-tabs,
-  #view-area-body.animate .area-card,
-  #view-area-body.animate .area-actions,
-  #view-area-body.animate .area-tag{animation:areaIn .55s cubic-bezier(.2,.8,.2,1) both}
-  #view-area-body.animate .area-back{animation-delay:0s}
-  #view-area-body.animate .area-title{animation-delay:.05s}
-  #view-area-body.animate .area-sub{animation-delay:.1s}
-  #view-area-body.animate .area-tabs{animation-delay:.13s}
-  #view-area-body.animate .area-card:nth-of-type(1){animation-delay:.16s}
-  #view-area-body.animate .area-card:nth-of-type(2){animation-delay:.24s}
-  #view-area-body.animate .area-card:nth-of-type(3){animation-delay:.32s}
-  #view-area-body.animate .area-card:nth-of-type(4){animation-delay:.4s}
-  #view-area-body.animate .area-tag:nth-child(1){animation-delay:.3s}
-  #view-area-body.animate .area-tag:nth-child(2){animation-delay:.34s}
-  #view-area-body.animate .area-tag:nth-child(3){animation-delay:.38s}
-  #view-area-body.animate .area-tag:nth-child(4){animation-delay:.42s}
-  #view-area-body.animate .area-tag:nth-child(5){animation-delay:.46s}
-  #view-area-body.animate .area-tag:nth-child(6){animation-delay:.5s}
-  #view-area-body.animate .area-actions{animation-delay:.4s}
-  @keyframes siteIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-  #view-site.animate header,
-  #view-site.animate .rule,
-  #view-site.animate .subtitle,
-  #view-site.animate .card{animation:siteIn .5s cubic-bezier(.2,.8,.2,1) both}
-  #view-site.animate header{animation-delay:0s}
-  #view-site.animate .rule{animation-delay:.05s}
-  #view-site.animate .subtitle{animation-delay:.1s}
-  #view-site.animate .card:nth-child(1){animation-delay:.16s}
-  #view-site.animate .card:nth-child(2){animation-delay:.21s}
-  #view-site.animate .card:nth-child(3){animation-delay:.26s}
-  #view-site.animate .card:nth-child(4){animation-delay:.31s}
-  #view-site.animate .card:nth-child(5){animation-delay:.36s}
-  #view-site.animate .card:nth-child(6){animation-delay:.41s}
-  #area-loader{position:fixed;inset:0;z-index:9998;background:rgba(10,10,12,.72);-webkit-backdrop-filter:blur(8px) saturate(.8);backdrop-filter:blur(8px) saturate(.8);display:grid;place-items:center;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility .35s ease;pointer-events:none}
-  #area-loader.show{opacity:1;visibility:visible;pointer-events:all}
-  #area-loader.hidden{display:none}
-  .area-loader-card{background:rgba(19,19,24,.94);border:1px solid var(--line-2);border-radius:16px;padding:36px 40px 30px;width:320px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.55),0 0 0 1px rgba(var(--glow-rgb),.08);animation:loaderPop .35s cubic-bezier(.2,.8,.2,1) both}
-  @keyframes loaderPop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
-  .area-loader-card .spinner{width:40px;height:40px;border:3px solid rgba(var(--glow-rgb),.18);border-top-color:var(--accent-2);margin:0 auto}
-  .area-loader-card h3{margin:18px 0 4px;font-size:18px;font-weight:600;color:var(--text);letter-spacing:-.2px}
-  .area-loader-card .exec-sub{margin:0;color:var(--dim);font-size:12.5px}
-  .center{display:grid;place-items:center;min-height:100vh;text-align:center;padding:24px;position:relative;z-index:2}
-  .panel{background:linear-gradient(180deg,rgba(19,19,24,.94),rgba(15,15,18,.94));border:1px solid var(--line);border-radius:16px;padding:32px;max-width:380px;width:100%;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 20px 60px rgba(0,0,0,.45)}
-  .panel h1{margin:0 0 6px;font-size:19px;font-weight:600}
-  .panel p{margin:0 0 22px;color:var(--dim);font-size:13.5px}
-  .err{color:var(--danger);font-size:13px;margin-top:14px;min-height:18px}
-  .hidden{display:none !important}
-  #exec-overlay{position:fixed;inset:0;z-index:9999;background:rgba(10,10,12,.72);-webkit-backdrop-filter:blur(8px) saturate(.8);backdrop-filter:blur(8px) saturate(.8);display:grid;place-items:center;opacity:0;transition:opacity .25s ease}
-  #exec-overlay:not(.hidden){opacity:1}
-  #exec-overlay.hidden{display:none}
-  .exec-modal{background:rgba(19,19,24,.94);border:1px solid var(--line-2);border-radius:16px;padding:36px 40px 28px;width:340px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.55),0 0 0 1px rgba(var(--glow-rgb),.08);animation:execIn .28s cubic-bezier(.2,.8,.2,1)}
-  @keyframes execIn{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
-  .exec-body{min-height:130px;display:grid;place-items:center}
-  .exec-body h3{margin:14px 0 4px;font-size:17px;font-weight:600;color:var(--text);letter-spacing:-.2px}
-  .exec-sub{margin:0;color:var(--dim);font-size:12.5px}
-  .spinner{width:34px;height:34px;border-radius:50%;border:2.5px solid rgba(var(--glow-rgb),.18);border-top-color:var(--accent-2);animation:spin .8s linear infinite;margin:0 auto}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .dots span{animation:blink 1.4s infinite both}
-  .dots span:nth-child(2){animation-delay:.2s}
-  .dots span:nth-child(3){animation-delay:.4s}
-  @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
-  .check{width:44px;height:44px;color:var(--accent-2);margin:0 auto;animation:checkIn .35s cubic-bezier(.2,.8,.2,1) both}
-  @keyframes checkIn{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
-  .exec-close{margin-top:22px;width:100%;padding:11px 16px;border-radius:11px;border:none;background:var(--accent);color:#fff;font-weight:600;font-size:14px;cursor:pointer;transition:background .15s}
-  .exec-close:hover{background:var(--accent-2)}
-  .exec-close.hidden{display:none}
-  #terms-overlay{position:fixed;inset:0;z-index:10000;background:rgba(10,10,12,.78);-webkit-backdrop-filter:blur(10px) saturate(.8);backdrop-filter:blur(10px) saturate(.8);display:grid;place-items:center;opacity:0;transition:opacity .25s ease;padding:24px}
-  #terms-overlay:not(.hidden){opacity:1}
-  #terms-overlay.hidden{display:none}
-  .terms-modal{background:rgba(19,19,24,.96);border:1px solid var(--line-2);border-radius:18px;width:620px;max-width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 30px 100px rgba(0,0,0,.7),0 0 0 1px rgba(var(--glow-rgb),.08);animation:execIn .28s cubic-bezier(.2,.8,.2,1);overflow:hidden}
-  .terms-header{display:flex;align-items:center;justify-content:space-between;padding:22px 26px 16px;border-bottom:1px solid var(--line);flex-shrink:0}
-  .terms-header h3{margin:0;font-size:18px;font-weight:600;color:var(--text);letter-spacing:-.3px}
-  .terms-header .terms-tag{font-size:11px;color:var(--dim);margin-left:10px;font-weight:500;letter-spacing:.3px}
-  .terms-close{width:32px;height:32px;border-radius:9px;background:transparent;border:1px solid var(--line-2);color:var(--dim);cursor:pointer;display:grid;place-items:center;font-family:inherit;flex-shrink:0;transition:background .15s,color .15s,border-color .15s}
-  .terms-close:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.5);color:#e05252}
-  .terms-close svg{width:15px;height:15px}
-  .terms-close.hidden{display:none}
-  .terms-content-wrap{padding:18px 26px;overflow:hidden;display:flex;flex:1;min-height:0}
-  .terms-content{width:100%;background:rgba(10,10,12,.75);border:1px solid var(--line);border-radius:12px;padding:22px 24px;overflow-y:auto;font-size:13.5px;line-height:1.7;color:#d4d4d8;scrollbar-width:none;-ms-overflow-style:none}
-  .terms-content::-webkit-scrollbar{display:none}
-  .terms-content h4{margin:0 0 8px;font-size:13.5px;font-weight:600;color:var(--text);letter-spacing:-.1px}
-  .terms-content h4:not(:first-child){margin-top:20px}
-  .terms-content p{margin:0 0 12px}
-  .terms-content ul{margin:0 0 12px;padding-left:20px}
-  .terms-content li{margin-bottom:5px}
-  .terms-content strong{color:var(--text);font-weight:600}
-  .terms-content em{color:var(--accent-2);font-style:normal;font-weight:500}
-  .terms-content .warn{color:#e05252;font-weight:600}
-  .terms-footer{padding:16px 26px 22px;border-top:1px solid var(--line);flex-shrink:0;background:rgba(15,15,18,.5)}
-  .terms-footer.hidden{display:none}
-  .terms-checkbox{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#d4d4d8;padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:rgba(10,10,12,.5);transition:border-color .15s,background .15s;user-select:none}
-  .terms-checkbox:hover{border-color:#33333d;background:rgba(21,21,26,.5)}
-  .terms-checkbox.checked{border-color:var(--accent);background:rgba(var(--glow-rgb),.1)}
-  .terms-checkbox input{margin:2px 0 0;accent-color:var(--accent);flex-shrink:0;width:16px;height:16px;cursor:pointer}
-  .terms-checkbox span{flex:1;line-height:1.5}
-  .terms-checkbox b{color:var(--text)}
-  .terms-accept{margin-top:14px;width:100%;padding:13px 20px;border-radius:11px;background:var(--accent);color:#fff;font-weight:600;font-size:14.5px;border:none;cursor:pointer;font-family:inherit;transition:background .15s,box-shadow .2s,opacity .15s}
-  .terms-accept:hover:not(:disabled){background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)}
-  .terms-accept:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.4)}
-  @media (max-width:560px){
-    header{padding:14px 18px}
-    .rule{margin:0 18px}
-    main{padding:36px 18px 64px}
-    #view-area{padding:0 18px 64px}
-    .nav .btn span{display:none}
-    .admin-meta{min-width:0}
-    #terms-overlay{padding:12px}
-    .terms-modal{max-height:94vh;border-radius:14px}
-    .terms-header{padding:16px 18px 12px}
-    .terms-header h3{font-size:16px}
-    .terms-content-wrap{padding:12px 14px}
-    .terms-content{padding:16px 16px;font-size:13px}
-    .terms-footer{padding:12px 16px 16px}
-  }
+:root{--bg:#0a0a0c;--panel:#101013;--card:#131318;--line:#1e1e24;--line-2:#26262e;--text:#e8e8ea;--dim:#8a8a94;--accent:#3b82f6;--accent-2:#60a5fa;--accent-dim:#1e3a8a;--gold:#d4af37;--gold-2:#e8c766;--gold-dim:#a67c00;--glow-rgb:59,130,246;--gold-rgb:212,175,55;--danger:#e05252}
+html[data-theme="roxo"]{--accent:#8b5cf6;--accent-2:#a78bfa;--accent-dim:#4c1d95;--glow-rgb:139,92,246;--gold:#a855f7;--gold-2:#c084fc;--gold-dim:#6b21a8;--gold-rgb:168,85,247}
+html[data-theme="verde"]{--accent:#10b981;--accent-2:#34d399;--accent-dim:#064e3b;--glow-rgb:16,185,129}
+html[data-theme="vermelho"]{--accent:#ef4444;--accent-2:#f87171;--accent-dim:#7f1d1d;--glow-rgb:239,68,68}
+*{box-sizing:border-box}
+html{margin:0;background:var(--bg);min-height:100%}
+body{margin:0;background:transparent;color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100%}
+a{color:inherit;text-decoration:none}
+.bg-pattern{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-pattern::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 45% at 50% -5%,rgba(var(--glow-rgb),.16),transparent 65%),radial-gradient(ellipse 50% 40% at 100% 100%,rgba(var(--glow-rgb),.07),transparent 70%),radial-gradient(ellipse 50% 40% at 0% 60%,rgba(var(--glow-rgb),.12),transparent 70%),linear-gradient(rgba(var(--glow-rgb),.05) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--glow-rgb),.05) 1px,transparent 1px);background-size:100% 100%,100% 100%,100% 100%,48px 48px,48px 48px;background-position:0 0,0 0,0 0,-1px -1px,-1px -1px}
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;position:relative;z-index:2}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600}
+.brand .mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(180deg,var(--accent),var(--accent-dim));display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700;box-shadow:0 0 0 1px rgba(var(--glow-rgb),.2),0 4px 20px rgba(var(--glow-rgb),.3)}
+.brand .name{font-size:16px}
+.brand .name em{font-style:normal;color:var(--accent-2)}
+.nav{display:flex;align-items:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;font-size:13.5px;font-weight:500;border:1px solid var(--line-2);background:rgba(15,15,19,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--text);cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.btn:hover{border-color:#33333d;background:rgba(21,21,26,.85)}
+.btn svg{width:15px;height:15px;opacity:.9}
+.btn.ghost{color:var(--dim)}.btn.ghost:hover{color:var(--text)}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--line-2) 15%,var(--line-2) 85%,transparent);margin:0 32px;position:relative;z-index:2}
+main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-index:2}
+.subtitle{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--dim);font-size:13.5px;margin-bottom:32px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid var(--line-2);background:rgba(15,15,19,.75);color:var(--text);font-size:12.5px}
+.chip svg{width:13px;height:13px;color:var(--accent-2)}
+.grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));max-width:1100px;margin:0 auto}
+.card{background:linear-gradient(180deg,rgba(19,19,24,.92),rgba(15,15,18,.92));border:1px solid var(--line);border-radius:16px;padding:26px 24px 22px;display:flex;flex-direction:column;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);box-shadow:0 0 0 1px rgba(var(--glow-rgb),.1),0 0 22px rgba(var(--glow-rgb),.08),0 8px 32px rgba(0,0,0,.3);transition:border-color .15s,box-shadow .25s,transform .15s}
+.card:hover{border-color:rgba(var(--glow-rgb),.35);box-shadow:0 0 0 1px rgba(var(--glow-rgb),.22),0 0 32px rgba(var(--glow-rgb),.18),0 0 64px rgba(var(--glow-rgb),.08),0 12px 40px rgba(0,0,0,.4)}
+.card .kicker{font-size:11px;letter-spacing:1.4px;color:var(--dim);text-transform:uppercase;margin-bottom:14px}
+.card h2{margin:0 0 2px;font-size:26px;font-weight:600;letter-spacing:-.3px}
+.card h2 em{font-style:normal;color:var(--accent-2)}
+.card .role{color:var(--dim);font-size:13.5px;margin-bottom:20px}
+.features{list-style:none;margin:0 0 22px;padding:0;display:flex;flex-direction:column;gap:11px}
+.features li{display:flex;align-items:center;gap:10px;font-size:14px;color:#d4d4d8}
+.features li svg{width:15px;height:15px;color:var(--accent-2);flex:0 0 auto}
+.card-actions{margin-top:auto;display:flex;align-items:stretch;gap:8px}
+.card .cta{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:background .15s,box-shadow .2s}
+.card .cta:hover{background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)}
+.card .cta svg{width:15px;height:15px}
+.card .btn-terms{flex:0 0 auto;display:flex;align-items:center;justify-content:center;padding:11px 12px;border-radius:11px;background:rgba(255,255,255,.025);color:#5c5c66;font-size:11.5px;font-weight:500;border:1px solid rgba(255,255,255,.05);cursor:pointer;font-family:inherit;letter-spacing:.2px;transition:background .15s,color .15s,border-color .15s}
+.card .btn-terms:hover{background:rgba(255,255,255,.05);color:#8a8a94;border-color:rgba(255,255,255,.09)}
+.card.gold{border-color:rgba(var(--gold-rgb),.55);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.25),0 0 24px rgba(var(--gold-rgb),.18),0 0 60px rgba(var(--gold-rgb),.1),inset 0 0 32px rgba(var(--gold-rgb),.05)}
+.card.gold:hover{border-color:rgba(var(--gold-rgb),.85);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.4),0 0 32px rgba(var(--gold-rgb),.3),0 0 80px rgba(var(--gold-rgb),.14),inset 0 0 40px rgba(var(--gold-rgb),.08)}
+.card.gold .kicker{color:rgba(var(--gold-rgb),.85)}
+.card.gold h2 em{color:var(--gold-2)}
+.card.gold .features li svg{color:var(--gold-2)}
+.card.gold .cta{background:linear-gradient(180deg,var(--gold),var(--gold-dim));color:#0a0a0c}
+.card.gold .cta:hover{background:linear-gradient(180deg,var(--gold-2),var(--gold));box-shadow:0 6px 22px rgba(var(--gold-rgb),.4)}
+.card.gold .btn-terms{border-color:rgba(var(--gold-rgb),.12);color:rgba(var(--gold-rgb),.45);background:rgba(var(--gold-rgb),.03)}
+.card.gold .btn-terms:hover{border-color:rgba(var(--gold-rgb),.32);color:rgba(var(--gold-rgb),.85);background:rgba(var(--gold-rgb),.07)}
+#view-area{padding:0 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-index:2}
+#view-area-body{max-width:760px;margin:0 auto;padding:36px 0 80px}
+.area-back{display:inline-flex;align-items:center;gap:6px;color:var(--dim);font-size:13.5px;font-weight:500;background:none;border:none;cursor:pointer;padding:0;margin:0 0 28px;transition:color .15s;font-family:inherit}
+.area-back:hover{color:var(--text)}
+.area-back svg{width:14px;height:14px}
+.area-title{margin:0 0 6px;font-size:30px;font-weight:600;letter-spacing:-.5px}
+.area-title em{font-style:normal;color:var(--accent-2)}
+.area-sub{color:var(--dim);font-size:13.5px;margin:0 0 36px}
+.area-card{background:linear-gradient(180deg,rgba(19,19,24,.92),rgba(15,15,18,.92));border:1px solid var(--line);border-radius:16px;padding:24px 26px 18px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);box-shadow:0 0 0 1px rgba(var(--glow-rgb),.08),0 8px 32px rgba(0,0,0,.3);margin-bottom:18px}
+.area-card h3{margin:0 0 14px;font-size:11px;font-weight:600;color:var(--dim);letter-spacing:1.4px;text-transform:uppercase}
+.area-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);gap:16px}
+.area-row:last-child{border-bottom:none}
+.area-row .k{color:var(--dim);font-size:13.5px;flex:0 0 auto}
+.area-row .v{color:var(--text);font-size:13.5px;font-weight:500;text-align:right;word-break:break-all;min-width:0}
+.area-tags{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0}
+.area-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;border:1px solid rgba(var(--glow-rgb),.3);background:rgba(var(--glow-rgb),.09);color:var(--accent-2);font-size:12.5px;font-weight:500}
+.area-tag.gold{border-color:rgba(var(--gold-rgb),.45);background:rgba(var(--gold-rgb),.09);color:var(--gold-2)}
+.area-actions{margin-top:22px}
+.area-actions .btn{width:100%;justify-content:center;padding:12px 16px}
+.terms-section-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.terms-btn-sm{background:transparent;border:1px solid var(--line-2);color:var(--dim);padding:8px 14px;border-radius:9px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,color .15s,background .15s}
+.terms-btn-sm:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
+.terms-btn-sm.danger:hover{border-color:rgba(224,82,82,.55);color:#e05252;background:rgba(224,82,82,.08)}
+.theme-row{display:flex;flex-wrap:wrap;gap:10px;padding:6px 0 4px}
+.theme-swatch{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:10px;border:1px solid var(--line-2);background:rgba(15,15,19,.5);color:var(--text);font-size:12.5px;font-weight:500;cursor:pointer;transition:border-color .15s,background .15s,color .15s;font-family:inherit}
+.theme-swatch:hover{border-color:#33333d;background:rgba(21,21,26,.85)}
+.theme-swatch.selected{border-color:var(--accent);background:rgba(var(--glow-rgb),.1);color:var(--accent-2)}
+.theme-swatch .dot{width:14px;height:14px;border-radius:50%;box-shadow:0 0 0 1px rgba(255,255,255,.06)}
+.theme-swatch.selected .dot{box-shadow:0 0 0 2px var(--accent)}
+.area-tabs{display:flex;gap:4px;margin:0 0 28px;border-bottom:1px solid var(--line)}
+.area-tab{padding:10px 16px;background:none;border:none;color:var(--dim);font-size:13.5px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;transition:color .15s,border-color .15s}
+.area-tab:hover{color:var(--text)}
+.area-tab.selected{color:var(--accent-2);border-bottom-color:var(--accent)}
+.admin-subtabs{display:flex;gap:4px;margin:0 0 20px;border-bottom:1px solid var(--line)}
+.admin-subtab{padding:8px 14px;background:none;border:none;color:var(--dim);font-size:12.5px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;transition:color .15s,border-color .15s}
+.admin-subtab:hover{color:var(--text)}
+.admin-subtab.selected{color:var(--accent-2);border-bottom-color:var(--accent)}
+.admin-panel{display:none}
+.admin-panel.active{display:block}
+.admin-form{display:flex;flex-direction:column;gap:14px}
+.admin-field{display:flex;flex-direction:column;gap:6px}
+.admin-field label{font-size:11px;font-weight:600;color:var(--dim);letter-spacing:1.2px;text-transform:uppercase}
+.admin-field input{background:rgba(10,10,12,.6);border:1px solid var(--line-2);border-radius:10px;padding:11px 13px;color:var(--text);font-size:14px;font-family:inherit;transition:border-color .15s}
+.admin-field input:focus{outline:none;border-color:var(--accent)}
+.admin-tag-checks{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0}
+.admin-check{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:rgba(15,15,19,.5);font-size:12.5px;color:var(--text);cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.admin-check input{accent-color:var(--accent);margin:0}
+.admin-check:hover{border-color:#33333d}
+.admin-check:has(input:checked){border-color:var(--accent);background:rgba(var(--glow-rgb),.1);color:var(--accent-2)}
+.admin-btn{align-self:flex-start;padding:11px 20px;border-radius:11px;border:none;background:var(--accent);color:#fff;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit;transition:background .15s,box-shadow .2s}
+.admin-btn:hover{background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)}
+.admin-btn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.4)}
+.admin-btn-danger{background:#b03030;color:#fff}
+.admin-btn-danger:hover{background:#e05252;box-shadow:0 6px 22px rgba(224,82,82,.35)}
+.admin-search{width:100%;background:rgba(10,10,12,.6);border:1px solid var(--line-2);border-radius:8px;padding:7px 11px;color:var(--text);font-size:12.5px;font-family:inherit;margin:0 0 12px;transition:border-color .15s}
+.admin-search:focus{outline:none;border-color:var(--accent)}
+.admin-search::placeholder{color:var(--dim)}
+.admin-tag-filter{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.admin-tag-chip{padding:5px 11px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--dim);font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s}
+.admin-tag-chip:hover{border-color:#33333d;color:var(--text)}
+.admin-tag-chip.on{border-color:var(--accent);background:rgba(var(--glow-rgb),.12);color:var(--accent-2)}
+.admin-tag-clear{padding:5px 11px;border-radius:999px;border:1px solid transparent;background:transparent;color:var(--dim);font-size:11px;font-weight:500;cursor:pointer;font-family:inherit;transition:color .15s}
+.admin-tag-clear:hover{color:var(--text)}
+.admin-tag-clear.hidden{display:none}
+.admin-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 14px;gap:12px}
+.admin-head h3{margin:0}
+.admin-head-left{display:flex;align-items:baseline;gap:10px}
+.admin-count{font-size:11.5px;color:var(--dim);font-weight:500;letter-spacing:.3px}
+.admin-count b{color:var(--accent-2);font-weight:600}
+.admin-io{display:flex;gap:6px}
+.admin-io button{background:transparent;border:1px solid var(--line-2);color:var(--dim);padding:5px 10px;border-radius:8px;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,color .15s,background .15s}
+.admin-io button:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
+.admin-users{display:flex;flex-direction:column;gap:10px;max-height:520px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
+.admin-users::-webkit-scrollbar{display:none}
+.admin-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:rgba(10,10,12,.4);border:1px solid var(--line);flex-wrap:wrap}
+.admin-meta{display:flex;flex-direction:column;gap:2px;min-width:160px;flex:0 0 auto}
+.admin-meta .admin-name{font-size:13.5px;font-weight:600;color:var(--text)}
+.admin-meta .admin-email{font-size:11.5px;color:var(--dim);word-break:break-all}
+.admin-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1}
+.admin-chip{padding:4px 10px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--dim);font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s}
+.admin-chip:hover{border-color:#33333d;color:var(--text)}
+.admin-chip.on{border-color:var(--accent);background:rgba(var(--glow-rgb),.12);color:var(--accent-2)}
+.admin-del{padding:6px 10px;border-radius:8px;background:transparent;border:1px solid var(--line-2);color:var(--dim);font-size:12px;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s}
+.admin-del:hover{border-color:rgba(224,82,82,.55);color:#e05252;background:rgba(224,82,82,.08)}
+.admin-empty{color:var(--dim);font-size:13px;padding:8px 0}
+.hist-search-wrap{margin:0 0 14px}
+.hist-list{display:flex;flex-direction:column;gap:8px;max-height:560px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
+.hist-list::-webkit-scrollbar{display:none}
+.hist-item{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-radius:10px;background:rgba(10,10,12,.4);border:1px solid var(--line)}
+.hist-icon{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;flex-shrink:0;background:rgba(var(--glow-rgb),.1);color:var(--accent-2)}
+.hist-icon svg{width:14px;height:14px}
+.hist-icon.h-login{background:rgba(59,130,246,.12);color:#60a5fa}
+.hist-icon.h-copy{background:rgba(59,130,246,.12);color:#60a5fa}
+.hist-icon.h-terms_a{background:rgba(16,185,129,.12);color:#34d399}
+.hist-icon.h-terms_r{background:rgba(224,82,82,.12);color:#e05252}
+.hist-icon.h-kill{background:rgba(224,82,82,.12);color:#e05252}
+.hist-icon.h-kill_s{background:rgba(250,204,21,.12);color:#fbbf24}
+.hist-icon.h-tags{background:rgba(139,92,246,.12);color:#a78bfa}
+.hist-body{flex:1;min-width:0}
+.hist-line1{font-size:13px;color:var(--text);line-height:1.4}
+.hist-line1 strong{font-weight:600}
+.hist-line1 em{font-style:normal;color:var(--accent-2);font-weight:500}
+.hist-line2{font-size:11px;color:var(--dim);margin-top:3px}
+.hist-email{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:11.5px}
+.kill-form{display:flex;flex-direction:column;gap:14px}
+.kill-options{display:flex;flex-direction:column;gap:8px;margin:4px 0 4px}
+.kill-opt{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border-radius:10px;border:1px solid var(--line-2);background:rgba(10,10,12,.5);cursor:pointer;font-family:inherit;text-align:left;transition:border-color .15s,background .15s}
+.kill-opt:hover{border-color:#33333d;background:rgba(21,21,26,.5)}
+.kill-opt.selected{border-color:var(--accent);background:rgba(var(--glow-rgb),.08)}
+.kill-opt.selected.danger{border-color:rgba(224,82,82,.6);background:rgba(224,82,82,.08)}
+.kill-radio{margin-top:2px;flex-shrink:0;width:14px;height:14px;border-radius:50%;border:2px solid var(--line-2);display:grid;place-items:center;transition:border-color .15s}
+.kill-opt.selected .kill-radio{border-color:var(--accent)}
+.kill-opt.selected.danger .kill-radio{border-color:#e05252}
+.kill-opt.selected .kill-radio::after{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.kill-opt.selected.danger .kill-radio::after{background:#e05252}
+.kill-text{flex:1}
+.kill-text b{display:block;font-size:13px;color:var(--text);font-weight:600;margin-bottom:2px}
+.kill-text span{font-size:11.5px;color:var(--dim);line-height:1.45}
+.kill-pending-list{display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
+.kill-pending-list::-webkit-scrollbar{display:none}
+.kill-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:rgba(10,10,12,.4);border:1px solid var(--line)}
+.kill-row-meta{flex:1;min-width:0}
+.kill-row-email{font-size:12.5px;color:var(--text);word-break:break-all;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.kill-row-sub{font-size:11px;color:var(--dim);margin-top:2px}
+.kill-row-mode{padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:600;flex-shrink:0}
+.kill-row-mode.soft{background:rgba(250,204,21,.12);color:#fbbf24}
+.kill-row-mode.hard{background:rgba(224,82,82,.12);color:#e05252}
+.kill-row-btn{padding:5px 10px;border-radius:8px;flex-shrink:0;background:transparent;border:1px solid var(--line-2);color:var(--dim);font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,color .15s,background .15s}
+.kill-row-btn:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
+.admin-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(19,19,24,.96);border:1px solid var(--line-2);border-radius:10px;padding:11px 18px;color:var(--text);font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:10001}
+.admin-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.admin-toast.err{border-color:rgba(224,82,82,.55);color:#e05252}
+@keyframes areaIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+#view-area-body.animate .area-back,#view-area-body.animate .area-title,#view-area-body.animate .area-sub,#view-area-body.animate .area-tabs,#view-area-body.animate .area-card,#view-area-body.animate .area-actions,#view-area-body.animate .area-tag{animation:areaIn .55s cubic-bezier(.2,.8,.2,1) both}
+#view-area-body.animate .area-back{animation-delay:0s}
+#view-area-body.animate .area-title{animation-delay:.05s}
+#view-area-body.animate .area-sub{animation-delay:.1s}
+#view-area-body.animate .area-tabs{animation-delay:.13s}
+#view-area-body.animate .area-card:nth-of-type(1){animation-delay:.16s}
+#view-area-body.animate .area-card:nth-of-type(2){animation-delay:.24s}
+#view-area-body.animate .area-card:nth-of-type(3){animation-delay:.32s}
+#view-area-body.animate .area-card:nth-of-type(4){animation-delay:.4s}
+#view-area-body.animate .area-tag:nth-child(1){animation-delay:.3s}
+#view-area-body.animate .area-tag:nth-child(2){animation-delay:.34s}
+#view-area-body.animate .area-tag:nth-child(3){animation-delay:.38s}
+#view-area-body.animate .area-tag:nth-child(4){animation-delay:.42s}
+#view-area-body.animate .area-tag:nth-child(5){animation-delay:.46s}
+#view-area-body.animate .area-tag:nth-child(6){animation-delay:.5s}
+#view-area-body.animate .area-actions{animation-delay:.4s}
+@keyframes siteIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+#view-site.animate header,#view-site.animate .rule,#view-site.animate .subtitle,#view-site.animate .card{animation:siteIn .5s cubic-bezier(.2,.8,.2,1) both}
+#view-site.animate header{animation-delay:0s}
+#view-site.animate .rule{animation-delay:.05s}
+#view-site.animate .subtitle{animation-delay:.1s}
+#view-site.animate .card:nth-child(1){animation-delay:.16s}
+#view-site.animate .card:nth-child(2){animation-delay:.21s}
+#view-site.animate .card:nth-child(3){animation-delay:.26s}
+#view-site.animate .card:nth-child(4){animation-delay:.31s}
+#view-site.animate .card:nth-child(5){animation-delay:.36s}
+#view-site.animate .card:nth-child(6){animation-delay:.41s}
+#area-loader{position:fixed;inset:0;z-index:9998;background:rgba(10,10,12,.72);-webkit-backdrop-filter:blur(8px) saturate(.8);backdrop-filter:blur(8px) saturate(.8);display:grid;place-items:center;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility .35s ease;pointer-events:none}
+#area-loader.show{opacity:1;visibility:visible;pointer-events:all}
+#area-loader.hidden{display:none}
+.area-loader-card{background:rgba(19,19,24,.94);border:1px solid var(--line-2);border-radius:16px;padding:36px 40px 30px;width:320px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.55),0 0 0 1px rgba(var(--glow-rgb),.08);animation:loaderPop .35s cubic-bezier(.2,.8,.2,1) both}
+@keyframes loaderPop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+.area-loader-card .spinner{width:40px;height:40px;border:3px solid rgba(var(--glow-rgb),.18);border-top-color:var(--accent-2);margin:0 auto}
+.area-loader-card h3{margin:18px 0 4px;font-size:18px;font-weight:600;color:var(--text);letter-spacing:-.2px}
+.area-loader-card .exec-sub{margin:0;color:var(--dim);font-size:12.5px}
+.center{display:grid;place-items:center;min-height:100vh;text-align:center;padding:24px;position:relative;z-index:2}
+.panel{background:linear-gradient(180deg,rgba(19,19,24,.94),rgba(15,15,18,.94));border:1px solid var(--line);border-radius:16px;padding:32px;max-width:380px;width:100%;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.panel h1{margin:0 0 6px;font-size:19px;font-weight:600}
+.panel p{margin:0 0 22px;color:var(--dim);font-size:13.5px}
+.err{color:var(--danger);font-size:13px;margin-top:14px;min-height:18px}
+.hidden{display:none !important}
+#exec-overlay{position:fixed;inset:0;z-index:9999;background:rgba(10,10,12,.72);-webkit-backdrop-filter:blur(8px) saturate(.8);backdrop-filter:blur(8px) saturate(.8);display:grid;place-items:center;opacity:0;transition:opacity .25s ease}
+#exec-overlay:not(.hidden){opacity:1}
+#exec-overlay.hidden{display:none}
+.exec-modal{background:rgba(19,19,24,.94);border:1px solid var(--line-2);border-radius:16px;padding:36px 40px 28px;width:340px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.55),0 0 0 1px rgba(var(--glow-rgb),.08);animation:execIn .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes execIn{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+.exec-body{min-height:130px;display:grid;place-items:center}
+.exec-body h3{margin:14px 0 4px;font-size:17px;font-weight:600;color:var(--text);letter-spacing:-.2px}
+.exec-sub{margin:0;color:var(--dim);font-size:12.5px}
+.spinner{width:34px;height:34px;border-radius:50%;border:2.5px solid rgba(var(--glow-rgb),.18);border-top-color:var(--accent-2);animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.dots span{animation:blink 1.4s infinite both}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.check{width:44px;height:44px;color:var(--accent-2);margin:0 auto;animation:checkIn .35s cubic-bezier(.2,.8,.2,1) both}
+@keyframes checkIn{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.exec-close{margin-top:22px;width:100%;padding:11px 16px;border-radius:11px;border:none;background:var(--accent);color:#fff;font-weight:600;font-size:14px;cursor:pointer;transition:background .15s}
+.exec-close:hover{background:var(--accent-2)}
+.exec-close.hidden{display:none}
+#terms-overlay{position:fixed;inset:0;z-index:10000;background:rgba(10,10,12,.78);-webkit-backdrop-filter:blur(10px) saturate(.8);backdrop-filter:blur(10px) saturate(.8);display:grid;place-items:center;opacity:0;transition:opacity .25s ease;padding:24px}
+#terms-overlay:not(.hidden){opacity:1}
+#terms-overlay.hidden{display:none}
+.terms-modal{background:rgba(19,19,24,.96);border:1px solid var(--line-2);border-radius:18px;width:620px;max-width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 30px 100px rgba(0,0,0,.7),0 0 0 1px rgba(var(--glow-rgb),.08);animation:execIn .28s cubic-bezier(.2,.8,.2,1);overflow:hidden}
+.terms-header{display:flex;align-items:center;justify-content:space-between;padding:22px 26px 16px;border-bottom:1px solid var(--line);flex-shrink:0}
+.terms-header h3{margin:0;font-size:18px;font-weight:600;color:var(--text);letter-spacing:-.3px}
+.terms-header .terms-tag{font-size:11px;color:var(--dim);margin-left:10px;font-weight:500;letter-spacing:.3px}
+.terms-close{width:32px;height:32px;border-radius:9px;background:transparent;border:1px solid var(--line-2);color:var(--dim);cursor:pointer;display:grid;place-items:center;font-family:inherit;flex-shrink:0;transition:background .15s,color .15s,border-color .15s}
+.terms-close:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.5);color:#e05252}
+.terms-close svg{width:15px;height:15px}
+.terms-close.hidden{display:none}
+.terms-content-wrap{padding:18px 26px;overflow:hidden;display:flex;flex:1;min-height:0}
+.terms-content{width:100%;background:rgba(10,10,12,.75);border:1px solid var(--line);border-radius:12px;padding:22px 24px;overflow-y:auto;font-size:13.5px;line-height:1.7;color:#d4d4d8;scrollbar-width:none;-ms-overflow-style:none}
+.terms-content::-webkit-scrollbar{display:none}
+.terms-content h4{margin:0 0 8px;font-size:13.5px;font-weight:600;color:var(--text);letter-spacing:-.1px}
+.terms-content h4:not(:first-child){margin-top:20px}
+.terms-content p{margin:0 0 12px}
+.terms-content ul{margin:0 0 12px;padding-left:20px}
+.terms-content li{margin-bottom:5px}
+.terms-content strong{color:var(--text);font-weight:600}
+.terms-content em{color:var(--accent-2);font-style:normal;font-weight:500}
+.terms-content .warn{color:#e05252;font-weight:600}
+.terms-footer{padding:16px 26px 22px;border-top:1px solid var(--line);flex-shrink:0;background:rgba(15,15,18,.5)}
+.terms-footer.hidden{display:none}
+.terms-checkbox{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#d4d4d8;padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:rgba(10,10,12,.5);transition:border-color .15s,background .15s;user-select:none}
+.terms-checkbox:hover{border-color:#33333d;background:rgba(21,21,26,.5)}
+.terms-checkbox.checked{border-color:var(--accent);background:rgba(var(--glow-rgb),.1)}
+.terms-checkbox input{margin:2px 0 0;accent-color:var(--accent);flex-shrink:0;width:16px;height:16px;cursor:pointer}
+.terms-checkbox span{flex:1;line-height:1.5}
+.terms-checkbox b{color:var(--text)}
+.terms-accept{margin-top:14px;width:100%;padding:13px 20px;border-radius:11px;background:var(--accent);color:#fff;font-weight:600;font-size:14.5px;border:none;cursor:pointer;font-family:inherit;transition:background .15s,box-shadow .2s,opacity .15s}
+.terms-accept:hover:not(:disabled){background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)}
+.terms-accept:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.4)}
+@media (max-width:560px){
+  header{padding:14px 18px}
+  .rule{margin:0 18px}
+  main{padding:36px 18px 64px}
+  #view-area{padding:0 18px 64px}
+  .nav .btn span{display:none}
+  .admin-meta{min-width:0}
+  #terms-overlay{padding:12px}
+  .terms-modal{max-height:94vh;border-radius:14px}
+  .terms-header{padding:16px 18px 12px}
+  .terms-header h3{font-size:16px}
+  .terms-content-wrap{padding:12px 14px}
+  .terms-content{padding:16px 16px;font-size:13px}
+  .terms-footer{padding:12px 16px 16px}
+}
 </style>
 </head>
 <body>
@@ -406,14 +358,8 @@
   <div class="panel">
     <h1>Acesso restrito</h1>
     <p>Entre com a conta Google autorizada.</p>
-    <div id="g_id_onload"
-         data-client_id="235523757028-er6fbrdbe760s57fc8bo4st6gc03thu8.apps.googleusercontent.com"
-         data-callback="onCredential"
-         data-auto_prompt="false"></div>
-    <div class="g_id_signin"
-         data-type="standard" data-size="large" data-theme="filled_black"
-         data-text="signin_with" data-shape="rectangular" data-logo_alignment="center"
-         style="display:flex;justify-content:center"></div>
+    <div id="g_id_onload" data-client_id="235523757028-er6fbrdbe760s57fc8bo4st6gc03thu8.apps.googleusercontent.com" data-callback="onCredential" data-auto_prompt="false"></div>
+    <div class="g_id_signin" data-type="standard" data-size="large" data-theme="filled_black" data-text="signin_with" data-shape="rectangular" data-logo_alignment="center" style="display:flex;justify-content:center"></div>
     <div class="err" id="login-err"></div>
   </div>
 </section>
@@ -534,6 +480,24 @@
   </div>
 </div>
 
+<div id="lynx-version-overlay" class="hidden" style="position:fixed;inset:0;z-index:99999;background:rgba(5,5,6,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:linear-gradient(160deg,#131318,#101013 70%);border:1px solid #1e1e24;border-radius:16px;padding:36px 32px;max-width:640px;width:100%;text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.6);">
+    <h2 style="font-family:'Sora';font-size:22px;letter-spacing:-.4px;margin-bottom:6px;color:#e8e8ea;">Como você quer o <b>Lynx</b>?</h2>
+    <p style="color:#8a8a94;font-size:13px;margin-bottom:24px;">Escolha a versão que corresponde ao seu sistema.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+      <button onclick="startLynxExec('new')" style="text-align:left;cursor:pointer;background:#101013;border:1px solid #1e1e24;color:#e8e8ea;padding:20px 16px;border-radius:12px;transition:border-color .2s, background .2s;" onmouseover="this.style.borderColor='#3b82f6';this.style.background='#131318'" onmouseout="this.style.borderColor='#1e1e24';this.style.background='#101013'">
+        <h3 style="font-size:16px;color:#60a5fa;margin-bottom:8px;">PC Novo</h3>
+        <p style="font-size:12px;color:#8a8a94;line-height:1.4;">Recomendado para Linux moderno. (glibc 2.28+ / Python 3.12)</p>
+      </button>
+      <button onclick="startLynxExec('old')" style="text-align:left;cursor:pointer;background:#101013;border:1px solid #1e1e24;color:#e8e8ea;padding:20px 16px;border-radius:12px;transition:border-color .2s, background .2s;" onmouseover="this.style.borderColor='#3b82f6';this.style.background='#131318'" onmouseout="this.style.borderColor='#1e1e24';this.style.background='#101013'">
+        <h3 style="font-size:16px;color:#60a5fa;margin-bottom:8px;">PC Antigo</h3>
+        <p style="font-size:12px;color:#8a8a94;line-height:1.4;">Para computadores com Linux antigo. (glibc 2.17 / Python 3.8)</p>
+      </button>
+    </div>
+    <button onclick="document.getElementById('lynx-version-overlay').classList.add('hidden')" style="background:transparent;border:none;color:#8a8a94;font-size:13px;cursor:pointer;">Cancelar</button>
+  </div>
+</div>
+
 <div id="terms-overlay" class="hidden">
   <div class="terms-modal">
     <div class="terms-header">
@@ -593,6 +557,7 @@
   const termsAccept       = document.getElementById('terms-accept');
 
   const payloads = new Map();
+  const termsCache = {};
   let currentUser = null;
   let areaOpenTimer = null;
   let adminData = null;
@@ -601,265 +566,21 @@
   let adminSelectedTags = new Set();
   let killSelectedMode = null;
 
-  const TERMS_GENERAL = `
-    <h4>1. Definições</h4>
-    <p>Para fins destes Termos, aplicam-se as seguintes definições:</p>
-    <ul>
-      <li><strong>"Plataforma"</strong> — o site Lynx, suas ferramentas, scripts, códigos, interface e funcionalidades, disponibilizados no domínio do projeto;</li>
-      <li><strong>"Bloco"</strong> — cada módulo ou ferramenta individual disponibilizado dentro da Plataforma, com finalidade e termos específicos próprios;</li>
-      <li><strong>"Usuário"</strong> — a pessoa física autorizada a acessar a Plataforma, identificada por conta Google previamente cadastrada pelo administrador;</li>
-      <li><strong>"Administrador"</strong> — o responsável pela Plataforma, com poderes para conceder, revogar e restringir acessos;</li>
-      <li><strong>"Parte Isenta"</strong> — o Administrador, seus criadores, mantenedores, colaboradores e quaisquer pessoas físicas ou jurídicas vinculadas ao projeto;</li>
-      <li><strong>"Termos"</strong> — o presente documento, bem como os termos específicos de cada Bloco, considerados em conjunto e de forma indivisível;</li>
-      <li><strong>"Conteúdo"</strong> — dados, textos, códigos, materiais e informações de qualquer natureza disponibilizados ou acessados por meio da Plataforma.</li>
-    </ul>
-
-    <h4>2. Aceitação integral e vinculante</h4>
-    <p>Ao marcar a caixa de concordância e pressionar <em>"Concordar e continuar"</em>, o Usuário declara ter lido, compreendido e aceito, de forma livre, expressa, informada e irrevogável, a totalidade destes Termos, bem como todas as políticas, avisos e condições específicas de cada Bloco (coletivamente, <strong>"Termos"</strong>).</p>
-    <p>O Usuário reconhece que estes Termos podem ser alterados, atualizados, complementados ou substituídos a qualquer momento, <strong>SEM AVISO PRÉVIO</strong>, a exclusivo critério do Administrador, sendo responsabilidade exclusiva do Usuário consultar periodicamente a versão vigente. O uso continuado da Plataforma após qualquer alteração constitui aceitação tácita e integral das novas disposições.</p>
-    <p>Caso não concorde, no todo ou em parte, com quaisquer disposições destes Termos, o Usuário deverá interromper imediatamente o uso da Plataforma, ficando vedado o acesso às funcionalidades.</p>
-
-    <h4>3. Objeto e natureza do serviço</h4>
-    <p>A Plataforma <strong>Lynx</strong> disponibiliza ferramentas de automação, scripts e utilitários destinados a apoiar o Usuário em atividades diversas, incluindo (mas não se limitando a) navegação assistida e automação de tarefas. A Plataforma é fornecida <strong>"no estado em que se encontra"</strong> (<em>as-is</em>), sem garantias de qualquer natureza, expressas ou implícitas, incluindo, sem limitação, garantias de comercialização, adequação a propósito específico, disponibilidade ininterrupta, ausência de erros ou conformidade com expectativas do Usuário.</p>
-
-    <h4>4. Elegibilidade e responsabilidade pela conta</h4>
-    <p>O acesso é pessoal, intransferível e vinculado à conta Google previamente autorizada pelo Administrador. O Usuário é integralmente responsável por:</p>
-    <ul>
-      <li>Manter a confidencialidade e segurança de suas credenciais de acesso;</li>
-      <li>Todas as atividades realizadas em sua conta, ainda que por terceiros, com ou sem seu consentimento;</li>
-      <li>Notificar imediatamente o Administrador em caso de uso não autorizado de sua conta.</li>
-    </ul>
-
-    <h4>5. Verificação obrigatória dos termos específicos de cada Bloco</h4>
-    <p>O Usuário reconhece e concorda que <strong>cada Bloco disponibilizado possui termos de uso próprios</strong>, os quais podem estabelecer restrições, obrigações e vedações específicas adicionalmente a estes Termos gerais. É <strong>obrigação indeclinável do Usuário</strong> consultar, ler e compreender integralmente os termos específicos de cada Bloco antes de utilizá-lo.</p>
-    <p>Ao utilizar qualquer Bloco, o Usuário declara automaticamente que leu, compreendeu e concorda com os termos específicos aplicáveis àquele Bloco, independentemente de confirmação adicional. <span class="warn">O uso de qualquer Bloco implica aceitação plena e irrestrita dos respectivos termos específicos.</span></p>
-
-    <h4>6. Isenção total de responsabilidade da Plataforma</h4>
-    <p>A Parte Isenta <strong>NÃO POSSUI QUALQUER RESPONSABILIDADE</strong> sobre:</p>
-    <ul>
-      <li>O uso que o Usuário fizer das ferramentas, scripts e códigos disponibilizados;</li>
-      <li>Quaisquer consequências diretas, indiretas, incidentais, especiais, exemplares ou punitivas decorrentes do uso da Plataforma;</li>
-      <li>Danos de qualquer natureza a dispositivos, dados, contas, reputação ou terceiros;</li>
-      <li>Eventuais penalidades, suspensões ou sanções aplicadas por plataformas de terceiros em razão do uso das ferramentas;</li>
-      <li>Violações de termos de serviço, contratos ou legislações aplicáveis cometidas pelo Usuário;</li>
-      <li>Perdas financeiras, lucros cessantes, danos morais ou qualquer outro prejuízo.</li>
-    </ul>
-    <p>O Usuário assume <strong>integral, exclusiva e total responsabilidade</strong> por todo e qualquer ato praticado com o uso da Plataforma e suas ferramentas, isentando a Parte Isenta de toda e qualquer reclamação, ação judicial ou extrajudicial, presente ou futura.</p>
-
-    <h4>7. Uso permitido e vedações gerais</h4>
-    <p>É expressamente vedado ao Usuário, sem limitação:</p>
-    <ul>
-      <li>Utilizar a Plataforma para fins ilícitos, criminosos ou contrários à ordem pública e aos bons costumes;</li>
-      <li>Praticar qualquer ato que viole direitos de terceiros, incluindo direitos autorais, de imagem, de propriedade intelectual, privacidade ou personalidade;</li>
-      <li>Revender, sublicenciar, redistribuir, copiar, modificar, descompilar, fazer engenharia reversa, extrair, adaptar ou comercializar o acesso, o código-fonte ou qualquer parte da Plataforma, no todo ou em parte, sem autorização expressa e escrita do Administrador;</li>
-      <li>Tentar contornar, burlar, desabilitar ou interferir em mecanismos de segurança, controle de acesso ou autenticação da Plataforma;</li>
-      <li>Utilizar a Plataforma para assediar, ameaçar, perseguir ou causar dano a qualquer pessoa;</li>
-      <li>Empregar as ferramentas em atividades que possam causar dano a sistemas, redes ou dados de terceiros.</li>
-    </ul>
-
-    <h4>8. Segurança, integridade do código e proteção de dados</h4>
-    <p>O Usuário reconhece que o código-fonte, a arquitetura interna, a lógica de autenticação, o catálogo de blocos, os payloads, a lista de usuários autorizados e quaisquer dados armazenados na Plataforma constituem <strong>informação confidencial, de propriedade exclusiva do Administrador</strong>.</p>
-    <p>É <span class="warn">EXPRESSAMENTE PROIBIDO</span> ao Usuário, sob qualquer meio ou pretexto:</p>
-    <ul>
-      <li>Realizar engenharia reversa, descompilação, desobfuscação, extração ou análise indevida do código-fonte da Plataforma ou de qualquer Bloco;</li>
-      <li>Vazar, expor, publicar, compartilhar, transmitir ou tornar acessível a terceiros o código-fonte, os payloads, a estrutura interna da Plataforma ou qualquer informação técnica dela extraída;</li>
-      <li>Vazar, expor, publicar ou tornar acessível a terceiros a lista de usuários autorizados, seus e-mails, nomes, preferências, registros de acesso ou qualquer outro dado pessoal obtido por meio da Plataforma;</li>
-      <li>Capturar, armazenar, replicar ou redistribuir, no todo ou em parte, os dados internos da Plataforma com finalidade diversa da utilização pessoal regular;</li>
-      <li>Tentar burlar, interceptar, descriptografar ou acessar indevidamente áreas restritas da Plataforma ou do sistema que a hospeda.</li>
-    </ul>
-    <p>Toda e qualquer violação desta cláusula será <strong>tratada como ilícito civil e, quando aplicável, penal</strong>, ensejando:</p>
-    <ul>
-      <li>Ação judicial cabível para reparação de danos materiais e morais, nos termos dos arts. 186, 187, 927 e seguintes do Código Civil brasileiro;</li>
-      <li>Notificação às autoridades competentes, incluindo, quando couber, a Autoridade Nacional de Proteção de Dados (ANPD), o Ministério Público e as autoridades policiais;</li>
-      <li>Responsabilização criminal por violação de segredo comercial, concorrência desleal, dano, furto de dados ou condutas equiparadas, nos termos da legislação penal aplicável;</li>
-      <li>Revogação imediata e definitiva do acesso, sem direito a reembolso ou indenização de qualquer natureza.</li>
-    </ul>
-    <p>O Usuário declara estar ciente de que a prática de tais condutas poderá sujeitá-lo a responsabilização pessoal, civil e criminal, independentemente de ter agido em nome próprio ou de terceiros.</p>
-
-    <h4>9. Revogação unilateral do acesso</h4>
-    <p>O Administrador reserva-se o direito de, a seu exclusivo critério e <strong>sem necessidade de aviso prévio, justificativa ou motivação</strong>, suspender, revogar, restringir ou encerrar o acesso de qualquer Usuário, temporária ou permanentemente, especialmente em caso de:</p>
-    <ul>
-      <li>Violação de qualquer disposição destes Termos, gerais ou específicos de Bloco;</li>
-      <li>Suspeita fundamentada de uso indevido, abusivo, malicioso ou de vazamento de dados;</li>
-      <li>Tentativa de engenharia reversa, extração de código ou acesso indevido a áreas restritas;</li>
-      <li>Requisição de autoridade competente;</li>
-      <li>Descontinuação do serviço, no todo ou em parte;</li>
-      <li>Qualquer outro motivo que o Administrador julgar pertinente.</li>
-    </ul>
-    <p>A revogação do acesso não gera direito a indenização, reembolso, restituição ou qualquer compensação de qualquer natureza ao Usuário.</p>
-
-    <h4>10. Propriedade intelectual</h4>
-    <p>Salvo disposição específica em contrário nos termos de um Bloco individual, todos os direitos sobre a Plataforma, seu código-fonte, design, marca, lógica, arquitetura e conteúdo permanecem de titularidade exclusiva do Administrador ou de seus respectivos licenciantes. O acesso concedido <strong>não transfere</strong> ao Usuário qualquer direito de propriedade, uso comercial ou exploração sobre a Plataforma ou qualquer de seus componentes.</p>
-
-    <h4>11. Privacidade e tratamento de dados</h4>
-    <p>A Plataforma coleta e armazena apenas as informações estritamente necessárias ao seu funcionamento, incluindo: identificação da conta Google autorizada, preferências de uso (como tema escolhido) e registros de aceitação destes Termos. Tais dados são armazenados em infraestrutura de terceiros e não são compartilhados, vendidos ou cedidos a terceiros, exceto por determinação legal ou judicial.</p>
-
-    <h4>12. Modificação dos termos</h4>
-    <p>Estes Termos podem ser alterados, atualizados, complementados ou substituídos a qualquer momento, <strong>a exclusivo critério do Administrador e SEM AVISO PRÉVIO</strong>. A versão vigente estará sempre disponível na Plataforma. O uso continuado após a publicação de alterações, ainda que o Usuário não tenha sido notificado, constitui <strong>aceitação tácita, plena e integral</strong> das novas disposições.</p>
-    <p>É responsabilidade exclusiva do Usuário consultar periodicamente esta página para se manter informado sobre a versão vigente. O desconhecimento das alterações não isenta o Usuário de sua responsabilidade.</p>
-
-    <h4>13. Independência das cláusulas (severabilidade)</h4>
-    <p>Caso qualquer disposição destes Termos seja considerada nula, inválida ou inexequível por autoridade competente, as demais disposições permanecerão em pleno vigor e efeito, e a disposição afetada será interpretada de modo a refletir, na máxima extensão possível, a intenção original das partes.</p>
-
-    <h4>14. Não renúncia</h4>
-    <p>A tolerância, omissão ou não exercício, por parte do Administrador, de qualquer direito previsto nestes Termos não constitui renúncia, novação ou modificação do respectivo direito, podendo ser exercido a qualquer tempo.</p>
-
-    <h4>15. Lei aplicável e foro</h4>
-    <p>Estes Termos são regidos pelas leis da República Federativa do Brasil. Eventuais controvérsias serão resolvidas no foro do domicílio do Administrador da Plataforma, com renúncia expressa pelo Usuário a qualquer outro, por mais privilegiado que seja.</p>
-
-    <h4>16. Contato</h4>
-    <p>Para dúvidas, solicitações ou comunicações relativas a estes Termos, o Usuário deverá entrar em contato pelos canais oficiais de suporte da Plataforma:</p>
-    <ul>
-      <li><strong>Telefone / WhatsApp:</strong> +55 45 98820-8796</li>
-    </ul>
-
-    <p style="margin-top:24px;color:var(--dim);font-size:12px;text-align:center">
-      Última atualização: outubro de 2026<br>
-      <strong style="color:var(--dim)">Ao marcar a caixa abaixo, você concorda integralmente com todos os termos acima.</strong>
-    </p>
-  `;
-
-  const TERMS_LYNX = `
-    <h4>Termos de Uso — Bloco "Lynx" (Navegador)</h4>
-    <p style="color:var(--dim);font-size:12.5px;margin-bottom:16px">Ferramenta gratuita de navegação assistida.</p>
-
-    <h4>1. Natureza do bloco</h4>
-    <p>O bloco <strong>Lynx</strong> é uma ferramenta de navegação assistida disponibilizada <strong>gratuitamente</strong>, sem garantias de qualquer natureza. O uso é condicionado à aceitação integral destes termos.</p>
-
-    <h4>2. Vedações absolutas</h4>
-    <p>É <span class="warn">EXPRESSAMENTE PROIBIDO</span> ao Usuário utilizar este bloco para acessar, obter, armazenar, compartilhar ou disseminar, por qualquer meio:</p>
-    <ul>
-      <li>Conteúdo pornográfico, erótico explícito, NSFW (<em>Not Safe For Work</em>) ou de natureza sexual;</li>
-      <li>Conteúdo de gore, mutilação, violência extrema, tortura, crueldade ou cenas explícitas de violência;</li>
-      <li>Conteúdo de exploração, abuso ou violência sexual, especialmente envolvendo menores de idade — conduta criminosa nos termos da legislação brasileira;</li>
-      <li>Conteúdo que promova, incite ou instrua atos de terrorismo, ódio, discriminação ou violência contra grupos ou indivíduos;</li>
-      <li>Material de abuso infantil, sob qualquer forma — sujeito a notificação imediata às autoridades;</li>
-      <li>Conteúdo ilícito, criminoso ou que viole direitos de terceiros;</li>
-      <li>Material que promova automutilação, suicídio ou distúrbios alimentares;</li>
-      <li>Conteúdo de natureza ilegal segundo a legislação vigente em qualquer jurisdição aplicável.</li>
-    </ul>
-
-    <h4>3. Uso responsável</h4>
-    <p>O Usuário compromete-se a utilizar este bloco <strong>exclusivamente para finalidades lícitas, éticas e legítimas</strong>, abstendo-se de:</p>
-    <ul>
-      <li>Praticar atos que causem dano a qualquer pessoa física ou jurídica;</li>
-      <li>Acessar, interferir ou comprometer sistemas, redes ou dados de terceiros sem autorização;</li>
-      <li>Realizar atividades de vigilância, perseguição, assédio ou violação de privacidade;</li>
-      <li>Cometer fraudes, estelionato, phishing ou qualquer forma de engenharia social;</li>
-      <li>Violar direitos autorais, marcas, patentes ou propriedade intelectual de terceiros.</li>
-    </ul>
-
-    <h4>4. Responsabilidade exclusiva do Usuário</h4>
-    <p>O Usuário reconhece e concorda que <strong>toda e qualquer consequência</strong> decorrente do uso deste bloco é de sua <strong>exclusiva e integral responsabilidade</strong>, isentando o criador, administrador e mantenedores do bloco e da Plataforma de qualquer responsabilidade civil, penal, administrativa ou de qualquer natureza.</p>
-
-    <h4>5. Verificação de conformidade com terceiros</h4>
-    <p>O Usuário é o único responsável por verificar e cumprir os termos de uso, políticas e legislações aplicáveis a quaisquer sites, serviços ou plataformas acessados por meio deste bloco.</p>
-
-    <h4>6. Revogação de acesso</h4>
-    <p>O acesso a este bloco pode ser <strong>suspenso ou revogado a qualquer momento, sem aviso prévio</strong>, em caso de violação destes termos ou de qualquer outro termo da Plataforma, sem direito a indenização, reembolso ou compensação.</p>
-
-    <h4>7. Gratuidade</h4>
-    <p>Este bloco é disponibilizado gratuitamente. A gratuidade não implica em qualquer garantia de continuidade, suporte, atualização ou manutenção.</p>
-
-    <p style="margin-top:24px;color:var(--dim);font-size:12px;text-align:center">
-      Ao utilizar este bloco, você declara ter lido e concordado integralmente com estes termos específicos.
-    </p>
-  `;
-
-  const TERMS_ESCRITOR = `
-    <h4>Termos de Uso — Bloco "Escritor Baiano"</h4>
-    <p style="color:var(--dim);font-size:12.5px;margin-bottom:16px">Automação e cópia rápida de texto — serviço pago.</p>
-
-    <h4>1. Natureza do bloco</h4>
-    <p>O bloco <strong>Escritor Baiano</strong> é um utilitário de automação e cópia rápida de texto, fornecido mediante contraprestação. Trata-se de ferramenta de finalidade específica, de <strong>código proprietário e fechado</strong>, sem garantias de qualquer natureza.</p>
-
-    <h4>2. Código proprietário — todos os direitos reservados</h4>
-    <p>O código-fonte, a lógica, a arquitetura, os algoritmos internos e quaisquer componentes deste bloco constituem <strong>propriedade intelectual exclusiva do Administrador</strong>, protegidos pela Lei de Direitos Autorais (Lei nº 9.610/98), pela Lei de Propriedade Industrial (Lei nº 9.279/96) e pelas demais legislações aplicáveis.</p>
-    <p><strong>Este bloco NÃO é open-source.</strong> Todos os direitos são reservados. O acesso concedido ao Usuário constitui <strong>mera licença pessoal, limitada, revogável, não exclusiva e intransferível</strong> de uso da ferramenta, não implicando em qualquer transferência, cessão ou compartilhamento de titularidade sobre o código.</p>
-    <p>É <span class="warn">EXPRESSAMENTE PROIBIDO</span> ao Usuário, sem autorização prévia, expressa e escrita do Administrador:</p>
-    <ul>
-      <li><strong>Usar</strong> o código em outros contextos, produtos, projetos ou finalidades que não a utilização pessoal regular autorizada;</li>
-      <li><strong>Modificar</strong>, adaptar, editar, traduzir, transformar, descompilar, desobfuscar ou criar obras derivadas do código, no todo ou em parte;</li>
-      <li><strong>Vender</strong>, revender, sublicenciar, alugar, arrendar ou explorar comercialmente o código ou qualquer de suas partes;</li>
-      <li><strong>Redistribuir</strong>, publicar, compartilhar, transmitir, subir em repositórios públicos ou tornar acessível a terceiros, em qualquer meio, o código ou qualquer fragmento dele;</li>
-      <li><strong>Realizar engenharia reversa</strong> ou qualquer tentativa de extrair, reconstruir, replicar ou entender a lógica interna da ferramenta;</li>
-      <li><strong>Vazar</strong>, expor ou divulgar informações técnicas, trechos de código, payloads ou qualquer material interno do bloco a terceiros.</li>
-    </ul>
-    <p>Toda e qualquer violação desta cláusula será <strong>tratada como ilícito civil e, quando aplicável, penal</strong>, ensejando:</p>
-    <ul>
-      <li>Ação judicial cabível para reparação de danos materiais e morais, nos termos da legislação civil aplicável;</li>
-      <li>Responsabilização criminal por violação de direito autoral, violação de segredo comercial, concorrência desleal e condutas equiparadas, nos termos das Leis nº 9.610/98, nº 9.279/96 e do Código Penal brasileiro;</li>
-      <li>Notificação às autoridades competentes;</li>
-      <li>Revogação imediata e definitiva do acesso, sem direito a reembolso ou indenização de qualquer natureza.</li>
-    </ul>
-
-    <h4>3. Isenção total de responsabilidade</h4>
-    <p>O criador e Administrador <strong>NÃO POSSUEM QUALQUER RESPONSABILIDADE</strong> sobre:</p>
-    <ul>
-      <li>O modo, a finalidade ou o contexto em que o Usuário utiliza o código;</li>
-      <li>Quaisquer consequências, danos ou prejuízos decorrentes do uso do código;</li>
-      <li>Violações de termos de terceiros, contratos ou legislações cometidas pelo Usuário;</li>
-      <li>Resultados obtidos por meio do uso da ferramenta, sejam eles esperados ou não.</li>
-    </ul>
-    <p>O Usuário assume <strong>integral, exclusiva e total responsabilidade</strong> por todo e qualquer uso que faça do código, isentando expressamente o criador e Administrador de qualquer reclamação, ação ou responsabilização, presente ou futura.</p>
-
-    <h4>4. Reembolso e revogação unilateral</h4>
-    <p>O Administrador reserva-se o direito de, <strong>a seu exclusivo critério e sem necessidade de aviso prévio, justificativa ou motivação</strong>:</p>
-    <ul>
-      <li>Realizar o <strong>reembolso</strong> do valor pago pelo Usuário;</li>
-      <li><strong>Revogar</strong> o acesso do Usuário ao bloco;</li>
-      <li>Suspender, restringir ou encerrar o fornecimento do serviço, no todo ou em parte.</li>
-    </ul>
-    <p>Tal medida poderá ser adotada em caso de violação destes Termos, uso indevido do código, suspeita fundamentada de conduta irregular, tentativa de extração ou redistribuição do código, descontinuação do serviço ou qualquer outro motivo que o Administrador julgar pertinente. A revogação e o eventual reembolso não geram qualquer direito a compensação adicional, indenização ou reparação por parte do Usuário.</p>
-
-    <h4>5. Uso permitido</h4>
-    <p>O Usuário compromete-se a utilizar este bloco exclusivamente para finalidades lícitas, éticas e legítimas, abstendo-se de empregá-lo em:</p>
-    <ul>
-      <li>Atividades criminosas, fraudulentas ou ilícitas de qualquer natureza;</li>
-      <li>Violações de direitos autorais, de propriedade intelectual ou de privacidade de terceiros;</li>
-      <li>Compartilhamento, revenda ou redistribuição do acesso ou do código sem autorização expressa;</li>
-      <li>Qualquer uso que cause dano a terceiros.</li>
-    </ul>
-
-    <h4>6. Verificação de conformidade com terceiros</h4>
-    <p>O Usuário é o único responsável por verificar e cumprir os termos de uso, políticas e legislações das plataformas de terceiros em que a ferramenta venha a ser empregada. O criador e Administrador não possuem qualquer vínculo com tais plataformas e não respondem por eventuais sanções aplicadas.</p>
-
-    <h4>7. Garantias e continuidade</h4>
-    <p>Este bloco é fornecido <em>"no estado em que se encontra"</em>, sem garantias de disponibilidade, funcionamento ininterrupto, atualização, suporte técnico ou adequação a qualquer finalidade específica. O criador e Administrador não se obrigam a manter o serviço ativo por qualquer período.</p>
-
-    <p style="margin-top:24px;color:var(--dim);font-size:12px;text-align:center">
-      Ao utilizar este bloco, você declara ter lido e concordado integralmente com estes termos específicos.
-    </p>
-  `;
-
-  const TERMS_GENERIC = (blockName) => `
-    <h4>Termos de Uso — Bloco "${escapeHtml(blockName)}"</h4>
-    <p style="color:var(--dim);font-size:12.5px;margin-bottom:16px">Termos específicos deste bloco.</p>
-
-    <h4>1. Natureza</h4>
-    <p>Este bloco é fornecido <em>"no estado em que se encontra"</em>, sem garantias de qualquer natureza. O uso é condicionado à aceitação integral destes termos e dos Termos Gerais da Plataforma.</p>
-
-    <h4>2. Responsabilidade do Usuário</h4>
-    <p>Toda e qualquer consequência decorrente do uso deste bloco é de <strong>exclusiva e integral responsabilidade do Usuário</strong>. O criador, administrador e mantenedores não respondem por danos de qualquer natureza, violações de termos de terceiros ou uso indevido.</p>
-
-    <h4>3. Uso permitido</h4>
-    <p>O uso é restrito a finalidades lícitas, éticas e legítimas. É vedado empregar o bloco em atividades criminosas, fraudulentas, que violem direitos de terceiros ou que causem dano a qualquer pessoa física ou jurídica.</p>
-
-    <h4>4. Revogação de acesso</h4>
-    <p>O acesso a este bloco pode ser suspenso ou revogado a qualquer momento, sem aviso prévio, em caso de violação dos Termos Gerais ou destes termos específicos, sem direito a indenização ou compensação.</p>
-
-    <h4>5. Verificação de conformidade com terceiros</h4>
-    <p>O Usuário é o único responsável por verificar e cumprir os termos de uso e políticas das plataformas de terceiros em que a ferramenta venha a ser empregada.</p>
-
-    <p style="margin-top:24px;color:var(--dim);font-size:12px;text-align:center">
-      Ao utilizar este bloco, você declara ter lido e concordado integralmente com estes termos.
-    </p>
-  `;
-
-  function getTermsForBlock(tag) {
-    if (tag === 'Lynx') return TERMS_LYNX;
-    if (tag === 'Escritor Baiano') return TERMS_ESCRITOR;
-    return TERMS_GENERIC(tag);
+  async function fetchTerms(key) {
+    if (termsCache[key]) return termsCache[key];
+    try {
+      const r = await window.fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'getTerms', key: key })
+      });
+      const data = await r.json();
+      if (data.ok) {
+        termsCache[key] = data.text;
+        return data.text;
+      }
+    } catch (e) {}
+    return '<p>Erro ao carregar os termos. Verifique sua conexão.</p>';
   }
 
   function jwtEmail(jwt) {
@@ -967,18 +688,31 @@
     termsAccept.textContent = 'Concordar e continuar';
   });
 
-  document.addEventListener('click', (e) => {
+  document.addEventListener('click', async (e) => {
     const btn = e.target.closest('.btn-terms');
     if (!btn) return;
     e.preventDefault();
     e.stopPropagation();
+    
     const card = btn.closest('.card');
     const tag  = card?.querySelector('h2 em')?.textContent || '';
+    
+    const termsMap = {
+      'Lynx': 'lynx',
+      'Escritor Baiano': 'escritor',
+      'Baiano do Khan': 'khan',
+      'Ingles': 'ingles',
+      'Quizziz': 'quizziz'
+    };
+    
+    const key = termsMap[tag] || tag.toLowerCase();
+    const termsText = await fetchTerms(key);
+    
     openTerms({
       mode: 'view',
       title: tag ? 'Termos — ' + tag : 'Termos de uso',
       subtitle: 'Leia antes de usar',
-      content: getTermsForBlock(tag)
+      content: termsText
     });
   });
 
@@ -1041,11 +775,14 @@
       viewSite.classList.add('hidden');
       viewArea.classList.add('hidden');
       viewLogin.classList.add('hidden');
+      
+      const termsText = await fetchTerms('general');
+      
       openTerms({
         mode: 'accept',
         title: 'Termos de uso',
         subtitle: 'Leia com atenção antes de continuar',
-        content: TERMS_GENERAL,
+        content: termsText,
         acceptLabel: 'Concordar e continuar',
         onAccept: async () => { await acceptTerms(); }
       });
@@ -1081,8 +818,16 @@
     const el = document.createElement('article');
     el.className = 'card' + (b.tag === 'Ingles' ? ' gold' : '');
     el.dataset.tag = b.tag;
-    payloads.set(b.tag, b.payload || '');
+    
+    if (b.tag === 'Lynx') {
+      payloads.set('Lynx_new', b.payload_new || '');
+      payloads.set('Lynx_old', b.payload_old || '');
+    } else {
+      payloads.set(b.tag, b.payload || '');
+    }
+
     const feats = (b.features || []).map(f => '<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>' + escapeHtml(f) + '</li>').join('');
+    
     el.innerHTML =
       '<div class="kicker">' + escapeHtml(b.kicker || 'a gente faz') + '</div>' +
       '<h2><em>' + escapeHtml(b.tag) + '</em></h2>' +
@@ -1094,6 +839,54 @@
       '</div>';
     return el;
   }
+
+  window.startLynxExec = async function(type) {
+    document.getElementById('lynx-version-overlay').classList.add('hidden');
+    const payload = payloads.get('Lynx_' + type);
+    
+    openExec('Lynx (' + (type === 'new' ? 'Novo' : 'Antigo') + ')');
+    
+    if (!payload) {
+      await new Promise(r => setTimeout(r, 600));
+      finishExec();
+      execDone.querySelector('h3').textContent = 'Sem payload';
+      execDone.querySelector('.exec-sub').textContent = 'esse bloco não tem código configurado.';
+      return;
+    }
+    
+    const ok = await copyToClipboard(payload);
+    if (ok) logCopyToWorker('Lynx');
+    await new Promise(r => setTimeout(r, 1400));
+    finishExec();
+  };
+
+  grid.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.cta');
+    if (!btn) return;
+    const card = btn.closest('.card');
+    const tag  = card?.querySelector('h2 em')?.textContent || '';
+    
+    if (tag === 'Lynx') {
+      document.getElementById('lynx-version-overlay').classList.remove('hidden');
+      return;
+    }
+
+    const payload = payloads.get(tag) || '';
+    openExec(tag);
+
+    if (!payload) {
+      await new Promise(r => setTimeout(r, 600));
+      finishExec();
+      execDone.querySelector('h3').textContent = 'Sem payload';
+      execDone.querySelector('.exec-sub').textContent = 'esse bloco não tem código configurado.';
+      return;
+    }
+
+    const ok = await copyToClipboard(payload);
+    if (ok) logCopyToWorker(tag);
+    await new Promise(r => setTimeout(r, 1400));
+    finishExec();
+  });
 
   function openExec(name) {
     execEmail.textContent = name || '—';
@@ -1133,31 +926,6 @@
       }).catch(() => {});
     } catch {}
   }
-
-  grid.addEventListener('click', async (e) => {
-    const btn = e.target.closest('.cta');
-    if (!btn) return;
-    const card = btn.closest('.card');
-    const tag  = card?.querySelector('h2 em')?.textContent || '';
-    const payload = payloads.get(tag) || '';
-    openExec(tag);
-
-    if (!payload) {
-      await new Promise(r => setTimeout(r, 600));
-      finishExec();
-      execDone.querySelector('h3').textContent = 'Sem payload';
-      execDone.querySelector('.exec-sub').textContent = 'esse bloco não tem código configurado no KV.';
-      return;
-    }
-
-    const ok = await copyToClipboard(payload);
-    if (ok) logCopyToWorker(tag);
-    await new Promise(r => setTimeout(r, 1400));
-    finishExec();
-    if (!ok) {
-      execDone.querySelector('.exec-sub').textContent = 'não deu pra copiar automaticamente. selecione o texto manualmente.';
-    }
-  });
 
   execClose.addEventListener('click', closeExec);
   execOverlay.addEventListener('click', (e) => {
@@ -1281,8 +1049,9 @@
   }
   function onAdminTabClick(e) { selectAdminTab(e.currentTarget.dataset.subtab); }
 
-  document.getElementById('btn-view-terms').addEventListener('click', () => {
-    openTerms({ mode: 'view', title: 'Termos de uso', subtitle: 'Versão vigente', content: TERMS_GENERAL });
+  document.getElementById('btn-view-terms').addEventListener('click', async () => {
+    const termsText = await fetchTerms('general');
+    openTerms({ mode: 'view', title: 'Termos de uso', subtitle: 'Versão vigente', content: termsText });
   });
 
   document.getElementById('btn-revoke-terms').addEventListener('click', async () => {
@@ -1318,113 +1087,59 @@
     const panel = document.createElement('div');
     panel.className = 'area-panel hidden';
     panel.dataset.panel = 'acesso';
-    panel.innerHTML = [
-      '<div class="admin-subtabs">',
-        '<button class="admin-subtab selected" data-subtab="acessos">Acessos</button>',
-        '<button class="admin-subtab" data-subtab="historico">Histórico</button>',
-        '<button class="admin-subtab" data-subtab="kill">Desligar sessão</button>',
-      '</div>',
-
-      '<div class="admin-panel active" data-panel="acessos">',
-        '<div class="area-card">',
-          '<h3>Adicionar acesso</h3>',
-          '<form class="admin-form" id="admin-add-form">',
-            '<div class="admin-field">',
-              '<label for="admin-new-email">email @escola</label>',
-              '<input id="admin-new-email" name="email" type="email" required placeholder="nome.sobrenome@escola.pr.gov.br" autocomplete="off" spellcheck="false">',
-            '</div>',
-            '<div class="admin-field">',
-              '<label for="admin-new-name">nome</label>',
-              '<input id="admin-new-name" name="name" type="text" required placeholder="Nome" autocomplete="off" spellcheck="false">',
-            '</div>',
-            '<div class="admin-field">',
-              '<label>blocos liberados</label>',
-              '<div class="admin-tag-checks" id="admin-new-tags"></div>',
-            '</div>',
-            '<button class="admin-btn" type="submit">Adicionar</button>',
-          '</form>',
-        '</div>',
-        '<div class="area-card">',
-          '<div class="admin-head">',
-            '<div class="admin-head-left">',
-              '<h3>Acessos</h3>',
-              '<span class="admin-count" id="admin-count"></span>',
-            '</div>',
-            '<div class="admin-io">',
-              '<button id="admin-export" type="button">exportar</button>',
-              '<button id="admin-import" type="button">importar</button>',
-              '<input id="admin-import-file" type="file" accept="application/json" style="display:none">',
-            '</div>',
-          '</div>',
-          '<div class="admin-tag-filter" id="admin-tag-filter"></div>',
-          '<input id="admin-search" class="admin-search" type="text" placeholder="Buscar por nome ou email…" autocomplete="off" spellcheck="false">',
-          '<div class="admin-users" id="admin-users">',
-            '<div class="admin-empty">carregando…</div>',
-          '</div>',
-        '</div>',
-      '</div>',
-
-      '<div class="admin-panel" data-panel="historico">',
-        '<div class="area-card">',
-          '<div class="admin-head">',
-            '<div class="admin-head-left">',
-              '<h3>Histórico de uso</h3>',
-              '<span class="admin-count" id="hist-count"></span>',
-            '</div>',
-          '</div>',
-          '<div class="hist-search-wrap">',
-            '<input id="hist-search" class="admin-search" type="text" placeholder="nome.sobrenome@escola.pr.gov.br" autocomplete="off" spellcheck="false" style="margin:0">',
-          '</div>',
-          '<div class="hist-list" id="hist-list">',
-            '<div class="admin-empty">Digite um email acima para ver o histórico.</div>',
-          '</div>',
-        '</div>',
-      '</div>',
-
-      '<div class="admin-panel" data-panel="kill">',
-        '<div class="area-card">',
-          '<h3>Desligar sessão</h3>',
-          '<p style="color:var(--dim);font-size:12.5px;margin:0 0 16px">Derruba a aba onde a pessoa está logada no site. Ela pode logar de novo normalmente.</p>',
-          '<form class="kill-form" id="kill-form">',
-            '<div class="admin-field">',
-              '<label for="kill-email">email @escola</label>',
-              '<input id="kill-email" name="email" type="email" required placeholder="nome.sobrenome@escola.pr.gov.br" autocomplete="off" spellcheck="false">',
-            '</div>',
-            '<div class="admin-field">',
-              '<label>modo</label>',
-              '<div class="kill-options" id="kill-options">',
-                '<button type="button" class="kill-opt" data-mode="soft">',
-                  '<span class="kill-radio"></span>',
-                  '<span class="kill-text">',
-                    '<b>Fechar a sessão</b>',
-                    '<span>Derruba a aba atual. Se a pessoa reabrir o site, ainda está logada</span>',
-                  '</span>',
-                '</button>',
-                '<button type="button" class="kill-opt danger" data-mode="hard">',
-                  '<span class="kill-radio"></span>',
-                  '<span class="kill-text">',
-                    '<b>fechar e deslogar</b>',
-                    '<span>Derruba a aba atual e apaga a sessão. Precisa logar com Google de novo</span>',
-                  '</span>',
-                '</button>',
-              '</div>',
-            '</div>',
-            '<button class="admin-btn admin-btn-danger" type="submit" id="kill-submit" disabled>Executar</button>',
-          '</form>',
-        '</div>',
-        '<div class="area-card">',
-          '<h3>Desligar todos</h3>',
-          '<p style="color:var(--dim);font-size:12.5px;margin:0 0 16px">Encerra a sessão de TODOS os usuários ativos no sistema instantaneamente.</p>',
-          '<button class="admin-btn admin-btn-danger" type="button" id="admin-kill-all">Desligar todos</button>',
-        '</div>',
-        '<div class="area-card">',
-          '<h3>Desligamentos pendentes</h3>',
-          '<div class="kill-pending-list" id="kill-pending-list">',
-            '<div class="admin-empty">Nenhum desligamento pendente.</div>',
-          '</div>',
-        '</div>',
-      '</div>'
-    ].join('');
+    panel.innerHTML = `
+      <div class="admin-subtabs">
+        <button class="admin-subtab selected" data-subtab="acessos">Acessos</button>
+        <button class="admin-subtab" data-subtab="historico">Histórico</button>
+        <button class="admin-subtab" data-subtab="kill">Desligar sessão</button>
+      </div>
+      <div class="admin-panel active" data-panel="acessos">
+        <div class="area-card">
+          <h3>Adicionar acesso</h3>
+          <form class="admin-form" id="admin-add-form">
+            <div class="admin-field"><label>email @escola</label><input id="admin-new-email" name="email" type="email" required placeholder="nome.sobrenome@escola.pr.gov.br"></div>
+            <div class="admin-field"><label>nome</label><input id="admin-new-name" name="name" type="text" required placeholder="Nome"></div>
+            <div class="admin-field"><label>blocos liberados</label><div class="admin-tag-checks" id="admin-new-tags"></div></div>
+            <button class="admin-btn" type="submit">Adicionar</button>
+          </form>
+        </div>
+        <div class="area-card">
+          <div class="admin-head"><div class="admin-head-left"><h3>Acessos</h3><span class="admin-count" id="admin-count"></span></div><div class="admin-io"><button id="admin-export">exportar</button><button id="admin-import">importar</button><input id="admin-import-file" type="file" accept="application/json" style="display:none"></div></div>
+          <div class="admin-tag-filter" id="admin-tag-filter"></div>
+          <input id="admin-search" class="admin-search" type="text" placeholder="Buscar por nome ou email…">
+          <div class="admin-users" id="admin-users"></div>
+        </div>
+      </div>
+      <div class="admin-panel" data-panel="historico">
+        <div class="area-card">
+          <div class="admin-head"><div class="admin-head-left"><h3>Histórico de uso</h3><span class="admin-count" id="hist-count"></span></div></div>
+          <div class="hist-search-wrap"><input id="hist-search" class="admin-search" type="text" placeholder="nome.sobrenome@escola.pr.gov.br" style="margin:0"></div>
+          <div class="hist-list" id="hist-list"><div class="admin-empty">Digite um email acima para ver o histórico.</div></div>
+        </div>
+      </div>
+      <div class="admin-panel" data-panel="kill">
+        <div class="area-card">
+          <h3>Desligar sessão</h3>
+          <p style="color:var(--dim);font-size:12.5px;margin:0 0 16px">Derruba a aba onde a pessoa está logada no site. Ela pode logar de novo normalmente.</p>
+          <form class="kill-form" id="kill-form">
+            <div class="admin-field"><label>email @escola</label><input id="kill-email" name="email" type="email" required placeholder="nome.sobrenome@escola.pr.gov.br"></div>
+            <div class="admin-field"><label>modo</label><div class="kill-options" id="kill-options">
+              <button type="button" class="kill-opt" data-mode="soft"><span class="kill-radio"></span><span class="kill-text"><b>Fechar a sessão</b><span>Derruba a aba atual. Se a pessoa reabrir o site, ainda está logada</span></span></button>
+              <button type="button" class="kill-opt danger" data-mode="hard"><span class="kill-radio"></span><span class="kill-text"><b>fechar e deslogar</b><span>Derruba a aba atual e apaga a sessão. Precisa logar com Google de novo</span></span></button>
+            </div></div>
+            <button class="admin-btn admin-btn-danger" type="submit" id="kill-submit" disabled>Executar</button>
+          </form>
+        </div>
+        <div class="area-card">
+          <h3>Desligar todos</h3>
+          <p style="color:var(--dim);font-size:12.5px;margin:0 0 16px">Encerra a sessão de TODOS os usuários ativos no sistema instantaneamente.</p>
+          <button class="admin-btn admin-btn-danger" type="button" id="admin-kill-all">Desligar todos</button>
+        </div>
+        <div class="area-card">
+          <h3>Desligamentos pendentes</h3>
+          <div class="kill-pending-list" id="kill-pending-list"><div class="admin-empty">Nenhum desligamento pendente.</div></div>
+        </div>
+      </div>`;
     areaBody.appendChild(panel);
 
     wireTabs();
@@ -1443,16 +1158,12 @@
         toast('adicionado: ' + name);
         form.reset();
         await loadAdmin();
-      } catch (e) {
-        toast('falha: ' + e.message, true);
-      }
+      } catch (e) { toast('falha: ' + e.message, true); }
     });
 
     document.getElementById('admin-search').addEventListener('input', applyAdminFilter);
     document.getElementById('admin-export').addEventListener('click', doExport);
-    document.getElementById('admin-import').addEventListener('click', () => {
-      document.getElementById('admin-import-file').click();
-    });
+    document.getElementById('admin-import').addEventListener('click', () => { document.getElementById('admin-import-file').click(); });
     document.getElementById('admin-import-file').addEventListener('change', doImport);
 
     let histTimer = null;
@@ -1495,9 +1206,7 @@
         document.querySelectorAll('.kill-opt').forEach(o => o.classList.remove('selected'));
         document.getElementById('kill-submit').disabled = true;
         await loadKills();
-      } catch (err) {
-        toast('falha: ' + err.message, true);
-      }
+      } catch (err) { toast('falha: ' + err.message, true); }
     });
 
     document.getElementById('admin-kill-all').addEventListener('click', async () => {
@@ -1506,9 +1215,7 @@
         const r = await adminCall('admin:killAll', { mode: 'hard' });
         toast('sessões encerradas: ' + r.count);
         await loadKills();
-      } catch (e) {
-        toast('falha: ' + e.message, true);
-      }
+      } catch (e) { toast('falha: ' + e.message, true); }
     });
   }
 
@@ -1544,9 +1251,7 @@
       renderAdminTagFilter();
       renderAdminUsers();
       updateAdminCount();
-    } catch (e) {
-      toast('falha ao carregar: ' + e.message, true);
-    }
+    } catch (e) { toast('falha ao carregar: ' + e.message, true); }
   }
 
   function updateAdminCount() {
@@ -1687,9 +1392,7 @@
       const r = await adminCall('admin:import', { people });
       toast('importado: ' + r.imported);
       await loadAdmin();
-    } catch (err) {
-      toast('falha: ' + err.message, true);
-    }
+    } catch (err) { toast('falha: ' + err.message, true); }
   }
 
   function renderAdminUsers() {
@@ -1750,9 +1453,7 @@
           await adminCall('admin:deleteUser', { email: p.email });
           toast('removido: ' + p.email);
           await loadAdmin();
-        } catch (e) {
-          toast('falha ao remover: ' + e.message, true);
-        }
+        } catch (e) { toast('falha ao remover: ' + e.message, true); }
       });
 
       row.append(meta, chips, del);
@@ -1777,9 +1478,7 @@
       }
       countEl.innerHTML = '<b>' + events.length + '</b> evento' + (events.length === 1 ? '' : 's');
       for (const ev of events) list.appendChild(renderHistItem(ev, email));
-    } catch (e) {
-      list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>';
-    }
+    } catch (e) { list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>'; }
   }
 
   function renderHistItem(ev, email) {
@@ -1791,53 +1490,19 @@
     let line1 = '';
 
     switch (ev.type) {
-      case 'login':
-        iconClass = 'h-login';
-        iconSvg = '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>';
-        line1 = 'fez login no site';
-        break;
-      case 'copy':
-        iconClass = 'h-copy';
-        iconSvg = '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>';
-        line1 = 'copiou o bloco <em>' + escapeHtml(ev.tag || '?') + '</em>';
-        break;
-      case 'terms_accept':
-        iconClass = 'h-terms_a';
-        iconSvg = '<path d="M20 6 9 17l-5-5"/>';
-        line1 = 'aceitou os termos de uso';
-        break;
-      case 'terms_revoke':
-        iconClass = 'h-terms_r';
-        iconSvg = '<path d="M18 6 6 18M6 6l12 12"/>';
-        line1 = 'revogou o aceite dos termos';
-        break;
-      case 'tags_update':
-        iconClass = 'h-tags';
-        iconSvg = '<path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2"/>';
-        line1 = 'tags atualizadas' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : '');
-        break;
-      case 'kill_soft':
-        iconClass = 'h-kill_s';
-        iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/>';
-        line1 = 'sessão derrubada' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : '');
-        break;
-      case 'kill_hard':
-        iconClass = 'h-kill';
-        iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/>';
-        line1 = 'sessão derrubada e deslogada' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : '');
-        break;
-      default:
-        line1 = escapeHtml(ev.type || '?');
+      case 'login': iconClass = 'h-login'; iconSvg = '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>'; line1 = 'fez login no site'; break;
+      case 'copy': iconClass = 'h-copy'; iconSvg = '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>'; line1 = 'copiou o bloco <em>' + escapeHtml(ev.tag || '?') + '</em>'; break;
+      case 'terms_accept': iconClass = 'h-terms_a'; iconSvg = '<path d="M20 6 9 17l-5-5"/>'; line1 = 'aceitou os termos de uso'; break;
+      case 'terms_revoke': iconClass = 'h-terms_r'; iconSvg = '<path d="M18 6 6 18M6 6l12 12"/>'; line1 = 'revogou o aceite dos termos'; break;
+      case 'tags_update': iconClass = 'h-tags'; iconSvg = '<path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2"/>'; line1 = 'tags atualizadas' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : ''); break;
+      case 'kill_soft': iconClass = 'h-kill_s'; iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/>'; line1 = 'sessão derrubada' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : ''); break;
+      case 'kill_hard': iconClass = 'h-kill'; iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/>'; line1 = 'sessão derrubada e deslogada' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : ''); break;
+      default: line1 = escapeHtml(ev.type || '?');
     }
 
     row.innerHTML =
-      '<div class="hist-icon ' + iconClass + '">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + iconSvg + '</svg>' +
-      '</div>' +
-      '<div class="hist-body">' +
-        '<div class="hist-line1">' + line1 + '</div>' +
-        '<div class="hist-line2">' + escapeHtml(fmtDate(ev.ts)) + ' · <span class="hist-email">' + escapeHtml(email) + '</span></div>' +
-      '</div>';
+      '<div class="hist-icon ' + iconClass + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + iconSvg + '</svg></div>' +
+      '<div class="hist-body"><div class="hist-line1">' + line1 + '</div><div class="hist-line2">' + escapeHtml(fmtDate(ev.ts)) + ' · <span class="hist-email">' + escapeHtml(email) + '</span></div></div>';
     return row;
   }
 
@@ -1849,39 +1514,23 @@
       const r = await adminCall('admin:listKills');
       const kills = r.kills || [];
       list.innerHTML = '';
-      if (!kills.length) {
-        list.innerHTML = '<div class="admin-empty">nenhum desligamento pendente.</div>';
-        return;
-      }
+      if (!kills.length) { list.innerHTML = '<div class="admin-empty">nenhum desligamento pendente.</div>'; return; }
       for (const k of kills) {
         const row = document.createElement('div');
         row.className = 'kill-row';
         const modeLabel = k.mode === 'hard' ? 'deslogar' : 'fechar';
-        row.innerHTML =
-          '<div class="kill-row-meta">' +
-            '<div class="kill-row-email">' + escapeHtml(k.email) + '</div>' +
-            '<div class="kill-row-sub">enviado ' + escapeHtml(fmtRelative(k.ts)) + (k.by ? ' por ' + escapeHtml(k.by) : '') + '</div>' +
-          '</div>' +
-          '<span class="kill-row-mode ' + k.mode + '">' + modeLabel + '</span>';
+        row.innerHTML = '<div class="kill-row-meta"><div class="kill-row-email">' + escapeHtml(k.email) + '</div><div class="kill-row-sub">enviado ' + escapeHtml(fmtRelative(k.ts)) + (k.by ? ' por ' + escapeHtml(k.by) : '') + '</div></div><span class="kill-row-mode ' + k.mode + '">' + modeLabel + '</span>';
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'kill-row-btn';
         btn.textContent = 'limpar';
         btn.addEventListener('click', async () => {
-          try {
-            await adminCall('admin:clearKill', { email: k.email });
-            toast('limpo: ' + k.email);
-            await loadKills();
-          } catch (e) {
-            toast('falha: ' + e.message, true);
-          }
+          try { await adminCall('admin:clearKill', { email: k.email }); toast('limpo: ' + k.email); await loadKills(); } catch (e) { toast('falha: ' + e.message, true); }
         });
         row.appendChild(btn);
         list.appendChild(row);
       }
-    } catch (e) {
-      list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>';
-    }
+    } catch (e) { list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>'; }
   }
 
   wireTabs();
@@ -1903,20 +1552,11 @@
 
   function showMiniToast(msg) {
     const t = document.createElement('div');
-    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);' +
-      'background:rgba(19,19,24,.96);border:1px solid #26262e;border-radius:10px;' +
-      'padding:11px 18px;color:#e8e8ea;font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.55);' +
-      'z-index:10002;transition:opacity .22s, transform .22s;opacity:0;';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(19,19,24,.96);border:1px solid #26262e;border-radius:10px;padding:11px 18px;color:#e8e8ea;font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.55);z-index:10002;transition:opacity .22s, transform .22s;opacity:0;';
     t.textContent = msg;
     document.body.appendChild(t);
-    requestAnimationFrame(() => {
-      t.style.opacity = '1';
-      t.style.transform = 'translateX(-50%) translateY(0)';
-    });
-    setTimeout(() => {
-      t.style.opacity = '0';
-      t.style.transform = 'translateX(-50%) translateY(20px)';
-    }, 2400);
+    requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; });
+    setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 2400);
     setTimeout(() => t.remove(), 2800);
   }
 
@@ -1945,9 +1585,8 @@
     const changed = [];
 
     for (const b of (currentUser.blocks || [])) {
-      if (!incomingMap.has(b.tag)) {
-        removed.push(b);
-      } else {
+      if (!incomingMap.has(b.tag)) removed.push(b);
+      else {
         const inc = incomingMap.get(b.tag);
         if (JSON.stringify(b) !== JSON.stringify(inc)) changed.push(inc);
       }
@@ -1963,7 +1602,14 @@
 
     for (const b of removed) {
       const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
-      fadeOutAndRemove(card);
+      if (card) {
+        card.style.transition = 'opacity .25s, transform .25s';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(.95)';
+        setTimeout(() => card.remove(), 260);
+      }
+      payloads.delete(b.tag + '_new');
+      payloads.delete(b.tag + '_old');
       payloads.delete(b.tag);
     }
 
@@ -1977,60 +1623,48 @@
 
     added.forEach((b, i) => {
       const el = renderBlock(b);
-      setTimeout(() => {
-        grid.appendChild(el);
-        fadeIn(el);
-      }, i * 90);
+      setTimeout(() => { grid.appendChild(el); fadeIn(el); }, i * 90);
     });
 
     const parts = [];
-    if (added.length)   parts.push('+' + added.map(b => b.tag).join(', '));
+    if (added.length) parts.push('+' + added.map(b => b.tag).join(', '));
     if (removed.length) parts.push('−' + removed.map(b => b.tag).join(', '));
-    if (parts.length)   showMiniToast('permissões atualizadas · ' + parts.join('  '));
+    if (changed.length && !added.length && !removed.length) parts.push('atualizado');
+    if (parts.length) showMiniToast('permissões atualizadas · ' + parts.join(' '));
   }
 
   async function _handleKill(kill) {
     stopPolling();
     if (kill.mode === 'hard') {
       try { sessionStorage.removeItem(SESSION_KEY); } catch {}
+      try { localStorage.clear(); } catch {}
     }
-    const t = document.createElement('div');
-    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);' +
-      'background:rgba(19,19,24,.96);border:1px solid #26262e;border-radius:10px;' +
-      'padding:12px 20px;color:#e8e8ea;font-size:13.5px;box-shadow:0 12px 40px rgba(0,0,0,.55);' +
-      'z-index:10002;transition:opacity .2s;';
-    t.textContent = kill.mode === 'hard' ? 'sessão encerrada pelo administrador.' : 'navegador fechado pelo administrador.';
-    document.body.appendChild(t);
-    setTimeout(() => { t.style.opacity = '0'; }, 1300);
-    setTimeout(() => kill_now(), 1600);
-  }
+    
+    document.documentElement.innerHTML = `
+      <head>
+        <meta charset="utf-8">
+        <title>Sessão Encerrada</title>
+        <style>
+          body{background:#0a0a0c;color:#e05252;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;font-family:system-ui,sans-serif;margin:0;text-align:center;}
+          h1{font-size:48px;margin:0 0 10px;letter-spacing:-1px;}
+          p{color:#8a8a94;font-size:16px;margin:0;}
+        </style>
+      </head>
+      <body>
+        <h1>SESSÃO ENCERRADA</h1>
+        <p>O administrador desconectou este dispositivo.</p>
+      </body>
+    `;
 
-    function applyBlocksDiff(incoming) {
-    const incomingMap = new Map((incoming || []).map(b => [b.tag, b]));
-    const removed = [];
+    history.pushState(null, document.title, location.href);
+    window.addEventListener('popstate', function () { history.pushState(null, document.title, location.href); });
 
-    for (const b of (currentUser.blocks || [])) {
-      if (!incomingMap.has(b.tag)) {
-        removed.push(b);
-      }
-    }
-
-    if (!removed.length) return;
-
-    currentUser.blocks = incoming || [];
-
-    for (const b of removed) {
-      const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
-      if (card) {
-        card.style.transition = 'opacity .25s, transform .25s';
-        card.style.opacity = '0';
-        card.style.transform = 'scale(.95)';
-        setTimeout(() => card.remove(), 260);
-      }
-      payloads.delete(b.tag);
-    }
-
-    showMiniToast('permissões atualizadas · -' + removed.map(b => b.tag).join(', '));
+    setTimeout(() => {
+      window.close();
+      window.open('', '_self', '');
+      window.close();
+      setTimeout(() => { window.location.replace('about:blank'); }, 500);
+    }, 1000);
   }
 
   async function pollTick() {
@@ -2045,22 +1679,16 @@
       await _handleKill(data.kill);
       return;
     }
-
+    
+    if (data.theme) applyTheme(data.theme);
     applyBlocksDiff(data.blocks || []);
   }
 
   function startPolling() {
     stopPolling();
     if (!currentUser) return;
-    pollTimer = setInterval(pollTick, 20000);
-    document.addEventListener('visibilitychange', onVisibilityForPoll);
-  }
-
-  function startPolling() {
-    stopPolling();
-    if (!currentUser) return;
     knownTags = new Set((currentUser.blocks || []).map(b => b.tag));
-    pollTimer = setInterval(pollTick, 5000);
+    pollTimer = setInterval(pollTick, 20000);
     document.addEventListener('visibilitychange', onVisibilityForPoll);
   }
   function onVisibilityForPoll() {
@@ -2074,6 +1702,7 @@
   function kill_now() {
     try { window.__guardKill && window.__guardKill('admin_kill'); }
     catch { try { location.replace('about:blank'); } catch {} }
+    if (document.body) { document.body.innerHTML = ''; document.body.style.background = '#000'; document.title = 'Sessão Encerrada'; }
   }
 
   function route() {
