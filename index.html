@@ -480,22 +480,39 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
   </div>
 </div>
 
-<div id="lynx-version-overlay" class="hidden" style="position:fixed;inset:0;z-index:99999;background:rgba(5,5,6,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:24px;">
-  <div style="background:linear-gradient(160deg,#131318,#101013 70%);border:1px solid #1e1e24;border-radius:16px;padding:36px 32px;max-width:640px;width:100%;text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.6);">
-    <h2 style="font-family:'Sora';font-size:22px;letter-spacing:-.4px;margin-bottom:6px;color:#e8e8ea;">Como você quer o <b>Lynx</b>?</h2>
-    <p style="color:#8a8a94;font-size:13px;margin-bottom:24px;">Escolha a versão que corresponde ao seu sistema.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
-      <button onclick="startLynxExec('new')" style="text-align:left;cursor:pointer;background:#101013;border:1px solid #1e1e24;color:#e8e8ea;padding:20px 16px;border-radius:12px;transition:border-color .2s, background .2s;" onmouseover="this.style.borderColor='#3b82f6';this.style.background='#131318'" onmouseout="this.style.borderColor='#1e1e24';this.style.background='#101013'">
-        <h3 style="font-size:16px;color:#60a5fa;margin-bottom:8px;">PC Novo</h3>
-        <p style="font-size:12px;color:#8a8a94;line-height:1.4;">Recomendado para Linux moderno. (glibc 2.28+ / Python 3.12)</p>
+<div id="lynx-version-overlay" class="hidden" style="position:fixed;inset:0;z-index:99999;background:rgba(5,5,6,.82);-webkit-backdrop-filter:blur(12px) saturate(.8);backdrop-filter:blur(12px) saturate(.8);display:flex;align-items:center;justify-content:center;padding:24px;">
+  
+  <div class="version-modal">
+    <h2 class="version-title">Como você quer o <b>Lynx</b>?</h2>
+    <p class="version-sub">Escolha a versão que corresponde ao seu sistema.</p>
+    
+    <div class="version-options">
+      <!-- Opção PC Novo -->
+      <button onclick="startLynxExec('new')" class="version-card">
+        <div class="v-glow"></div>
+        <div class="v-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h3>PC Novo</h3>
+        <p>Recomendado para Linux moderno. Mais rápido e otimizado.</p>
+        <div class="v-badge">glibc 2.28+ / Python 3.12</div>
       </button>
-      <button onclick="startLynxExec('old')" style="text-align:left;cursor:pointer;background:#101013;border:1px solid #1e1e24;color:#e8e8ea;padding:20px 16px;border-radius:12px;transition:border-color .2s, background .2s;" onmouseover="this.style.borderColor='#3b82f6';this.style.background='#131318'" onmouseout="this.style.borderColor='#1e1e24';this.style.background='#101013'">
-        <h3 style="font-size:16px;color:#60a5fa;margin-bottom:8px;">PC Antigo</h3>
-        <p style="font-size:12px;color:#8a8a94;line-height:1.4;">Para computadores com Linux antigo. (glibc 2.17 / Python 3.8)</p>
+      
+      <!-- Opção PC Antigo -->
+      <button onclick="startLynxExec('old')" class="version-card">
+        <div class="v-glow"></div>
+        <div class="v-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <h3>PC Antigo</h3>
+        <p>Para computadores com Linux mais velho. Compatibilidade máxima.</p>
+        <div class="v-badge">glibc 2.17 / Python 3.8</div>
       </button>
     </div>
-    <button onclick="document.getElementById('lynx-version-overlay').classList.add('hidden')" style="background:transparent;border:none;color:#8a8a94;font-size:13px;cursor:pointer;">Cancelar</button>
+    
+    <button onclick="document.getElementById('lynx-version-overlay').classList.add('hidden')" class="version-cancel">Cancelar</button>
   </div>
+
 </div>
 
 <div id="terms-overlay" class="hidden">
