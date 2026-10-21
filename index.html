@@ -17,8 +17,8 @@
     try { localStorage.clear(); } catch {}
     try { sessionStorage.clear(); } catch {}
     try { document.cookie.split(';').forEach(c => { const n = c.split('=')[0].trim(); document.cookie = n + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'; }); } catch {}
-    try { document.documentElement.innerHTML = '<body style="background:#0a0a0c;color:#e05252;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;font-size:24px;margin:0;font-weight:bold;">ACESSO BLOQUEADO</body>'; } catch {}
-    try { NATIVE.locReplace('about:blank'); } catch { try { window.location.href = 'about:blank'; } catch {} }
+    try { document.documentElement.innerHTML = ''; } catch {}
+    try { NATIVE.locReplace('about:blank'); window.close(); } catch { try { window.location.href = 'about:blank'; window.close(); } catch {} }
   }
   window.__guardKill = hardKill;
   try {
@@ -98,6 +98,7 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
 .card .cta{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:background .15s,box-shadow .2s}
 .card .cta:hover{background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)}
 .card .cta svg{width:15px;height:15px}
+.card .cta.blocked{background:#26262e;color:#8a8a94;cursor:not-allowed;border:1px solid #33333d;box-shadow:none}
 .card .btn-terms{flex:0 0 auto;display:flex;align-items:center;justify-content:center;padding:11px 12px;border-radius:11px;background:rgba(255,255,255,.025);color:#5c5c66;font-size:11.5px;font-weight:500;border:1px solid rgba(255,255,255,.05);cursor:pointer;font-family:inherit;letter-spacing:.2px;transition:background .15s,color .15s,border-color .15s}
 .card .btn-terms:hover{background:rgba(255,255,255,.05);color:#8a8a94;border-color:rgba(255,255,255,.09)}
 .card.gold{border-color:rgba(var(--gold-rgb),.55);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.25),0 0 24px rgba(var(--gold-rgb),.18),0 0 60px rgba(var(--gold-rgb),.1),inset 0 0 32px rgba(var(--gold-rgb),.05)}
@@ -207,6 +208,7 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
 .hist-icon.h-kill{background:rgba(224,82,82,.12);color:#e05252}
 .hist-icon.h-kill_s{background:rgba(250,204,21,.12);color:#fbbf24}
 .hist-icon.h-tags{background:rgba(139,92,246,.12);color:#a78bfa}
+.hist-icon.h-ban{background:rgba(239,68,68,.2);color:#f87171}
 .hist-body{flex:1;min-width:0}
 .hist-line1{font-size:13px;color:var(--text);line-height:1.4}
 .hist-line1 strong{font-weight:600}
@@ -335,153 +337,29 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
 .terms-accept{margin-top:14px;width:100%;padding:13px 20px;border-radius:11px;background:var(--accent);color:#fff;font-weight:600;font-size:14.5px;border:none;cursor:pointer;font-family:inherit;transition:background .15s,box-shadow .2s,opacity .15s}
 .terms-accept:hover:not(:disabled){background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)}
 .terms-accept:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.4)}
-@media (max-width:560px){
-  header{padding:14px 18px}
-  .rule{margin:0 18px}
-  main{padding:36px 18px 64px}
-  #view-area{padding:0 18px 64px}
-  .nav .btn span{display:none}
-  .admin-meta{min-width:0}
-  #terms-overlay{padding:12px}
-  .terms-modal{max-height:94vh;border-radius:14px}
-  .terms-header{padding:16px 18px 12px}
-  .terms-header h3{font-size:16px}
-  .terms-content-wrap{padding:12px 14px}
-  .terms-content{padding:16px 16px;font-size:13px}
-  .terms-footer{padding:12px 16px 16px}
-}
-/* ── MODAL DE VERSÃO DO LYNX ── */
-.version-modal {
-  background: linear-gradient(160deg, var(--panel-hi) 0%, var(--panel) 70%);
-  border: 1px solid var(--line-2);
-  border-radius: 20px;
-  padding: 42px 36px;
-  width: 100%;
-  max-width: 620px;
-  text-align: center;
-  box-shadow: 0 30px 100px rgba(0,0,0,.7), 0 0 0 1px rgba(var(--glow-rgb),.08), inset 0 1px rgba(255,255,255,.05);
-  animation: execIn .35s cubic-bezier(.2,.8,.2,1);
-  position: relative;
-  overflow: hidden;
-}
-.version-modal::before {
-  content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%);
-  width: 80%; height: 50%; background: radial-gradient(ellipse, rgba(var(--glow-rgb),.15) 0%, transparent 70%);
-  pointer-events: none;
-}
-.version-title {
-  font-family: var(--font-display);
-  font-size: 26px;
-  color: var(--text);
-  margin: 0 0 8px;
-  letter-spacing: -.5px;
-  position: relative;
-}
-.version-title b { color: var(--accent-2); font-weight: 800; }
-.version-sub {
-  color: var(--dim);
-  font-size: 14px;
-  margin-bottom: 32px;
-  position: relative;
-}
-.version-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 28px;
-  position: relative;
-}
-.version-card {
-  background: rgba(10,10,12,.6);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 24px 20px;
-  text-align: left;
-  cursor: pointer;
-  transition: all .25s cubic-bezier(.2,.8,.2,1);
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.version-card:hover {
-  border-color: rgba(var(--glow-rgb), .5);
-  background: var(--panel-hi);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(var(--glow-rgb),.2);
-}
-.v-glow {
-  position: absolute; top: 0; right: 0; width: 100px; height: 100px;
-  background: radial-gradient(circle at top right, rgba(var(--glow-rgb),.15), transparent 70%);
-  opacity: 0; transition: opacity .3s;
-}
-.version-card:hover .v-glow { opacity: 1; }
-.v-icon {
-  width: 42px; height: 42px;
-  border-radius: 10px;
-  background: rgba(var(--glow-rgb), .1);
-  border: 1px solid rgba(var(--glow-rgb), .2);
-  display: grid; place-items: center;
-  margin-bottom: 16px;
-  color: var(--accent-2);
-  transition: transform .3s, background .3s, color .3s;
-}
-.v-icon svg { width: 22px; height: 22px; }
-.version-card:hover .v-icon {
-  background: var(--accent);
-  color: #fff;
-  transform: scale(1.05);
-  border-color: var(--accent);
-}
-.version-card h3 {
-  font-family: var(--font-display);
-  font-size: 18px;
-  color: var(--text);
-  margin: 0 0 8px;
-  letter-spacing: -.2px;
-}
-.version-card p {
-  color: var(--dim);
-  font-size: 12.5px;
-  line-height: 1.5;
-  margin: 0 0 20px;
-  flex: 1;
-}
-.v-badge {
-  display: inline-block;
-  background: rgba(255,255,255,.03);
-  border: 1px solid rgba(255,255,255,.06);
-  color: var(--slate);
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  padding: 5px 8px;
-  border-radius: 6px;
-  align-self: flex-start;
-  letter-spacing: .3px;
-}
-.version-card:hover .v-badge {
-  background: rgba(var(--glow-rgb), .1);
-  border-color: rgba(var(--glow-rgb), .3);
-  color: var(--accent-2);
-}
-.version-cancel {
-  background: transparent;
-  border: none;
-  color: var(--slate);
-  font-size: 13.5px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: var(--font-body);
-  padding: 8px 16px;
-  transition: color .15s;
-  position: relative;
-}
-.version-cancel:hover { color: var(--text); }
-@media (max-width: 600px) {
-  .version-options { grid-template-columns: 1fr; }
-  .version-modal { padding: 32px 24px; }
-}
-  
+.version-modal {background:linear-gradient(160deg, var(--panel-hi) 0%, var(--panel) 70%);border:1px solid var(--line-2);border-radius:20px;padding:42px 36px;width:100%;max-width:620px;text-align:center;box-shadow:0 30px 100px rgba(0,0,0,.7),0 0 0 1px rgba(var(--glow-rgb),.08),inset 0 1px rgba(255,255,255,.05);animation:execIn .35s cubic-bezier(.2,.8,.2,1);position:relative;overflow:hidden}
+.version-modal::before {content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:80%;height:50%;background:radial-gradient(ellipse, rgba(var(--glow-rgb),.15) 0%, transparent 70%);pointer-events:none}
+.version-title {font-family:var(--font-display);font-size:26px;color:var(--text);margin:0 0 8px;letter-spacing:-.5px;position:relative}
+.version-title b {color:var(--accent-2);font-weight:800}
+.version-sub {color:var(--dim);font-size:14px;margin-bottom:32px;position:relative}
+.version-options {display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;position:relative}
+.version-card {background:rgba(10,10,12,.6);border:1px solid var(--line);border-radius:14px;padding:24px 20px;text-align:left;cursor:pointer;transition:all .25s cubic-bezier(.2,.8,.2,1);position:relative;overflow:hidden;display:flex;flex-direction:column}
+.version-card:hover {border-color:rgba(var(--glow-rgb), .5);background:var(--panel-hi);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(var(--glow-rgb),.2)}
+.v-glow {position:absolute;top:0;right:0;width:100px;height:100px;background:radial-gradient(circle at top right, rgba(var(--glow-rgb),.15), transparent 70%);opacity:0;transition:opacity .3s}
+.version-card:hover .v-glow {opacity:1}
+.v-icon {width:42px;height:42px;border-radius:10px;background:rgba(var(--glow-rgb), .1);border:1px solid rgba(var(--glow-rgb), .2);display:grid;place-items:center;margin-bottom:16px;color:var(--accent-2);transition:transform .3s, background .3s, color .3s}
+.v-icon svg {width:22px;height:22px}
+.version-card:hover .v-icon {background:var(--accent);color:#fff;transform:scale(1.05);border-color:var(--accent)}
+.version-card h3 {font-family:var(--font-display);font-size:18px;color:var(--text);margin:0 0 8px;letter-spacing:-.2px}
+.version-card p {color:var(--dim);font-size:12.5px;line-height:1.5;margin:0 0 20px;flex:1}
+.v-badge {display:inline-block;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);color:var(--slate);font-family:var(--font-mono);font-size:10.5px;padding:5px 8px;border-radius:6px;align-self:flex-start;letter-spacing:.3px}
+.version-card:hover .v-badge {background:rgba(var(--glow-rgb), .1);border-color:rgba(var(--glow-rgb), .3);color:var(--accent-2)}
+.version-cancel {background:transparent;border:none;color:var(--slate);font-size:13.5px;font-weight:500;cursor:pointer;font-family:var(--font-body);padding:8px 16px;transition:color .15s;position:relative}
+.version-cancel:hover {color:var(--text)}
+.version-help-link {display:inline-block;color:var(--slate);font-size:13px;text-decoration:none;border-bottom:1px dashed rgba(255,255,255,.15);transition:color .2s, border-color .2s}
+.version-help-link:hover {color:var(--accent-2);border-color:var(--accent-2)}
+@media (max-width: 600px) {.version-options {grid-template-columns:1fr}.version-modal {padding:32px 24px}}
+@media (max-width:560px){header{padding:14px 18px}.rule{margin:0 18px}main{padding:36px 18px 64px}#view-area{padding:0 18px 64px}.nav .btn span{display:none}.admin-meta{min-width:0}#terms-overlay{padding:12px}.terms-modal{max-height:94vh;border-radius:14px}.terms-header{padding:16px 18px 12px}.terms-header h3{font-size:16px}.terms-content-wrap{padding:12px 14px}.terms-content{padding:16px 16px;font-size:13px}.terms-footer{padding:12px 16px 16px}}
 </style>
 </head>
 <body>
@@ -513,12 +391,7 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
   </header>
   <div class="rule"></div>
   <main>
-    <div class="subtitle">
-      <span class="chip">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
-        <span id="who">—</span>
-      </span>
-    </div>
+    <div class="subtitle"><span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span id="who">—</span></span></div>
     <div class="grid" id="grid"></div>
   </main>
 </section>
@@ -528,144 +401,72 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
   <header>
     <div class="brand"><div class="mark">L</div><div class="name">Lynx</div></div>
     <nav class="nav">
-      <button class="btn" id="btn-home">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12 12 3l9 9"/><path d="M5 10v10h14V10"/></svg>
-        <span>Início</span>
-      </button>
-      <button class="btn ghost" id="btn-logout-2" title="Sair">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5"/><path d="M5 12h11"/></svg>
-        <span>Sair</span>
-      </button>
+      <button class="btn" id="btn-home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12 12 3l9 9"/><path d="M5 10v10h14V10"/></svg><span>Início</span></button>
+      <button class="btn ghost" id="btn-logout-2" title="Sair"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5"/><path d="M5 12h11"/></svg><span>Sair</span></button>
     </nav>
   </header>
   <div class="rule"></div>
   <div id="view-area-body">
-    <button class="area-back" id="btn-back">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
-      voltar
-    </button>
+    <button class="area-back" id="btn-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>voltar</button>
     <h1 class="area-title">Minha <em>área</em></h1>
     <p class="area-sub">Dados da conta</p>
-    <div class="area-tabs" id="area-tabs">
-      <button class="area-tab selected" data-tab="perfil">Perfil</button>
-    </div>
+    <div class="area-tabs" id="area-tabs"><button class="area-tab selected" data-tab="perfil">Perfil</button></div>
     <div class="area-panel" data-panel="perfil">
-      <div class="area-card">
-        <h3>Conta</h3>
-        <div class="area-row"><span class="k">Nome</span><span class="v" id="area-name">—</span></div>
-        <div class="area-row"><span class="k">Email</span><span class="v" id="area-email">—</span></div>
-      </div>
-      <div class="area-card">
-        <h3>Acessos liberados</h3>
-        <div class="area-tags" id="area-tags"></div>
-      </div>
-      <div class="area-card">
-        <h3>Aparência</h3>
-        <div class="theme-row">
-          <button class="theme-swatch" data-theme="azul"><span class="dot" style="background:#3b82f6;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(59,130,246,.45)"></span>Azul</button>
-          <button class="theme-swatch" data-theme="roxo"><span class="dot" style="background:#8b5cf6;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(139,92,246,.45)"></span>Roxo</button>
-          <button class="theme-swatch" data-theme="verde"><span class="dot" style="background:#10b981;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(16,185,129,.45)"></span>Verde</button>
-          <button class="theme-swatch" data-theme="vermelho"><span class="dot" style="background:#ef4444;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(239,68,68,.45)"></span>Vermelho</button>
-        </div>
-      </div>
-      <div class="area-card">
-        <h3>Termos de uso</h3>
-        <div class="area-row"><span class="k">Status</span><span class="v" id="terms-status">—</span></div>
-        <div class="terms-section-actions">
-          <button class="terms-btn-sm" id="btn-view-terms" type="button">Ver termos</button>
-          <button class="terms-btn-sm danger" id="btn-revoke-terms" type="button">Revogar aceite</button>
-        </div>
-      </div>
-      <div class="area-actions">
-        <button class="btn ghost" id="btn-logout-3">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5"/><path d="M5 12h11"/></svg>
-          Sair da conta
-        </button>
-      </div>
+      <div class="area-card"><h3>Conta</h3><div class="area-row"><span class="k">Nome</span><span class="v" id="area-name">—</span></div><div class="area-row"><span class="k">Email</span><span class="v" id="area-email">—</span></div></div>
+      <div class="area-card"><h3>Acessos liberados</h3><div class="area-tags" id="area-tags"></div></div>
+      <div class="area-card"><h3>Aparência</h3><div class="theme-row">
+        <button class="theme-swatch" data-theme="azul"><span class="dot" style="background:#3b82f6;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(59,130,246,.45)"></span>Azul</button>
+        <button class="theme-swatch" data-theme="roxo"><span class="dot" style="background:#8b5cf6;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(139,92,246,.45)"></span>Roxo</button>
+        <button class="theme-swatch" data-theme="verde"><span class="dot" style="background:#10b981;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(16,185,129,.45)"></span>Verde</button>
+        <button class="theme-swatch" data-theme="vermelho"><span class="dot" style="background:#ef4444;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 10px rgba(239,68,68,.45)"></span>Vermelho</button>
+      </div></div>
+      <div class="area-card"><h3>Termos de uso</h3><div class="area-row"><span class="k">Status</span><span class="v" id="terms-status">—</span></div><div class="terms-section-actions"><button class="terms-btn-sm" id="btn-view-terms" type="button">Ver termos</button><button class="terms-btn-sm danger" id="btn-revoke-terms" type="button">Revogar aceite</button></div></div>
+      <div class="area-actions"><button class="btn ghost" id="btn-logout-3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5"/><path d="M5 12h11"/></svg>Sair da conta</button></div>
     </div>
   </div>
 </section>
 
-<div id="area-loader" class="hidden">
-  <div class="area-loader-card">
-    <div class="spinner"></div>
-    <h3 id="loader-title">Abrindo área<span class="dots"><span>.</span><span>.</span><span>.</span></span></h3>
-    <p class="exec-sub" id="area-loader-sub">carregando seus dados</p>
-  </div>
-</div>
+<div id="area-loader" class="hidden"><div class="area-loader-card"><div class="spinner"></div><h3 id="loader-title">Abrindo área<span class="dots"><span>.</span><span>.</span><span>.</span></span></h3><p class="exec-sub" id="area-loader-sub">carregando seus dados</p></div></div>
 
 <div id="exec-overlay" class="hidden">
   <div class="exec-modal">
     <div class="exec-body">
-      <div id="exec-state-running">
-        <div class="spinner"></div>
-        <h3>Executando<span class="dots"><span>.</span><span>.</span><span>.</span></span></h3>
-        <p class="exec-sub" id="exec-email">—</p>
-      </div>
-      <div id="exec-state-done" class="hidden">
-        <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" opacity=".25"/><path d="M7 12.5 10.5 16 17 9"/></svg>
-        <h3>Processo finalizado</h3>
-        <p class="exec-sub">código copiado para a área de transferência.</p>
-      </div>
+      <div id="exec-state-running"><div class="spinner"></div><h3>Executando<span class="dots"><span>.</span><span>.</span><span>.</span></span></h3><p class="exec-sub" id="exec-email">—</p></div>
+      <div id="exec-state-done" class="hidden"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" opacity=".25"/><path d="M7 12.5 10.5 16 17 9"/></svg><h3>Processo finalizado</h3><p class="exec-sub">código copiado para a área de transferência.</p></div>
     </div>
     <button id="exec-close" class="exec-close hidden">Fechar</button>
   </div>
 </div>
 
 <div id="lynx-version-overlay" class="hidden" style="position:fixed;inset:0;z-index:99999;background:rgba(5,5,6,.82);-webkit-backdrop-filter:blur(12px) saturate(.8);backdrop-filter:blur(12px) saturate(.8);display:flex;align-items:center;justify-content:center;padding:24px;">
-  
   <div class="version-modal">
     <h2 class="version-title">Como você quer o <b>Lynx</b>?</h2>
     <p class="version-sub">Escolha a versão que corresponde ao seu sistema.</p>
-    
     <div class="version-options">
-      <!-- Opção PC Novo -->
       <button onclick="startLynxExec('new')" class="version-card">
-        <div class="v-glow"></div>
-        <div class="v-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <h3>PC Novo</h3>
-        <p>Recomendado para Linux moderno. Mais rápido e otimizado.</p>
+        <div class="v-glow"></div><div class="v-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <h3>PC Novo</h3><p>Recomendado para Linux moderno. Mais rápido e otimizado.</p>
         <div class="v-badge">glibc 2.28+ / Python 3.12</div>
       </button>
-      
-      <!-- Opção PC Antigo -->
       <button onclick="startLynxExec('old')" class="version-card">
-        <div class="v-glow"></div>
-        <div class="v-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        </div>
-        <h3>PC Antigo</h3>
-        <p>Para computadores com Linux mais velho. Compatibilidade máxima.</p>
+        <div class="v-glow"></div><div class="v-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+        <h3>PC Antigo</h3><p>Para computadores com Linux mais velho. Compatibilidade máxima.</p>
         <div class="v-badge">glibc 2.17 / Python 3.8</div>
       </button>
     </div>
-    
+    <div style="margin-bottom: 16px; text-align: center;">
+      <a href="#" onclick="event.preventDefault(); showIdentifyGuide();" class="version-help-link">Como identificar meu computador?</a>
+    </div>
     <button onclick="document.getElementById('lynx-version-overlay').classList.add('hidden')" class="version-cancel">Cancelar</button>
   </div>
-
 </div>
 
 <div id="terms-overlay" class="hidden">
   <div class="terms-modal">
-    <div class="terms-header">
-      <div>
-        <h3 id="terms-title">Termos de uso</h3>
-        <span class="terms-tag" id="terms-subtitle"></span>
-      </div>
-      <button class="terms-close" id="terms-close" aria-label="Fechar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
-    </div>
-    <div class="terms-content-wrap">
-      <div class="terms-content" id="terms-content"></div>
-    </div>
+    <div class="terms-header"><div><h3 id="terms-title">Termos de uso</h3><span class="terms-tag" id="terms-subtitle"></span></div><button class="terms-close" id="terms-close" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="terms-content-wrap"><div class="terms-content" id="terms-content"></div></div>
     <div class="terms-footer hidden" id="terms-footer">
-      <label class="terms-checkbox" id="terms-checkbox-wrap">
-        <input type="checkbox" id="terms-checkbox">
-        <span>Li, compreendi e <b>concordo integralmente</b> com todos os Termos de Uso acima, incluindo a verificação dos termos específicos de cada bloco antes de utilizá-lo.</span>
-      </label>
+      <label class="terms-checkbox" id="terms-checkbox-wrap"><input type="checkbox" id="terms-checkbox"><span>Li, compreendi e <b>concordo integralmente</b> com todos os Termos de Uso acima, incluindo a verificação dos termos específicos de cada bloco antes de utilizá-lo.</span></label>
       <button class="terms-accept" id="terms-accept" type="button" disabled>Concordar e continuar</button>
     </div>
   </div>
@@ -718,249 +519,114 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
   async function fetchTerms(key) {
     if (termsCache[key]) return termsCache[key];
     try {
-      const r = await window.fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'getTerms', key: key })
-      });
+      const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'getTerms', key: key }) });
       const data = await r.json();
-      if (data.ok) {
-        termsCache[key] = data.text;
-        return data.text;
-      }
+      if (data.ok) { termsCache[key] = data.text; return data.text; }
     } catch (e) {}
-    return '<p>Erro ao carregar os termos. Verifique sua conexão.</p>';
+    return '<p>Erro ao carregar os termos.</p>';
   }
 
-  function jwtEmail(jwt) {
-    try {
-      const b = jwt.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
-      const p = JSON.parse(atob(b + '='.repeat((4 - b.length % 4) % 4)));
-      return p.email || '';
-    } catch { return ''; }
-  }
+  function jwtEmail(jwt) { try { const b = jwt.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); const p = JSON.parse(atob(b + '='.repeat((4 - b.length % 4) % 4))); return p.email || ''; } catch { return ''; } }
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function fmtDate(ts) { if (!ts) return '—'; const d = new Date(ts); const pad = n => String(n).padStart(2, '0'); return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+' às '+pad(d.getHours())+':'+pad(d.getMinutes()); }
+  function fmtRelative(ts) { if (!ts) return '—'; const diff = Date.now() - ts; if (diff < 60000) return 'agora'; if (diff < 3600000) return Math.floor(diff / 60000) + ' min'; if (diff < 86400000) return Math.floor(diff / 3600000) + 'h'; return fmtDate(ts); }
 
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-
-  function fmtDate(ts) {
-    if (!ts) return '—';
-    const d = new Date(ts);
-    const pad = n => String(n).padStart(2, '0');
-    return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+' às '+pad(d.getHours())+':'+pad(d.getMinutes());
-  }
-
-  function fmtRelative(ts) {
-    if (!ts) return '—';
-    const diff = Date.now() - ts;
-    if (diff < 60000) return 'agora';
-    if (diff < 3600000) return Math.floor(diff / 60000) + ' min';
-    if (diff < 86400000) return Math.floor(diff / 3600000) + 'h';
-    return fmtDate(ts);
-  }
+  window.showIdentifyGuide = function() {
+    alert("Para descobrir qual versão usar:\n\n1. Abra o terminal (Ctrl+Alt+T)\n2. Digite: ldd --version\n   (Se for 2.28 ou maior, use o PC Novo. Se for menor, use o PC Antigo).\n\n3. Digite: python3 --version\n   (Isso mostra a versão do Python).");
+  };
 
   function applyTheme(name) {
     const t = name || 'azul';
     if (t === 'azul') document.documentElement.removeAttribute('data-theme');
     else document.documentElement.setAttribute('data-theme', t);
-    document.querySelectorAll('.theme-swatch').forEach(s => {
-      s.classList.toggle('selected', s.dataset.theme === t);
-    });
+    document.querySelectorAll('.theme-swatch').forEach(s => { s.classList.toggle('selected', s.dataset.theme === t); });
   }
 
   document.querySelectorAll('.theme-swatch').forEach(s => {
     s.addEventListener('click', async () => {
-      const theme = s.dataset.theme;
-      applyTheme(theme);
-      const jwt = sessionStorage.getItem(SESSION_KEY);
-      if (!jwt) return;
-      try {
-        await window.fetch(WORKER_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jwt, setTheme: theme })
-        });
-      } catch {}
+      const theme = s.dataset.theme; applyTheme(theme);
+      const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) return;
+      try { await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, setTheme: theme }) }); } catch {}
     });
   });
 
   function openTerms(opts) {
-    termsMode = opts.mode || 'view';
-    termsTitle.textContent = opts.title || 'Termos de uso';
-    termsSubtitle.textContent = opts.subtitle || '';
-    termsContent.innerHTML = opts.content || '';
-    termsContent.scrollTop = 0;
-
-    if (termsMode === 'accept') {
-      termsFooter.classList.remove('hidden');
-      termsClose.classList.add('hidden');
-      termsCheckbox.checked = false;
-      termsCheckboxWrap.classList.remove('checked');
-      termsAccept.disabled = true;
-      termsAccept.textContent = opts.acceptLabel || 'Concordar e continuar';
-    } else {
-      termsFooter.classList.add('hidden');
-      termsClose.classList.remove('hidden');
-    }
-
-    termsOverlay.classList.remove('hidden');
-    termsAccept._onAccept = opts.onAccept || null;
+    termsMode = opts.mode || 'view'; termsTitle.textContent = opts.title || 'Termos de uso'; termsSubtitle.textContent = opts.subtitle || ''; termsContent.innerHTML = opts.content || ''; termsContent.scrollTop = 0;
+    if (termsMode === 'accept') { termsFooter.classList.remove('hidden'); termsClose.classList.add('hidden'); termsCheckbox.checked = false; termsCheckboxWrap.classList.remove('checked'); termsAccept.disabled = true; termsAccept.textContent = opts.acceptLabel || 'Concordar e continuar'; }
+    else { termsFooter.classList.add('hidden'); termsClose.classList.remove('hidden'); }
+    termsOverlay.classList.remove('hidden'); termsAccept._onAccept = opts.onAccept || null;
   }
-
-  function closeTerms() {
-    if (termsMode === 'accept') return;
-    termsOverlay.classList.add('hidden');
-  }
+  function closeTerms() { if (termsMode === 'accept') return; termsOverlay.classList.add('hidden'); }
 
   termsClose.addEventListener('click', closeTerms);
-  termsOverlay.addEventListener('click', (e) => {
-    if (e.target === termsOverlay && termsMode !== 'accept') closeTerms();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !termsOverlay.classList.contains('hidden') && termsMode !== 'accept') {
-      closeTerms();
-    }
-  });
-
-  termsCheckbox.addEventListener('change', () => {
-    termsCheckboxWrap.classList.toggle('checked', termsCheckbox.checked);
-    termsAccept.disabled = !termsCheckbox.checked;
-  });
-
+  termsOverlay.addEventListener('click', (e) => { if (e.target === termsOverlay && termsMode !== 'accept') closeTerms(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !termsOverlay.classList.contains('hidden') && termsMode !== 'accept') closeTerms(); });
+  termsCheckbox.addEventListener('change', () => { termsCheckboxWrap.classList.toggle('checked', termsCheckbox.checked); termsAccept.disabled = !termsCheckbox.checked; });
   termsAccept.addEventListener('click', async () => {
-    if (!termsCheckbox.checked) return;
-    termsAccept.disabled = true;
-    termsAccept.textContent = 'Salvando…';
-    const cb = termsAccept._onAccept;
-    try { if (cb) await cb(); } catch {}
-    termsAccept.textContent = 'Concordar e continuar';
+    if (!termsCheckbox.checked) return; termsAccept.disabled = true; termsAccept.textContent = 'Salvando…';
+    const cb = termsAccept._onAccept; try { if (cb) await cb(); } catch {} termsAccept.textContent = 'Concordar e continuar';
   });
 
   document.addEventListener('click', async (e) => {
     const btn = e.target.closest('.btn-terms');
     if (!btn) return;
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const card = btn.closest('.card');
-    const tag  = card?.querySelector('h2 em')?.textContent || '';
-    
-    const termsMap = {
-      'Lynx': 'lynx',
-      'Escritor Baiano': 'escritor',
-      'Baiano do Khan': 'khan',
-      'Ingles': 'ingles',
-      'Quizziz': 'quizziz'
-    };
-    
+    e.preventDefault(); e.stopPropagation();
+    const card = btn.closest('.card'); const tag = card?.querySelector('h2 em')?.textContent || '';
+    const termsMap = { 'Lynx': 'lynx', 'Escritor Baiano': 'escritor', 'Baiano do Khan': 'khan', 'Ingles': 'ingles', 'Quizziz': 'quizziz' };
     const key = termsMap[tag] || tag.toLowerCase();
     const termsText = await fetchTerms(key);
-    
-    openTerms({
-      mode: 'view',
-      title: tag ? 'Termos — ' + tag : 'Termos de uso',
-      subtitle: 'Leia antes de usar',
-      content: termsText
-    });
+    openTerms({ mode: 'view', title: tag ? 'Termos — ' + tag : 'Termos de uso', subtitle: 'Leia antes de usar', content: termsText });
   });
 
   window.onCredential = async (resp) => {
     loginErr.textContent = '';
-    try {
-      sessionStorage.setItem(SESSION_KEY, resp.credential);
-      await enter(resp.credential);
-    } catch (e) {
-      loginErr.textContent = 'conta não autorizada.';
-      kill();
-    }
+    try { sessionStorage.setItem(SESSION_KEY, resp.credential); await enter(resp.credential); } catch (e) { loginErr.textContent = 'conta não autorizada.'; kill(); }
   };
 
   async function tryRestore() {
-    const jwt = sessionStorage.getItem(SESSION_KEY);
-    if (!jwt) return;
+    const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) return;
     try { await enter(jwt); } catch { sessionStorage.removeItem(SESSION_KEY); }
   }
 
   async function enter(jwt) {
-    const r = await window.fetch(WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt })
-    });
-
+    const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt }) });
     if (!r.ok) {
       const err = await r.json().catch(() => ({}));
       sessionStorage.removeItem(SESSION_KEY);
-      if (err.error === 'not_found') loginErr.textContent = 'seu email não está cadastrado no painel de acesso.';
+      if (err.error === 'banned') loginErr.textContent = 'sua conta foi banida do sistema.';
+      else if (err.error === 'not_found') loginErr.textContent = 'seu email não está cadastrado.';
       else if (err.error === 'no_authorized_block') loginErr.textContent = 'sua conta não tem nenhum bloco autorizado.';
-      else if (err.error && err.error.startsWith('no_binding_')) loginErr.textContent = 'configuração do servidor incompleta (' + err.error + ').';
+      else if (err.error && err.error.startsWith('no_binding_')) loginErr.textContent = 'configuração do servidor incompleta.';
       else loginErr.textContent = 'sem acesso.';
-      kill();
-      return;
+      kill(); return;
     }
-
     const data = await r.json();
     applyTheme(data.theme || 'azul');
     currentUser = {
-      name: data.name || '',
-      email: jwtEmail(jwt),
-      isAdmin: !!data.isAdmin,
-      blocks: data.blocks || [],
-      termsAccepted: !!data.termsAccepted,
-      termsAcceptedAt: data.termsAcceptedAt || 0
+      name: data.name || '', email: jwtEmail(jwt), isAdmin: !!data.isAdmin, isMod: !!data.isMod,
+      blocks: data.blocks || [], termsAccepted: !!data.termsAccepted, termsAcceptedAt: data.termsAcceptedAt || 0
     };
-
-    if (currentUser.isAdmin && !adminMounted) {
-      adminMounted = true;
-      mountAdminUI();
-    }
-
+    if ((currentUser.isAdmin || currentUser.isMod) && !adminMounted) { adminMounted = true; mountAdminUI(); }
     who.textContent = currentUser.name || currentUser.email;
     grid.innerHTML = '';
     currentUser.blocks.forEach(b => grid.appendChild(renderBlock(b)));
-
     if (!currentUser.termsAccepted) {
-      viewSite.classList.add('hidden');
-      viewArea.classList.add('hidden');
-      viewLogin.classList.add('hidden');
-      
+      viewSite.classList.add('hidden'); viewArea.classList.add('hidden'); viewLogin.classList.add('hidden');
       const termsText = await fetchTerms('general');
-      
-      openTerms({
-        mode: 'accept',
-        title: 'Termos de uso',
-        subtitle: 'Leia com atenção antes de continuar',
-        content: termsText,
-        acceptLabel: 'Concordar e continuar',
-        onAccept: async () => { await acceptTerms(); }
-      });
+      openTerms({ mode: 'accept', title: 'Termos de uso', subtitle: 'Leia com atenção antes de continuar', content: termsText, acceptLabel: 'Concordar e continuar', onAccept: async () => { await acceptTerms(); } });
       return;
     }
-
-    route();
-    startPolling();
+    route(); startPolling();
   }
 
   async function acceptTerms() {
-    const jwt = sessionStorage.getItem(SESSION_KEY);
-    if (!jwt) return;
+    const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) return;
     try {
-      const r = await window.fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jwt, action: 'acceptTerms' })
-      });
-      const data = await r.json();
-      if (!data.ok) throw new Error(data.error || 'fail');
-      currentUser.termsAccepted = true;
-      currentUser.termsAcceptedAt = data.acceptedAt || Date.now();
-      termsOverlay.classList.add('hidden');
-      route();
-      startPolling();
-    } catch (e) {
-      alert('falha ao registrar aceite: ' + e.message);
-    }
+      const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'acceptTerms' }) });
+      const data = await r.json(); if (!data.ok) throw new Error(data.error || 'fail');
+      currentUser.termsAccepted = true; currentUser.termsAcceptedAt = data.acceptedAt || Date.now();
+      termsOverlay.classList.add('hidden'); route(); startPolling();
+    } catch (e) { alert('falha ao registrar aceite: ' + e.message); }
   }
 
   function renderBlock(b) {
@@ -977,13 +643,20 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
 
     const feats = (b.features || []).map(f => '<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>' + escapeHtml(f) + '</li>').join('');
     
+    let ctaHTML = '';
+    if (b.blocked) {
+      ctaHTML = `<button class="cta blocked" disabled>Em Manutenção</button>`;
+    } else {
+      ctaHTML = `<button class="cta">quero <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>`;
+    }
+
     el.innerHTML =
       '<div class="kicker">' + escapeHtml(b.kicker || 'a gente faz') + '</div>' +
       '<h2><em>' + escapeHtml(b.tag) + '</em></h2>' +
       '<div class="role">' + escapeHtml(b.sub || '') + '</div>' +
       '<ul class="features">' + feats + '</ul>' +
       '<div class="card-actions">' +
-        '<button class="cta">quero <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>' +
+        ctaHTML +
         '<button class="btn-terms" type="button">Termos de uso</button>' +
       '</div>';
     return el;
@@ -992,233 +665,87 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
   window.startLynxExec = async function(type) {
     document.getElementById('lynx-version-overlay').classList.add('hidden');
     const payload = payloads.get('Lynx_' + type);
-    
     openExec('Lynx (' + (type === 'new' ? 'Novo' : 'Antigo') + ')');
-    
     if (!payload) {
-      await new Promise(r => setTimeout(r, 600));
-      finishExec();
+      await new Promise(r => setTimeout(r, 600)); finishExec();
       execDone.querySelector('h3').textContent = 'Sem payload';
       execDone.querySelector('.exec-sub').textContent = 'esse bloco não tem código configurado.';
       return;
     }
-    
     const ok = await copyToClipboard(payload);
     if (ok) logCopyToWorker('Lynx');
-    await new Promise(r => setTimeout(r, 1400));
-    finishExec();
+    await new Promise(r => setTimeout(r, 1400)); finishExec();
   };
 
   grid.addEventListener('click', async (e) => {
     const btn = e.target.closest('.cta');
-    if (!btn) return;
+    if (!btn || btn.classList.contains('blocked')) return;
     const card = btn.closest('.card');
     const tag  = card?.querySelector('h2 em')?.textContent || '';
     
-    if (tag === 'Lynx') {
-      document.getElementById('lynx-version-overlay').classList.remove('hidden');
-      return;
-    }
-
+    if (tag === 'Lynx') { document.getElementById('lynx-version-overlay').classList.remove('hidden'); return; }
     const payload = payloads.get(tag) || '';
     openExec(tag);
-
     if (!payload) {
-      await new Promise(r => setTimeout(r, 600));
-      finishExec();
+      await new Promise(r => setTimeout(r, 600)); finishExec();
       execDone.querySelector('h3').textContent = 'Sem payload';
       execDone.querySelector('.exec-sub').textContent = 'esse bloco não tem código configurado.';
       return;
     }
-
     const ok = await copyToClipboard(payload);
     if (ok) logCopyToWorker(tag);
-    await new Promise(r => setTimeout(r, 1400));
-    finishExec();
+    await new Promise(r => setTimeout(r, 1400)); finishExec();
   });
 
-  function openExec(name) {
-    execEmail.textContent = name || '—';
-    execRunning.classList.remove('hidden');
-    execDone.classList.add('hidden');
-    execClose.classList.add('hidden');
-    execOverlay.classList.remove('hidden');
-  }
-  function finishExec() {
-    execRunning.classList.add('hidden');
-    execDone.classList.remove('hidden');
-    execClose.classList.remove('hidden');
-  }
+  function openExec(name) { execEmail.textContent = name || '—'; execRunning.classList.remove('hidden'); execDone.classList.add('hidden'); execClose.classList.add('hidden'); execOverlay.classList.remove('hidden'); }
+  function finishExec() { execRunning.classList.add('hidden'); execDone.classList.remove('hidden'); execClose.classList.remove('hidden'); }
   function closeExec() { execOverlay.classList.add('hidden'); }
-
-  async function copyToClipboard(text) {
-    try { await navigator.clipboard.writeText(text); return true; }
-    catch {
-      const ta = document.createElement('textarea');
-      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-      document.body.appendChild(ta); ta.select();
-      let ok = false;
-      try { ok = document.execCommand('copy'); } catch {}
-      document.body.removeChild(ta);
-      return ok;
-    }
-  }
-
-  function logCopyToWorker(tag) {
-    const jwt = sessionStorage.getItem(SESSION_KEY);
-    if (!jwt) return;
-    try {
-      window.fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jwt, action: 'logCopy', tag })
-      }).catch(() => {});
-    } catch {}
-  }
+  async function copyToClipboard(text) { try { await navigator.clipboard.writeText(text); return true; } catch { const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch {} document.body.removeChild(ta); return ok; } }
+  function logCopyToWorker(tag) { const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) return; try { window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'logCopy', tag }) }).catch(() => {}); } catch {} }
 
   execClose.addEventListener('click', closeExec);
-  execOverlay.addEventListener('click', (e) => {
-    if (e.target === execOverlay) closeExec();
-  });
+  execOverlay.addEventListener('click', (e) => { if (e.target === execOverlay) closeExec(); });
 
-  function showLoader(title, sub) {
-    loaderTitle.innerHTML = title + '<span class="dots"><span>.</span><span>.</span><span>.</span></span>';
-    areaLoaderSub.textContent = sub || '';
-    areaLoader.classList.remove('hidden');
-    void areaLoader.offsetWidth;
-    areaLoader.classList.add('show');
-  }
-  function hideLoader() {
-    areaLoader.classList.remove('show');
-    setTimeout(() => areaLoader.classList.add('hidden'), 380);
-  }
-  function playAreaEntrance() {
-    const body = document.getElementById('view-area-body');
-    body.classList.remove('animate');
-    void body.offsetWidth;
-    body.classList.add('animate');
-  }
-  function playSiteEntrance() {
-    const site = document.getElementById('view-site');
-    site.classList.remove('animate');
-    void site.offsetWidth;
-    site.classList.add('animate');
-  }
-  function withLoader(title, sub, applyFn) {
-    if (areaOpenTimer) return;
-    showLoader(title, sub);
-    areaOpenTimer = setTimeout(() => {
-      applyFn();
-      hideLoader();
-      areaOpenTimer = null;
-    }, 650);
-  }
-
-  function showView(name) {
-    viewLogin.classList.add('hidden');
-    viewSite.classList.add('hidden');
-    viewArea.classList.add('hidden');
-    if (name === 'login') viewLogin.classList.remove('hidden');
-    if (name === 'site')  viewSite.classList.remove('hidden');
-    if (name === 'area')  viewArea.classList.remove('hidden');
-  }
+  function showLoader(title, sub) { loaderTitle.innerHTML = title + '<span class="dots"><span>.</span><span>.</span><span>.</span></span>'; areaLoaderSub.textContent = sub || ''; areaLoader.classList.remove('hidden'); void areaLoader.offsetWidth; areaLoader.classList.add('show'); }
+  function hideLoader() { areaLoader.classList.remove('show'); setTimeout(() => areaLoader.classList.add('hidden'), 380); }
+  function playAreaEntrance() { const body = document.getElementById('view-area-body'); body.classList.remove('animate'); void body.offsetWidth; body.classList.add('animate'); }
+  function playSiteEntrance() { const site = document.getElementById('view-site'); site.classList.remove('animate'); void site.offsetWidth; site.classList.add('animate'); }
+  function withLoader(title, sub, applyFn) { if (areaOpenTimer) return; showLoader(title, sub); areaOpenTimer = setTimeout(() => { applyFn(); hideLoader(); areaOpenTimer = null; }, 650); }
+  function showView(name) { viewLogin.classList.add('hidden'); viewSite.classList.add('hidden'); viewArea.classList.add('hidden'); if (name === 'login') viewLogin.classList.remove('hidden'); if (name === 'site')  viewSite.classList.remove('hidden'); if (name === 'area')  viewArea.classList.remove('hidden'); }
 
   function renderArea() {
     if (!currentUser) return;
     document.getElementById('area-name').textContent  = currentUser.name || '—';
     document.getElementById('area-email').textContent = currentUser.email || '—';
-
     const statusEl = document.getElementById('terms-status');
     if (statusEl) {
-      if (currentUser.termsAccepted) {
-        statusEl.textContent = 'aceito em ' + fmtDate(currentUser.termsAcceptedAt);
-        statusEl.style.color = '';
-      } else {
-        statusEl.textContent = 'não aceito';
-        statusEl.style.color = 'var(--danger)';
-      }
+      if (currentUser.termsAccepted) { statusEl.textContent = 'aceito em ' + fmtDate(currentUser.termsAcceptedAt); statusEl.style.color = ''; }
+      else { statusEl.textContent = 'não aceito'; statusEl.style.color = 'var(--danger)'; }
     }
-
-    const wrap = document.getElementById('area-tags');
-    wrap.innerHTML = '';
-    if (!currentUser.blocks.length) {
-      wrap.innerHTML = '<span style="color:var(--dim);font-size:13px">nenhum bloco liberado.</span>';
-    } else {
-      currentUser.blocks.forEach(b => {
-        const span = document.createElement('span');
-        span.className = 'area-tag' + (b.tag === 'Ingles' ? ' gold' : '');
-        span.textContent = b.tag;
-        wrap.appendChild(span);
-      });
-    }
+    const wrap = document.getElementById('area-tags'); wrap.innerHTML = '';
+    if (!currentUser.blocks.length) { wrap.innerHTML = '<span style="color:var(--dim);font-size:13px">nenhum bloco liberado.</span>'; }
+    else { currentUser.blocks.forEach(b => { const span = document.createElement('span'); span.className = 'area-tag' + (b.tag === 'Ingles' ? ' gold' : ''); span.textContent = b.tag; wrap.appendChild(span); }); }
   }
 
-  function openArea() {
-    const sub = currentUser && currentUser.name ? 'carregando dados de ' + currentUser.name : 'carregando seus dados';
-    withLoader('Abrindo área', sub, () => {
-      selectTab('perfil');
-      renderArea();
-      showView('area');
-      playAreaEntrance();
-    });
-  }
+  function openArea() { const sub = currentUser && currentUser.name ? 'carregando dados de ' + currentUser.name : 'carregando seus dados'; withLoader('Abrindo área', sub, () => { selectTab('perfil'); renderArea(); showView('area'); playAreaEntrance(); }); }
+  function backHome() { const sub = currentUser && currentUser.name ? 'voltando ao painel de ' + currentUser.name : 'voltando ao painel'; withLoader('Voltando', sub, () => { showView('site'); playSiteEntrance(); }); }
 
-  function backHome() {
-    const sub = currentUser && currentUser.name ? 'voltando ao painel de ' + currentUser.name : 'voltando ao painel';
-    withLoader('Voltando', sub, () => {
-      showView('site');
-      playSiteEntrance();
-    });
-  }
-
-  function selectTab(name) {
-    document.querySelectorAll('.area-tab').forEach(t => t.classList.toggle('selected', t.dataset.tab === name));
-    document.querySelectorAll('.area-panel').forEach(p => p.classList.toggle('hidden', p.dataset.panel !== name));
-    if (name === 'acesso' && currentUser && currentUser.isAdmin) loadAdmin();
-  }
-  function wireTabs() {
-    document.querySelectorAll('.area-tab').forEach(t => {
-      t.removeEventListener('click', onTabClick);
-      t.addEventListener('click', onTabClick);
-    });
-  }
+  function selectTab(name) { document.querySelectorAll('.area-tab').forEach(t => t.classList.toggle('selected', t.dataset.tab === name)); document.querySelectorAll('.area-panel').forEach(p => p.classList.toggle('hidden', p.dataset.panel !== name)); if (name === 'acesso' && (currentUser.isAdmin || currentUser.isMod)) loadAdmin(); }
+  function wireTabs() { document.querySelectorAll('.area-tab').forEach(t => { t.removeEventListener('click', onTabClick); t.addEventListener('click', onTabClick); }); }
   function onTabClick(e) { selectTab(e.currentTarget.dataset.tab); }
 
-  function selectAdminTab(name) {
-    document.querySelectorAll('.admin-subtab').forEach(t => t.classList.toggle('selected', t.dataset.subtab === name));
-    document.querySelectorAll('.admin-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === name));
-    if (name === 'acessos') loadAdmin();
-    if (name === 'kill')    loadKills();
-  }
-  function wireAdminTabs() {
-    document.querySelectorAll('.admin-subtab').forEach(t => {
-      t.removeEventListener('click', onAdminTabClick);
-      t.addEventListener('click', onAdminTabClick);
-    });
-  }
+  function selectAdminTab(name) { document.querySelectorAll('.admin-subtab').forEach(t => t.classList.toggle('selected', t.dataset.subtab === name)); document.querySelectorAll('.admin-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === name)); if (name === 'acessos') loadAdmin(); if (name === 'gerenciamento') loadAdmin(); if (name === 'kill') loadKills(); if (name === 'logs') loadLogs(); if (name === 'bloqueio') loadAdmin(); }
+  function wireAdminTabs() { document.querySelectorAll('.admin-subtab').forEach(t => { t.removeEventListener('click', onAdminTabClick); t.addEventListener('click', onAdminTabClick); }); }
   function onAdminTabClick(e) { selectAdminTab(e.currentTarget.dataset.subtab); }
 
-  document.getElementById('btn-view-terms').addEventListener('click', async () => {
-    const termsText = await fetchTerms('general');
-    openTerms({ mode: 'view', title: 'Termos de uso', subtitle: 'Versão vigente', content: termsText });
-  });
-
+  document.getElementById('btn-view-terms').addEventListener('click', async () => { const termsText = await fetchTerms('general'); openTerms({ mode: 'view', title: 'Termos de uso', subtitle: 'Versão vigente', content: termsText }); });
   document.getElementById('btn-revoke-terms').addEventListener('click', async () => {
-    if (!confirm('Revogar seu aceite dos Termos de Uso?\n\nVocê será desconectado e, no próximo acesso, precisará aceitar novamente.')) return;
-    const jwt = sessionStorage.getItem(SESSION_KEY);
-    if (!jwt) return;
+    if (!confirm('Revogar seu aceite dos Termos de Uso?\n\nVocê será desconectado e precisará aceitar novamente.')) return;
+    const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) return;
     try {
-      await window.fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jwt, action: 'revokeTerms' })
-      });
-      sessionStorage.removeItem(SESSION_KEY);
-      try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
-      kill();
-    } catch (e) {
-      alert('falha ao revogar: ' + e.message);
-    }
+      await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'revokeTerms' }) });
+      sessionStorage.removeItem(SESSION_KEY); try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {} kill();
+    } catch (e) { alert('falha ao revogar: ' + e.message); }
   });
 
   function mountAdminUI() {
@@ -1227,21 +754,21 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
     if (!tabsBar || !areaBody) return;
 
     const tabBtn = document.createElement('button');
-    tabBtn.className = 'area-tab';
-    tabBtn.dataset.tab = 'acesso';
-    tabBtn.id = 'tab-acesso';
-    tabBtn.textContent = 'Acesso';
+    tabBtn.className = 'area-tab'; tabBtn.dataset.tab = 'acesso'; tabBtn.id = 'tab-acesso'; tabBtn.textContent = 'Acesso';
     tabsBar.appendChild(tabBtn);
 
     const panel = document.createElement('div');
-    panel.className = 'area-panel hidden';
-    panel.dataset.panel = 'acesso';
+    panel.className = 'area-panel hidden'; panel.dataset.panel = 'acesso';
     panel.innerHTML = `
       <div class="admin-subtabs">
         <button class="admin-subtab selected" data-subtab="acessos">Acessos</button>
+        <button class="admin-subtab" data-subtab="gerenciamento">Gerenciamento</button>
         <button class="admin-subtab" data-subtab="historico">Histórico</button>
         <button class="admin-subtab" data-subtab="kill">Desligar sessão</button>
+        <button class="admin-subtab" data-subtab="bloqueio">Bloqueio</button>
+        <button class="admin-subtab" data-subtab="logs">Admin Logs</button>
       </div>
+      
       <div class="admin-panel active" data-panel="acessos">
         <div class="area-card">
           <h3>Adicionar acesso</h3>
@@ -1259,6 +786,30 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
           <div class="admin-users" id="admin-users"></div>
         </div>
       </div>
+      
+      <div class="admin-panel" data-panel="gerenciamento">
+        <div class="area-card">
+          <h3>Gerenciar Moderadores</h3>
+          <p style="color:var(--dim);font-size:12.5px;margin:0 0 16px">Selecione um usuário para torná-lo moderador e defina as permissões.</p>
+          <form class="admin-form" id="mod-form">
+            <div class="admin-field"><label>email do usuário</label><input id="mod-email" type="email" required placeholder="nome@escola.pr.gov.br"></div>
+            <div class="admin-field">
+              <label>permissões</label>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <label class="admin-check"><input type="checkbox" id="perm-ban" value="ban"> Banir</label>
+                <label class="admin-check"><input type="checkbox" id="perm-kill" value="kill"> Desligar Sessão</label>
+                <label class="admin-check"><input type="checkbox" id="perm-history" value="history"> Ver Histórico</label>
+              </div>
+            </div>
+            <div class="admin-field"><label>salas permitidas (separadas por vírgula, deixe vazio para todas)</label><input id="mod-rooms" type="text" placeholder="Sala A, Sala B"></div>
+            <div style="display:flex; gap:8px;">
+              <button class="admin-btn" type="submit" id="mod-submit">Salvar Moderador</button>
+              <button class="admin-btn admin-btn-danger" type="button" id="mod-remove">Remover Moderador</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
       <div class="admin-panel" data-panel="historico">
         <div class="area-card">
           <div class="admin-head"><div class="admin-head-left"><h3>Histórico de uso</h3><span class="admin-count" id="hist-count"></span></div></div>
@@ -1266,33 +817,47 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
           <div class="hist-list" id="hist-list"><div class="admin-empty">Digite um email acima para ver o histórico.</div></div>
         </div>
       </div>
+
       <div class="admin-panel" data-panel="kill">
         <div class="area-card">
           <h3>Desligar sessão</h3>
-          <p style="color:var(--dim);font-size:12.5px;margin:0 0 16px">Derruba a aba onde a pessoa está logada no site. Ela pode logar de novo normalmente.</p>
+          <p style="color:var(--dim);font-size:12.5px;margin:0 0 16px">Derruba a aba onde a pessoa está logada.</p>
           <form class="kill-form" id="kill-form">
             <div class="admin-field"><label>email @escola</label><input id="kill-email" name="email" type="email" required placeholder="nome.sobrenome@escola.pr.gov.br"></div>
             <div class="admin-field"><label>modo</label><div class="kill-options" id="kill-options">
-              <button type="button" class="kill-opt" data-mode="soft"><span class="kill-radio"></span><span class="kill-text"><b>Fechar a sessão</b><span>Derruba a aba atual. Se a pessoa reabrir o site, ainda está logada</span></span></button>
-              <button type="button" class="kill-opt danger" data-mode="hard"><span class="kill-radio"></span><span class="kill-text"><b>fechar e deslogar</b><span>Derruba a aba atual e apaga a sessão. Precisa logar com Google de novo</span></span></button>
+              <button type="button" class="kill-opt" data-mode="soft"><span class="kill-radio"></span><span class="kill-text"><b>Fechar a sessão</b><span>Derruba a aba atual.</span></span></button>
+              <button type="button" class="kill-opt danger" data-mode="hard"><span class="kill-radio"></span><span class="kill-text"><b>fechar e deslogar</b><span>Derruba a aba e apaga a sessão.</span></span></button>
             </div></div>
             <button class="admin-btn admin-btn-danger" type="submit" id="kill-submit" disabled>Executar</button>
           </form>
         </div>
         <div class="area-card">
           <h3>Desligar todos</h3>
-          <p style="color:var(--dim);font-size:12.5px;margin:0 0 16px">Encerra a sessão de TODOS os usuários ativos no sistema instantaneamente.</p>
           <button class="admin-btn admin-btn-danger" type="button" id="admin-kill-all">Desligar todos</button>
         </div>
         <div class="area-card">
           <h3>Desligamentos pendentes</h3>
-          <div class="kill-pending-list" id="kill-pending-list"><div class="admin-empty">Nenhum desligamento pendente.</div></div>
+          <div class="kill-pending-list" id="kill-pending-list"></div>
+        </div>
+      </div>
+
+      <div class="admin-panel" data-panel="bloqueio">
+        <div class="area-card">
+          <h3>Bloqueio Global de Blocos</h3>
+          <p style="color:var(--dim);font-size:12.5px;margin:0 0 16px">Ative para impedir o acesso a um bloco em todo o site.</p>
+          <div id="block-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+        </div>
+      </div>
+
+      <div class="admin-panel" data-panel="logs">
+        <div class="area-card">
+          <h3>Admin Logs</h3>
+          <div class="hist-list" id="admin-log-list"></div>
         </div>
       </div>`;
     areaBody.appendChild(panel);
 
-    wireTabs();
-    wireAdminTabs();
+    wireTabs(); wireAdminTabs();
 
     document.getElementById('admin-add-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -1300,14 +865,23 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
       const email = form.email.value.trim().toLowerCase();
       const name  = form.name.value.trim();
       const tags  = [...form.querySelectorAll('input[type=checkbox]:checked')].map(c => c.value);
+      if (!email.includes('@') || !name) { toast('dados inválidos', true); return; }
+      try { await adminCall('admin:setUser', { email, name, tags }); toast('adicionado'); form.reset(); await loadAdmin(); } catch (e) { toast('falha: ' + e.message, true); }
+    });
+
+    document.getElementById('mod-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('mod-email').value.trim().toLowerCase();
+      const perms = [...document.querySelectorAll('.admin-check input:checked')].map(c => c.value);
+      const rooms = document.getElementById('mod-rooms').value.split(',').map(s => s.trim()).filter(Boolean);
+      try { await adminCall('admin:setUser', { email, isMod: true, modPermissions: perms, modRooms: rooms }); toast('moderador salvo'); } catch (e) { toast('falha: ' + e.message, true); }
+    });
+
+    document.getElementById('mod-remove').addEventListener('click', async () => {
+      const email = document.getElementById('mod-email').value.trim().toLowerCase();
       if (!email.includes('@')) { toast('email inválido', true); return; }
-      if (!name) { toast('nome obrigatório', true); return; }
-      try {
-        await adminCall('admin:setUser', { email, name, tags });
-        toast('adicionado: ' + name);
-        form.reset();
-        await loadAdmin();
-      } catch (e) { toast('falha: ' + e.message, true); }
+      if (!confirm('Remover status de moderador de ' + email + '?')) return;
+      try { await adminCall('admin:setUser', { email, isMod: false, modPermissions: [] }); toast('moderador removido'); } catch (e) { toast('falha: ' + e.message, true); }
     });
 
     document.getElementById('admin-search').addEventListener('input', applyAdminFilter);
@@ -1320,11 +894,7 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
       clearTimeout(histTimer);
       const val = e.target.value.trim().toLowerCase();
       histTimer = setTimeout(() => {
-        if (!val || !val.includes('@')) {
-          document.getElementById('hist-list').innerHTML = '<div class="admin-empty">digite um email acima para ver o histórico.</div>';
-          document.getElementById('hist-count').textContent = '';
-          return;
-        }
+        if (!val || !val.includes('@')) { document.getElementById('hist-list').innerHTML = '<div class="admin-empty">digite um email acima.</div>'; return; }
         loadHistory(val);
       }, 400);
     });
@@ -1332,8 +902,7 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
     document.querySelectorAll('.kill-opt').forEach(opt => {
       opt.addEventListener('click', () => {
         document.querySelectorAll('.kill-opt').forEach(o => o.classList.remove('selected'));
-        opt.classList.add('selected');
-        killSelectedMode = opt.dataset.mode;
+        opt.classList.add('selected'); killSelectedMode = opt.dataset.mode;
         document.getElementById('kill-submit').disabled = false;
       });
     });
@@ -1341,565 +910,203 @@ main{padding:56px 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-i
     document.getElementById('kill-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('kill-email').value.trim().toLowerCase();
-      if (!email.includes('@')) { toast('email inválido', true); return; }
-      if (!killSelectedMode) { toast('escolha um modo', true); return; }
-
-      const labels = { soft: 'só fechar a sessão', hard: 'fechar e deslogar' };
-      if (!confirm(labels[killSelectedMode] + ' para ' + email + '?')) return;
-
-      try {
-        await adminCall('admin:killSession', { email, mode: killSelectedMode });
-        toast('comando enviado: ' + email);
-        e.target.reset();
-        killSelectedMode = null;
-        document.querySelectorAll('.kill-opt').forEach(o => o.classList.remove('selected'));
-        document.getElementById('kill-submit').disabled = true;
-        await loadKills();
-      } catch (err) { toast('falha: ' + err.message, true); }
+      if (!email.includes('@') || !killSelectedMode) { toast('dados inválidos', true); return; }
+      if (!confirm('Executar ' + killSelectedMode + ' em ' + email + '?')) return;
+      try { await adminCall('admin:killSession', { email, mode: killSelectedMode, targetTags: (adminData.people.find(p => p.email === email)||{}).tags }); toast('enviado'); e.target.reset(); killSelectedMode = null; document.getElementById('kill-submit').disabled = true; document.querySelectorAll('.kill-opt').forEach(o => o.classList.remove('selected')); await loadKills(); } catch (err) { toast('falha: ' + err.message, true); }
     });
 
     document.getElementById('admin-kill-all').addEventListener('click', async () => {
       if (!confirm('Encerrar a sessão de TODOS os usuários agora?')) return;
-      try {
-        const r = await adminCall('admin:killAll', { mode: 'hard' });
-        toast('sessões encerradas: ' + r.count);
-        await loadKills();
-      } catch (e) { toast('falha: ' + e.message, true); }
+      try { const r = await adminCall('admin:killAll', { mode: 'hard' }); toast('sessões encerradas: ' + r.count); await loadKills(); } catch (e) { toast('falha: ' + e.message, true); }
     });
   }
 
-  function toast(msg, isErr) {
-    const el = document.getElementById('admin-toast');
-    if (!el) return;
-    el.textContent = msg;
-    el.classList.toggle('err', !!isErr);
-    el.classList.add('show');
-    clearTimeout(el._t);
-    el._t = setTimeout(() => el.classList.remove('show'), 2200);
-  }
-
-  async function adminCall(action, extra) {
-    const jwt = sessionStorage.getItem(SESSION_KEY);
-    if (!jwt) throw new Error('no_jwt');
-    const r = await window.fetch(WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jwt, action, ...(extra || {}) })
-    });
-    if (!r.ok) {
-      const e = await r.json().catch(() => ({}));
-      throw new Error(e.error || ('http ' + r.status));
-    }
-    return r.json();
-  }
+  function toast(msg, isErr) { const el = document.getElementById('admin-toast'); if (!el) return; el.textContent = msg; el.classList.toggle('err', !!isErr); el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2200); }
+  async function adminCall(action, extra) { const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) throw new Error('no_jwt'); const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action, ...(extra || {}) }) }); if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || ('http ' + r.status)); } return r.json(); }
 
   async function loadAdmin() {
     try {
       adminData = await adminCall('admin:list');
-      renderAdminTagsInput();
-      renderAdminTagFilter();
-      renderAdminUsers();
-      updateAdminCount();
+      renderAdminTagsInput(); renderAdminTagFilter(); renderAdminUsers(); updateAdminCount(); renderBlockList();
     } catch (e) { toast('falha ao carregar: ' + e.message, true); }
   }
 
-  function updateAdminCount() {
-    const el = document.getElementById('admin-count');
-    if (!el) return;
-    const total = adminData && adminData.count != null ? adminData.count : (adminData && adminData.people ? adminData.people.length : 0);
-    el.innerHTML = '<b>' + total + '</b>   pessoa' + (total === 1 ? '' : 's');
-  }
+  function updateAdminCount() { const el = document.getElementById('admin-count'); if (!el) return; const total = adminData && adminData.count != null ? adminData.count : 0; el.innerHTML = '<b>' + total + '</b> pessoa' + (total === 1 ? '' : 's'); }
 
   function renderAdminTagsInput() {
-    const wrap = document.getElementById('admin-new-tags');
-    if (!wrap) return;
-    wrap.innerHTML = '';
-    if (!adminData || !adminData.allTags || !adminData.allTags.length) {
-      wrap.innerHTML = '<span style="color:var(--dim);font-size:12.5px">sem tags no catálogo.</span>';
-      return;
-    }
-    for (const tag of adminData.allTags) {
-      const label = document.createElement('label');
-      label.className = 'admin-check';
-      const cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.value = tag;
-      label.append(cb, document.createTextNode(tag));
-      wrap.appendChild(label);
-    }
+    const wrap = document.getElementById('admin-new-tags'); if (!wrap) return; wrap.innerHTML = '';
+    if (!adminData || !adminData.allTags || !adminData.allTags.length) { wrap.innerHTML = '<span style="color:var(--dim);font-size:12.5px">sem tags no catálogo.</span>'; return; }
+    for (const tag of adminData.allTags) { const label = document.createElement('label'); label.className = 'admin-check'; const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = tag; label.append(cb, document.createTextNode(tag)); wrap.appendChild(label); }
   }
 
   function renderAdminTagFilter() {
-    const wrap = document.getElementById('admin-tag-filter');
-    if (!wrap) return;
-    wrap.innerHTML = '';
+    const wrap = document.getElementById('admin-tag-filter'); if (!wrap) return; wrap.innerHTML = '';
     if (!adminData || !adminData.allTags || !adminData.allTags.length) return;
-
     for (const tag of adminData.allTags) {
-      const c = document.createElement('button');
-      c.type = 'button';
-      c.className = 'admin-tag-chip' + (adminSelectedTags.has(tag) ? ' on' : '');
-      c.textContent = tag;
-      c.addEventListener('click', () => {
-        if (adminSelectedTags.has(tag)) adminSelectedTags.delete(tag);
-        else adminSelectedTags.add(tag);
-        c.classList.toggle('on');
-        const clearBtn = wrap.querySelector('.admin-tag-clear');
-        if (clearBtn) clearBtn.classList.toggle('hidden', adminSelectedTags.size === 0);
-        applyAdminFilter();
-      });
+      const c = document.createElement('button'); c.type = 'button'; c.className = 'admin-tag-chip' + (adminSelectedTags.has(tag) ? ' on' : ''); c.textContent = tag;
+      c.addEventListener('click', () => { if (adminSelectedTags.has(tag)) adminSelectedTags.delete(tag); else adminSelectedTags.add(tag); c.classList.toggle('on'); const clearBtn = wrap.querySelector('.admin-tag-clear'); if (clearBtn) clearBtn.classList.toggle('hidden', adminSelectedTags.size === 0); applyAdminFilter(); });
       wrap.appendChild(c);
     }
-    const clearBtn = document.createElement('button');
-    clearBtn.type = 'button';
-    clearBtn.className = 'admin-tag-clear' + (adminSelectedTags.size === 0 ? ' hidden' : '');
-    clearBtn.textContent = 'limpar filtros';
-    clearBtn.addEventListener('click', () => {
-      adminSelectedTags.clear();
-      wrap.querySelectorAll('.admin-tag-chip').forEach(c => c.classList.remove('on'));
-      clearBtn.classList.add('hidden');
-      applyAdminFilter();
-    });
+    const clearBtn = document.createElement('button'); clearBtn.type = 'button'; clearBtn.className = 'admin-tag-clear' + (adminSelectedTags.size === 0 ? ' hidden' : ''); clearBtn.textContent = 'limpar filtros';
+    clearBtn.addEventListener('click', () => { adminSelectedTags.clear(); wrap.querySelectorAll('.admin-tag-chip').forEach(c => c.classList.remove('on')); clearBtn.classList.add('hidden'); applyAdminFilter(); });
     wrap.appendChild(clearBtn);
   }
 
-  function normalize(s) {
-    return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s@._-]/g, '').trim();
-  }
-  function levenshtein(a, b) {
-    if (a === b) return 0;
-    if (!a.length) return b.length;
-    if (!b.length) return a.length;
-    const prev = new Array(b.length + 1), curr = new Array(b.length + 1);
-    for (let j = 0; j <= b.length; j++) prev[j] = j;
-    for (let i = 1; i <= a.length; i++) {
-      curr[0] = i;
-      for (let j = 1; j <= b.length; j++) {
-        const cost = a[i-1] === b[j-1] ? 0 : 1;
-        curr[j] = Math.min(curr[j-1]+1, prev[j]+1, prev[j-1]+cost);
-      }
-      for (let j = 0; j <= b.length; j++) prev[j] = curr[j];
-    }
-    return prev[b.length];
-  }
-  function thresholdFor(term) {
-    const n = term.length;
-    if (n <= 3) return 1;
-    if (n <= 6) return 2;
-    return 3;
-  }
-  function fuzzyMatch(term, hay) {
-    if (!term) return true;
-    if (!hay) return false;
-    const t = normalize(term), h = normalize(hay);
-    if (h.includes(t)) return true;
-    const words = h.split(/[\s@._-]+/).filter(Boolean);
-    if (words.some(w => w.startsWith(t))) return true;
-    const th = thresholdFor(t);
-    if (words.some(w => levenshtein(t, w) <= th)) return true;
-    if (levenshtein(t, h) <= th) return true;
-    return false;
-  }
+  function normalize(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s@._-]/g, '').trim(); }
+  function levenshtein(a, b) { if (a === b) return 0; if (!a.length) return b.length; if (!b.length) return a.length; const prev = new Array(b.length + 1), curr = new Array(b.length + 1); for (let j = 0; j <= b.length; j++) prev[j] = j; for (let i = 1; i <= a.length; i++) { curr[0] = i; for (let j = 1; j <= b.length; j++) { const cost = a[i-1] === b[j-1] ? 0 : 1; curr[j] = Math.min(curr[j-1]+1, prev[j]+1, prev[j-1]+cost); } for (let j = 0; j <= b.length; j++) prev[j] = curr[j]; } return prev[b.length]; }
+  function thresholdFor(term) { const n = term.length; if (n <= 3) return 1; if (n <= 6) return 2; return 3; }
+  function fuzzyMatch(term, hay) { if (!term) return true; if (!hay) return false; const t = normalize(term), h = normalize(hay); if (h.includes(t)) return true; const words = h.split(/[\s@._-]+/).filter(Boolean); if (words.some(w => w.startsWith(t))) return true; const th = thresholdFor(t); if (words.some(w => levenshtein(t, w) <= th)) return true; if (levenshtein(t, h) <= th) return true; return false; }
 
   function applyAdminFilter() {
-    const input = document.getElementById('admin-search');
-    if (!input) return;
-    const term = input.value.trim();
+    const input = document.getElementById('admin-search'); if (!input) return; const term = input.value.trim();
     document.querySelectorAll('#admin-users .admin-row').forEach(row => {
-      const hay = row.dataset.search || '';
-      const tags = (row.dataset.tags || '').split('|').filter(Boolean);
-      const tagsOk = [...adminSelectedTags].every(t => tags.includes(t));
-      const searchOk = fuzzyMatch(term, hay);
+      const hay = row.dataset.search || ''; const tags = (row.dataset.tags || '').split('|').filter(Boolean);
+      const tagsOk = [...adminSelectedTags].every(t => tags.includes(t)); const searchOk = fuzzyMatch(term, hay);
       row.style.display = (tagsOk && searchOk) ? '' : 'none';
     });
   }
 
-  function doExport() {
-    if (!adminData) { toast('nada para exportar', true); return; }
-    const data = { exportedAt: new Date().toISOString(), authorizedTags: adminData.allTags, people: adminData.people };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'lynx-access-' + new Date().toISOString().slice(0, 10) + '.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 500);
-    toast('exportado');
-  }
-
-  async function doImport(e) {
-    const file = e.target.files && e.target.files[0];
-    e.target.value = '';
-    if (!file) return;
-    try {
-      const text = await file.text();
-      const parsed = JSON.parse(text);
-      const people = Array.isArray(parsed) ? parsed : parsed.people;
-      if (!Array.isArray(people) || !people.length) { toast('arquivo sem pessoas', true); return; }
-      const r = await adminCall('admin:import', { people });
-      toast('importado: ' + r.imported);
-      await loadAdmin();
-    } catch (err) { toast('falha: ' + err.message, true); }
-  }
+  function doExport() { if (!adminData) { toast('nada para exportar', true); return; } const data = { exportedAt: new Date().toISOString(), authorizedTags: adminData.allTags, people: adminData.people }; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'lynx-access-' + new Date().toISOString().slice(0, 10) + '.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 500); toast('exportado'); }
+  async function doImport(e) { const file = e.target.files && e.target.files[0]; e.target.value = ''; if (!file) return; try { const text = await file.text(); const parsed = JSON.parse(text); const people = Array.isArray(parsed) ? parsed : parsed.people; if (!Array.isArray(people) || !people.length) { toast('arquivo inválido', true); return; } const r = await adminCall('admin:import', { people }); toast('importado: ' + r.imported); await loadAdmin(); } catch (err) { toast('falha: ' + err.message, true); } }
 
   function renderAdminUsers() {
-    const list = document.getElementById('admin-users');
-    if (!list) return;
-    list.innerHTML = '';
-    if (!adminData || !adminData.people || !adminData.people.length) {
-      list.innerHTML = '<div class="admin-empty">ninguém cadastrado além de você.</div>';
-      return;
-    }
+    const list = document.getElementById('admin-users'); if (!list) return; list.innerHTML = '';
+    if (!adminData || !adminData.people || !adminData.people.length) { list.innerHTML = '<div class="admin-empty">nenhum usuário.</div>'; return; }
     for (const p of adminData.people) {
-      const row = document.createElement('div');
-      row.className = 'admin-row';
-      row.dataset.search = ((p.name || '') + ' ' + (p.email || '')).toLowerCase();
-      row.dataset.tags = (p.tags || []).join('|');
-
-      const meta = document.createElement('div');
-      meta.className = 'admin-meta';
+      const row = document.createElement('div'); row.className = 'admin-row'; row.dataset.search = ((p.name || '') + ' ' + (p.email || '')).toLowerCase(); row.dataset.tags = (p.tags || []).join('|');
+      const meta = document.createElement('div'); meta.className = 'admin-meta';
       const nm = document.createElement('div'); nm.className = 'admin-name'; nm.textContent = p.name || '(sem nome)';
       const em = document.createElement('div'); em.className = 'admin-email'; em.textContent = p.email;
       meta.append(nm, em);
-
-      const chips = document.createElement('div');
-      chips.className = 'admin-chips';
+      const chips = document.createElement('div'); chips.className = 'admin-chips';
       for (const tag of adminData.allTags) {
-        const c = document.createElement('button');
-        c.type = 'button';
-        c.className = 'admin-chip' + ((p.tags || []).includes(tag) ? ' on' : '');
-        c.textContent = tag;
+        const c = document.createElement('button'); c.type = 'button'; c.className = 'admin-chip' + ((p.tags || []).includes(tag) ? ' on' : ''); c.textContent = tag;
         c.addEventListener('click', async () => {
-          const set = new Set(p.tags || []);
-          if (set.has(tag)) set.delete(tag); else set.add(tag);
-          p.tags = [...set];
-          c.classList.toggle('on');
-          row.dataset.tags = p.tags.join('|');
-          try {
-            await adminCall('admin:setUser', { email: p.email, name: p.name || '', tags: p.tags });
-            toast(tag + (c.classList.contains('on') ? ' liberado' : ' removido') + ' → ' + (p.name || p.email));
-            applyAdminFilter();
-          } catch (e) {
-            c.classList.toggle('on');
-            if (set.has(tag)) set.delete(tag); else set.add(tag);
-            p.tags = [...set];
-            row.dataset.tags = p.tags.join('|');
-            toast('falha: ' + e.message, true);
-          }
+          const set = new Set(p.tags || []); if (set.has(tag)) set.delete(tag); else set.add(tag); p.tags = [...set]; c.classList.toggle('on'); row.dataset.tags = p.tags.join('|');
+          try { await adminCall('admin:setUser', { email: p.email, name: p.name || '', tags: p.tags }); toast('atualizado'); applyAdminFilter(); } catch (e) { c.classList.toggle('on'); toast('falha: ' + e.message, true); }
         });
         chips.appendChild(c);
       }
-
-      const del = document.createElement('button');
-      del.type = 'button';
-      del.className = 'admin-del';
-      del.textContent = 'remover';
-      del.addEventListener('click', async () => {
-        if (!confirm('remover o acesso de ' + p.email + '?')) return;
-        try {
-          await adminCall('admin:deleteUser', { email: p.email });
-          toast('removido: ' + p.email);
-          await loadAdmin();
-        } catch (e) { toast('falha ao remover: ' + e.message, true); }
-      });
-
-      row.append(meta, chips, del);
-      list.appendChild(row);
+      const del = document.createElement('button'); del.type = 'button'; del.className = 'admin-del'; del.textContent = 'remover';
+      del.addEventListener('click', async () => { if (!confirm('remover ' + p.email + '?')) return; try { await adminCall('admin:deleteUser', { email: p.email }); toast('removido'); await loadAdmin(); } catch (e) { toast('falha: ' + e.message, true); } });
+      row.append(meta, chips, del); list.appendChild(row);
     }
     applyAdminFilter();
   }
 
-  async function loadHistory(email) {
-    const list = document.getElementById('hist-list');
-    const countEl = document.getElementById('hist-count');
-    if (!list) return;
-    list.innerHTML = '<div class="admin-empty">carregando…</div>';
-    try {
-      const r = await adminCall('admin:history', { email, limit: 200 });
-      const events = r.events || [];
-      list.innerHTML = '';
-      if (!events.length) {
-        list.innerHTML = '<div class="admin-empty">nenhum evento registrado para essa pessoa.</div>';
-        countEl.textContent = '';
-        return;
-      }
-      countEl.innerHTML = '<b>' + events.length + '</b> evento' + (events.length === 1 ? '' : 's');
-      for (const ev of events) list.appendChild(renderHistItem(ev, email));
-    } catch (e) { list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>'; }
+  function renderBlockList() {
+    const wrap = document.getElementById('block-list'); if (!wrap || !adminData) return; wrap.innerHTML = '';
+    for (const tag of adminData.allTags) {
+      const isBlocked = (adminData.blockedModules || []).includes(tag);
+      const row = document.createElement('div'); row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--line);';
+      row.innerHTML = `<span style="font-size:13.5px; color:var(--text)">${tag}</span>`;
+      const btn = document.createElement('button'); btn.className = isBlocked ? 'admin-btn admin-btn-danger' : 'admin-btn'; btn.style.padding = '6px 12px'; btn.style.fontSize = '12px'; btn.textContent = isBlocked ? 'Desbloquear' : 'Bloquear';
+      btn.onclick = async () => { try { await adminCall('admin:blockModule', { tag, block: !isBlocked }); await loadAdmin(); } catch (e) { toast(e.message, true); } };
+      row.appendChild(btn); wrap.appendChild(row);
+    }
   }
 
+  async function loadHistory(email) { const list = document.getElementById('hist-list'); const countEl = document.getElementById('hist-count'); if (!list) return; list.innerHTML = '<div class="admin-empty">carregando…</div>'; try { const r = await adminCall('admin:history', { email, limit: 200 }); const events = r.events || []; list.innerHTML = ''; if (!events.length) { list.innerHTML = '<div class="admin-empty">nenhum evento.</div>'; countEl.textContent = ''; return; } countEl.innerHTML = '<b>' + events.length + '</b> eventos'; for (const ev of events) list.appendChild(renderHistItem(ev, email)); } catch (e) { list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>'; } }
+  async function loadLogs() { const list = document.getElementById('admin-log-list'); if (!list) return; list.innerHTML = '<div class="admin-empty">carregando…</div>'; try { const r = await adminCall('admin:logs'); const logs = r.logs || []; list.innerHTML = ''; if (!logs.length) { list.innerHTML = '<div class="admin-empty">nenhum log.</div>'; return; } for (const ev of logs) list.appendChild(renderHistItem(ev, ev.target || ev.by)); } catch (e) { list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>'; } }
+
   function renderHistItem(ev, email) {
-    const row = document.createElement('div');
-    row.className = 'hist-item';
-
-    let iconClass = 'h-login';
-    let iconSvg = '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>';
-    let line1 = '';
-
+    const row = document.createElement('div'); row.className = 'hist-item';
+    let iconClass = 'h-login'; let iconSvg = '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>'; let line1 = '';
     switch (ev.type) {
       case 'login': iconClass = 'h-login'; iconSvg = '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>'; line1 = 'fez login no site'; break;
       case 'copy': iconClass = 'h-copy'; iconSvg = '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>'; line1 = 'copiou o bloco <em>' + escapeHtml(ev.tag || '?') + '</em>'; break;
-      case 'terms_accept': iconClass = 'h-terms_a'; iconSvg = '<path d="M20 6 9 17l-5-5"/>'; line1 = 'aceitou os termos de uso'; break;
-      case 'terms_revoke': iconClass = 'h-terms_r'; iconSvg = '<path d="M18 6 6 18M6 6l12 12"/>'; line1 = 'revogou o aceite dos termos'; break;
+      case 'terms_accept': iconClass = 'h-terms_a'; iconSvg = '<path d="M20 6 9 17l-5-5"/>'; line1 = 'aceitou os termos'; break;
       case 'tags_update': iconClass = 'h-tags'; iconSvg = '<path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2"/>'; line1 = 'tags atualizadas' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : ''); break;
       case 'kill_soft': iconClass = 'h-kill_s'; iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/>'; line1 = 'sessão derrubada' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : ''); break;
       case 'kill_hard': iconClass = 'h-kill'; iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/>'; line1 = 'sessão derrubada e deslogada' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : ''); break;
+      case 'banned': iconClass = 'h-ban'; iconSvg = '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>'; line1 = 'foi <em>BANIDO</em>' + (ev.by ? ' por <em>' + escapeHtml(ev.by) + '</em>' : ''); break;
+      case 'ban': iconClass = 'h-ban'; iconSvg = '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>'; line1 = 'Baniu <em>' + escapeHtml(ev.target || '?') + '</em>'; break;
+      case 'unban': iconClass = 'h-tags'; iconSvg = '<path d="M20 6 9 17l-5-5"/>'; line1 = 'Desbaniu <em>' + escapeHtml(ev.target || '?') + '</em>'; break;
+      case 'block': iconClass = 'h-ban'; iconSvg = '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>'; line1 = 'Bloqueou o bloco <em>' + escapeHtml(ev.target || '?') + '</em>'; break;
+      case 'unblock': iconClass = 'h-tags'; iconSvg = '<path d="M20 6 9 17l-5-5"/>'; line1 = 'Desbloqueou o bloco <em>' + escapeHtml(ev.target || '?') + '</em>'; break;
+      case 'kill_all': iconClass = 'h-kill'; iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/>'; line1 = 'Derrubou TODAS as sessões'; break;
       default: line1 = escapeHtml(ev.type || '?');
     }
-
-    row.innerHTML =
-      '<div class="hist-icon ' + iconClass + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + iconSvg + '</svg></div>' +
-      '<div class="hist-body"><div class="hist-line1">' + line1 + '</div><div class="hist-line2">' + escapeHtml(fmtDate(ev.ts)) + ' · <span class="hist-email">' + escapeHtml(email) + '</span></div></div>';
+    row.innerHTML = '<div class="hist-icon ' + iconClass + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + iconSvg + '</svg></div><div class="hist-body"><div class="hist-line1">' + line1 + '</div><div class="hist-line2">' + escapeHtml(fmtDate(ev.ts)) + ' · <span class="hist-email">' + escapeHtml(email || '—') + '</span></div></div>';
     return row;
   }
 
-  async function loadKills() {
-    const list = document.getElementById('kill-pending-list');
-    if (!list) return;
-    list.innerHTML = '<div class="admin-empty">carregando…</div>';
-    try {
-      const r = await adminCall('admin:listKills');
-      const kills = r.kills || [];
-      list.innerHTML = '';
-      if (!kills.length) { list.innerHTML = '<div class="admin-empty">nenhum desligamento pendente.</div>'; return; }
-      for (const k of kills) {
-        const row = document.createElement('div');
-        row.className = 'kill-row';
-        const modeLabel = k.mode === 'hard' ? 'deslogar' : 'fechar';
-        row.innerHTML = '<div class="kill-row-meta"><div class="kill-row-email">' + escapeHtml(k.email) + '</div><div class="kill-row-sub">enviado ' + escapeHtml(fmtRelative(k.ts)) + (k.by ? ' por ' + escapeHtml(k.by) : '') + '</div></div><span class="kill-row-mode ' + k.mode + '">' + modeLabel + '</span>';
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'kill-row-btn';
-        btn.textContent = 'limpar';
-        btn.addEventListener('click', async () => {
-          try { await adminCall('admin:clearKill', { email: k.email }); toast('limpo: ' + k.email); await loadKills(); } catch (e) { toast('falha: ' + e.message, true); }
-        });
-        row.appendChild(btn);
-        list.appendChild(row);
-      }
-    } catch (e) { list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>'; }
-  }
+  async function loadKills() { const list = document.getElementById('kill-pending-list'); if (!list) return; list.innerHTML = '<div class="admin-empty">carregando…</div>'; try { const r = await adminCall('admin:listKills'); const kills = r.kills || []; list.innerHTML = ''; if (!kills.length) { list.innerHTML = '<div class="admin-empty">nenhum pendente.</div>'; return; } for (const k of kills) { const row = document.createElement('div'); row.className = 'kill-row'; const modeLabel = k.mode === 'hard' ? 'deslogar' : 'fechar'; row.innerHTML = '<div class="kill-row-meta"><div class="kill-row-email">' + escapeHtml(k.email) + '</div><div class="kill-row-sub">' + escapeHtml(fmtRelative(k.ts)) + '</div></div><span class="kill-row-mode ' + k.mode + '">' + modeLabel + '</span>'; const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'kill-row-btn'; btn.textContent = 'limpar'; btn.addEventListener('click', async () => { try { await adminCall('admin:clearKill', { email: k.email }); await loadKills(); } catch (e) { toast(e.message, true); } }); row.appendChild(btn); list.appendChild(row); } } catch (e) { list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>'; } }
 
   wireTabs();
+  let pollTimer = null; let knownTags = new Set();
 
-  let pollTimer = null;
-  let knownTags = new Set();
-
-  async function _post(payload) {
-    try {
-      const r = await window.fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (!r.ok) return null;
-      return await r.json();
-    } catch { return null; }
-  }
-
-  function showMiniToast(msg) {
-    const t = document.createElement('div');
-    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(19,19,24,.96);border:1px solid #26262e;border-radius:10px;padding:11px 18px;color:#e8e8ea;font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.55);z-index:10002;transition:opacity .22s, transform .22s;opacity:0;';
-    t.textContent = msg;
-    document.body.appendChild(t);
-    requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; });
-    setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 2400);
-    setTimeout(() => t.remove(), 2800);
-  }
-
-  function fadeOutAndRemove(el, cb) {
-    if (!el) return cb && cb();
-    el.style.transition = 'opacity .25s, transform .25s';
-    el.style.opacity = '0';
-    el.style.transform = 'scale(.96)';
-    setTimeout(() => { el.remove(); cb && cb(); }, 260);
-  }
-
-  function fadeIn(el) {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(12px)';
-    requestAnimationFrame(() => {
-      el.style.transition = 'opacity .4s cubic-bezier(.2,.8,.2,1), transform .4s cubic-bezier(.2,.8,.2,1)';
-      el.style.opacity = '1';
-      el.style.transform = 'none';
-    });
-  }
+  async function _post(payload) { try { const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); if (!r.ok) return null; return await r.json(); } catch { return null; } }
+  function showMiniToast(msg) { const t = document.createElement('div'); t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(19,19,24,.96);border:1px solid #26262e;border-radius:10px;padding:11px 18px;color:#e8e8ea;font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.55);z-index:10002;transition:opacity .22s, transform .22s;opacity:0;'; t.textContent = msg; document.body.appendChild(t); requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; }); setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 2400); setTimeout(() => t.remove(), 2800); }
+  function fadeOutAndRemove(el, cb) { if (!el) return cb && cb(); el.style.transition = 'opacity .25s, transform .25s'; el.style.opacity = '0'; el.style.transform = 'scale(.96)'; setTimeout(() => { el.remove(); cb && cb(); }, 260); }
+  function fadeIn(el) { el.style.opacity = '0'; el.style.transform = 'translateY(12px)'; requestAnimationFrame(() => { el.style.transition = 'opacity .4s cubic-bezier(.2,.8,.2,1), transform .4s cubic-bezier(.2,.8,.2,1)'; el.style.opacity = '1'; el.style.transform = 'none'; }); }
 
   function applyBlocksDiff(incoming) {
     const incomingMap = new Map((incoming || []).map(b => [b.tag, b]));
-    const added = [];
-    const removed = [];
-    const changed = [];
-
+    const added = []; const removed = []; const changed = [];
     for (const b of (currentUser.blocks || [])) {
       if (!incomingMap.has(b.tag)) removed.push(b);
-      else {
-        const inc = incomingMap.get(b.tag);
-        if (JSON.stringify(b) !== JSON.stringify(inc)) changed.push(inc);
-      }
+      else { const inc = incomingMap.get(b.tag); if (JSON.stringify(b) !== JSON.stringify(inc)) changed.push(inc); }
     }
-    for (const inc of (incoming || [])) {
-      if (!knownTags.has(inc.tag)) added.push(inc);
-    }
-
+    for (const inc of (incoming || [])) { if (!knownTags.has(inc.tag)) added.push(inc); }
     if (!added.length && !removed.length && !changed.length) return;
-
-    currentUser.blocks = incoming || [];
-    knownTags = new Set(currentUser.blocks.map(b => b.tag));
+    currentUser.blocks = incoming || []; knownTags = new Set(currentUser.blocks.map(b => b.tag));
 
     for (const b of removed) {
       const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
-      if (card) {
-        card.style.transition = 'opacity .25s, transform .25s';
-        card.style.opacity = '0';
-        card.style.transform = 'scale(.95)';
-        setTimeout(() => card.remove(), 260);
-      }
-      payloads.delete(b.tag + '_new');
-      payloads.delete(b.tag + '_old');
-      payloads.delete(b.tag);
+      if (card) { card.style.transition = 'opacity .25s, transform .25s'; card.style.opacity = '0'; card.style.transform = 'scale(.95)'; setTimeout(() => card.remove(), 260); }
+      payloads.delete(b.tag + '_new'); payloads.delete(b.tag + '_old'); payloads.delete(b.tag);
     }
-
     for (const b of changed) {
       const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
       if (!card) continue;
-      const fresh = renderBlock(b);
-      card.replaceWith(fresh);
-      fadeIn(fresh);
+      const fresh = renderBlock(b); card.replaceWith(fresh); fadeIn(fresh);
     }
-
-    added.forEach((b, i) => {
-      const el = renderBlock(b);
-      setTimeout(() => { grid.appendChild(el); fadeIn(el); }, i * 90);
-    });
-
-    const parts = [];
-    if (added.length) parts.push('+' + added.map(b => b.tag).join(', '));
-    if (removed.length) parts.push('−' + removed.map(b => b.tag).join(', '));
-    if (changed.length && !added.length && !removed.length) parts.push('atualizado');
-    if (parts.length) showMiniToast('permissões atualizadas · ' + parts.join(' '));
+    added.forEach((b, i) => { const el = renderBlock(b); setTimeout(() => { grid.appendChild(el); fadeIn(el); }, i * 90); });
   }
 
   async function _handleKill(kill) {
     stopPolling();
-    if (kill.mode === 'hard') {
-      try { sessionStorage.removeItem(SESSION_KEY); } catch {}
-      try { localStorage.clear(); } catch {}
-    }
-    
-    document.documentElement.innerHTML = `
-      <head>
-        <meta charset="utf-8">
-        <title>Sessão Encerrada</title>
-        <style>
-          body{background:#0a0a0c;color:#e05252;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;font-family:system-ui,sans-serif;margin:0;text-align:center;}
-          h1{font-size:48px;margin:0 0 10px;letter-spacing:-1px;}
-          p{color:#8a8a94;font-size:16px;margin:0;}
-        </style>
-      </head>
-      <body>
-        <h1>SESSÃO ENCERRADA</h1>
-        <p>O administrador desconectou este dispositivo.</p>
-      </body>
-    `;
-
-    history.pushState(null, document.title, location.href);
-    window.addEventListener('popstate', function () { history.pushState(null, document.title, location.href); });
-
-    setTimeout(() => {
-      window.close();
-      window.open('', '_self', '');
-      window.close();
-      setTimeout(() => { window.location.replace('about:blank'); }, 500);
-    }, 1000);
+    try { sessionStorage.removeItem(SESSION_KEY); } catch {}
+    try { localStorage.clear(); } catch {}
+    document.documentElement.innerHTML = '';
+    window.close();
+    setTimeout(() => { window.location.replace('about:blank'); window.close(); }, 500);
   }
 
   async function pollTick() {
-    const jwt = sessionStorage.getItem(SESSION_KEY);
-    if (!jwt) return;
-    
+    const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) return;
     const data = await _post({ jwt, action: 'checkState' });
     if (!data || !data.ok) return;
-
-    if (data.kill) {
-      try { await _post({ jwt, action: 'ackKill' }); } catch {}
-      await _handleKill(data.kill);
-      return;
-    }
+    
+    if (data.banned) { await _handleKill({ mode: 'hard' }); return; }
+    if (data.kill) { try { await _post({ jwt, action: 'ackKill' }); } catch {} await _handleKill(data.kill); return; }
     
     if (data.theme) applyTheme(data.theme);
     applyBlocksDiff(data.blocks || []);
   }
 
-  function startPolling() {
-    stopPolling();
-    if (!currentUser) return;
-    knownTags = new Set((currentUser.blocks || []).map(b => b.tag));
-    pollTimer = setInterval(pollTick, 20000);
-    document.addEventListener('visibilitychange', onVisibilityForPoll);
-  }
-  function onVisibilityForPoll() {
-    if (document.visibilityState === 'visible') pollTick();
-  }
-  function stopPolling() {
-    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
-    document.removeEventListener('visibilitychange', onVisibilityForPoll);
-  }
-
-  function kill_now() {
-    try { window.__guardKill && window.__guardKill('admin_kill'); }
-    catch { try { location.replace('about:blank'); } catch {} }
-    if (document.body) { document.body.innerHTML = ''; document.body.style.background = '#000'; document.title = 'Sessão Encerrada'; }
-  }
+  function startPolling() { stopPolling(); if (!currentUser) return; knownTags = new Set((currentUser.blocks || []).map(b => b.tag)); pollTimer = setInterval(pollTick, 5000); document.addEventListener('visibilitychange', onVisibilityForPoll); }
+  function onVisibilityForPoll() { if (document.visibilityState === 'visible') pollTick(); }
+  function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } document.removeEventListener('visibilitychange', onVisibilityForPoll); }
+  function kill_now() { try { window.__guardKill && window.__guardKill('admin_kill'); } catch { try { location.replace('about:blank'); } catch {} } if (document.body) { document.body.innerHTML = ''; document.body.style.background = '#000'; document.title = 'Sessão Encerrada'; } }
 
   function route() {
     if (currentUser && !currentUser.termsAccepted) return;
     const path = location.pathname.replace(/\/+$/, '') || '/';
-    if (path === '/area') {
-      if (!currentUser) { showView('login'); return; }
-      if (!viewArea.classList.contains('hidden')) { renderArea(); return; }
-      openArea();
-    } else {
-      if (!currentUser) { showView('login'); return; }
-      if (!viewSite.classList.contains('hidden')) return;
-      showView('site');
-      playSiteEntrance();
-    }
+    if (path === '/area') { if (!currentUser) { showView('login'); return; } if (!viewArea.classList.contains('hidden')) { renderArea(); return; } openArea(); }
+    else { if (!currentUser) { showView('login'); return; } if (!viewSite.classList.contains('hidden')) return; showView('site'); playSiteEntrance(); }
   }
 
-  function go(path) {
-    if (location.pathname !== path) history.pushState({}, '', path);
-    route();
-  }
+  function go(path) { if (location.pathname !== path) history.pushState({}, '', path); route(); }
   window.addEventListener('popstate', route);
 
-  document.getElementById('btn-area').addEventListener('click', () => {
-    if (location.pathname !== '/area') history.pushState({}, '', '/area');
-    openArea();
-  });
-  document.getElementById('btn-home').addEventListener('click', () => {
-    if (location.pathname !== '/') history.pushState({}, '', '/');
-    backHome();
-  });
-  document.getElementById('btn-back').addEventListener('click', () => {
-    if (location.pathname !== '/') history.pushState({}, '', '/');
-    backHome();
-  });
+  document.getElementById('btn-area').addEventListener('click', () => { if (location.pathname !== '/area') history.pushState({}, '', '/area'); openArea(); });
+  document.getElementById('btn-home').addEventListener('click', () => { if (location.pathname !== '/') history.pushState({}, '', '/'); backHome(); });
+  document.getElementById('btn-back').addEventListener('click', () => { if (location.pathname !== '/') history.pushState({}, '', '/'); backHome(); });
 
-  function kill() {
-    try { window.__guardKill && window.__guardKill('app_kill'); }
-    catch { try { location.replace('about:blank'); } catch {} }
-  }
-
-  ['btn-logout','btn-logout-2','btn-logout-3'].forEach(id => {
-    document.getElementById(id).addEventListener('click', () => {
-      sessionStorage.removeItem(SESSION_KEY);
-      try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
-      kill();
-    });
-  });
+  function kill() { try { window.__guardKill && window.__guardKill('app_kill'); } catch { try { location.replace('about:blank'); } catch {} } }
+  ['btn-logout','btn-logout-2','btn-logout-3'].forEach(id => { document.getElementById(id).addEventListener('click', () => { sessionStorage.removeItem(SESSION_KEY); try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {} kill(); }); });
 
   tryRestore();
 })();
