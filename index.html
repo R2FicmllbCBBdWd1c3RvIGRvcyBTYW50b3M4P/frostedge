@@ -50,7 +50,7 @@
 </script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
-:root{--bg:#0a0a0c;--panel:#101013;--card:#131318;--line:#1e1e24;--line-2:#26262e;--text:#e8e8ea;--dim:#8a8a94;--accent:#3b82f6;--accent-2:#60a5fa;--accent-dim:#1e3a8a;--gold:#d4af37;--gold-2:#e8c766;--gold-dim:#a67c00;--glow-rgb:59,130,246;--gold-rgb:212,175,55;--danger:#e05252}
+:root{--bg:#0a0a0c;--panel:#101013;--card:#131318;--line:#1e1e24;--line-2:#26262e;--text:#e8e8ea;--dim:#8a8a94;--accent:#3b82f6;--accent-2:#60a5fa;--accent-dim:#1e3a8a;--gold:#d4af37;--gold-2:#e8c766;--gold-dim:#a67c00;--glow-rgb:59,130,246;--gold-rgb:212,175,55;--danger:#e05252;--success:#10b981}
 html[data-theme="roxo"]{--accent:#8b5cf6;--accent-2:#a78bfa;--accent-dim:#4c1d95;--glow-rgb:139,92,246;--gold:#a855f7;--gold-2:#c084fc;--gold-dim:#6b21a8;--gold-rgb:168,85,247}
 html[data-theme="verde"]{--accent:#10b981;--accent-2:#34d399;--accent-dim:#064e3b;--glow-rgb:16,185,129}
 html[data-theme="vermelho"]{--accent:#ef4444;--accent-2:#f87171;--accent-dim:#7f1d1d;--glow-rgb:239,68,68}
@@ -62,9 +62,16 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));max-width:1100px;margin:0 auto} .card{background:linear-gradient(180deg,rgba(19,19,24,.92),rgba(15,15,18,.92));border:1px solid var(--line);border-radius:16px;padding:26px 24px 22px;display:flex;flex-direction:column;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);box-shadow:0 0 0 1px rgba(var(--glow-rgb),.1),0 0 22px rgba(var(--glow-rgb),.08),0 8px 32px rgba(0,0,0,.3);transition:border-color .15s,box-shadow .25s,transform .15s} .card:hover{border-color:rgba(var(--glow-rgb),.35);box-shadow:0 0 0 1px rgba(var(--glow-rgb),.22),0 0 32px rgba(var(--glow-rgb),.18),0 0 64px rgba(var(--glow-rgb),.08),0 12px 40px rgba(0,0,0,.4)}
 .card .kicker{font-size:11px;letter-spacing:1.4px;color:var(--dim);text-transform:uppercase;margin-bottom:14px} .card h2{margin:0 0 2px;font-size:26px;font-weight:600;letter-spacing:-.3px} .card h2 em{font-style:normal;color:var(--accent-2)} .card .role{color:var(--dim);font-size:13.5px;margin-bottom:20px}
 .features{list-style:none;margin:0 0 22px;padding:0;display:flex;flex-direction:column;gap:11px} .features li{display:flex;align-items:center;gap:10px;font-size:14px;color:#d4d4d8} .features li svg{width:15px;height:15px;color:var(--accent-2);flex:0 0 auto}
-.card-actions{margin-top:auto;display:flex;align-items:stretch;gap:8px} .card .cta{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:background .15s,box-shadow .2s} .card .cta:hover{background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)} .card .cta svg{width:15px;height:15px} .card .cta.blocked{background:#26262e;color:#8a8a94;cursor:not-allowed;border:1px solid #33333d;box-shadow:none}
+.card-actions{margin-top:auto;display:flex;align-items:stretch;gap:8px} .card .cta{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:background .15s,box-shadow .2s,opacity .15s;position:relative;min-height:42px} .card .cta:hover:not(:disabled){background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)} .card .cta svg{width:15px;height:15px}
+.card .cta.blocked{background:#26262e;color:#8a8a94;cursor:not-allowed;border:1px solid #33333d;box-shadow:none}
+.card .cta.unavailable{background:rgba(255,255,255,.04);color:#5c5c66;cursor:not-allowed;border:1px dashed rgba(255,255,255,.08);font-weight:500}
+.card .cta.loading{background:var(--accent-dim);color:#c7d2fe;cursor:progress}
+.card .cta.loading::after{content:'';width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;animation:spin .7s linear infinite;flex-shrink:0}
+.card .cta.success{background:var(--success);color:#fff;box-shadow:0 6px 22px rgba(16,185,129,.35)}
+.card .cta.success:hover{background:#34d399}
+.card .cta:disabled{cursor:not-allowed}
 .card .btn-terms{flex:0 0 auto;display:flex;align-items:center;justify-content:center;padding:11px 12px;border-radius:11px;background:rgba(255,255,255,.025);color:#5c5c66;font-size:11.5px;font-weight:500;border:1px solid rgba(255,255,255,.05);cursor:pointer;font-family:inherit;letter-spacing:.2px;transition:background .15s,color .15s,border-color .15s} .card .btn-terms:hover{background:rgba(255,255,255,.05);color:#8a8a94;border-color:rgba(255,255,255,.09)}
-.card.gold{border-color:rgba(var(--gold-rgb),.55);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.25),0 0 24px rgba(var(--gold-rgb),.18),0 0 60px rgba(var(--gold-rgb),.1),inset 0 0 32px rgba(var(--gold-rgb),.05)} .card.gold:hover{border-color:rgba(var(--gold-rgb),.85);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.4),0 0 32px rgba(var(--gold-rgb),.3),0 0 80px rgba(var(--gold-rgb),.14),inset 0 0 40px rgba(var(--gold-rgb),.08)} .card.gold .kicker{color:rgba(var(--gold-rgb),.85)} .card.gold h2 em{color:var(--gold-2)} .card.gold .features li svg{color:var(--gold-2)} .card.gold .cta{background:linear-gradient(180deg,var(--gold),var(--gold-dim));color:#0a0a0c} .card.gold .cta:hover{background:linear-gradient(180deg,var(--gold-2),var(--gold));box-shadow:0 6px 22px rgba(var(--gold-rgb),.4)} .card.gold .btn-terms{border-color:rgba(var(--gold-rgb),.12);color:rgba(var(--gold-rgb),.45);background:rgba(var(--gold-rgb),.03)} .card.gold .btn-terms:hover{border-color:rgba(var(--gold-rgb),.32);color:rgba(var(--gold-rgb),.85);background:rgba(var(--gold-rgb),.07)}
+.card.gold{border-color:rgba(var(--gold-rgb),.55);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.25),0 0 24px rgba(var(--gold-rgb),.18),0 0 60px rgba(var(--gold-rgb),.1),inset 0 0 32px rgba(var(--gold-rgb),.05)} .card.gold:hover{border-color:rgba(var(--gold-rgb),.85);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.4),0 0 32px rgba(var(--gold-rgb),.3),0 0 80px rgba(var(--gold-rgb),.14),inset 0 0 40px rgba(var(--gold-rgb),.08)} .card.gold .kicker{color:rgba(var(--gold-rgb),.85)} .card.gold h2 em{color:var(--gold-2)} .card.gold .features li svg{color:var(--gold-2)} .card.gold .cta{background:linear-gradient(180deg,var(--gold),var(--gold-dim));color:#0a0a0c} .card.gold .cta:hover:not(:disabled){background:linear-gradient(180deg,var(--gold-2),var(--gold));box-shadow:0 6px 22px rgba(var(--gold-rgb),.4)} .card.gold .btn-terms{border-color:rgba(var(--gold-rgb),.12);color:rgba(var(--gold-rgb),.45);background:rgba(var(--gold-rgb),.03)} .card.gold .btn-terms:hover{border-color:rgba(var(--gold-rgb),.32);color:rgba(var(--gold-rgb),.85);background:rgba(var(--gold-rgb),.07)}
 #view-area{padding:0 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-index:2} #view-area-body{max-width:760px;margin:0 auto;padding:36px 0 80px} .area-back{display:inline-flex;align-items:center;gap:6px;color:var(--dim);font-size:13.5px;font-weight:500;background:none;border:none;cursor:pointer;padding:0;margin:0 0 28px;transition:color .15s;font-family:inherit} .area-back:hover{color:var(--text)} .area-back svg{width:14px;height:14px} .area-title{margin:0 0 6px;font-size:30px;font-weight:600;letter-spacing:-.5px} .area-title em{font-style:normal;color:var(--accent-2)} .area-sub{color:var(--dim);font-size:13.5px;margin:0 0 36px}
 .area-card{background:linear-gradient(180deg,rgba(19,19,24,.92),rgba(15,15,18,.92));border:1px solid var(--line);border-radius:16px;padding:24px 26px 18px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);box-shadow:0 0 0 1px rgba(var(--glow-rgb),.08),0 8px 32px rgba(0,0,0,.3);margin-bottom:18px} .area-card h3{margin:0 0 14px;font-size:11px;font-weight:600;color:var(--dim);letter-spacing:1.4px;text-transform:uppercase} .area-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);gap:16px} .area-row:last-child{border-bottom:none} .area-row .k{color:var(--dim);font-size:13.5px;flex:0 0 auto} .area-row .v{color:var(--text);font-size:13.5px;font-weight:500;text-align:right;word-break:break-all;min-width:0}
 .area-tags{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0} .area-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;border:1px solid rgba(var(--glow-rgb),.3);background:rgba(var(--glow-rgb),.09);color:var(--accent-2);font-size:12.5px;font-weight:500} .area-tag.gold{border-color:rgba(var(--gold-rgb),.45);background:rgba(var(--gold-rgb),.09);color:var(--gold-2)} .area-actions{margin-top:22px} .area-actions .btn{width:100%;justify-content:center;padding:12px 16px}
@@ -74,11 +81,11 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .admin-subtabs{display:flex;gap:4px;margin:0 0 20px;border-bottom:1px solid var(--line);flex-wrap:wrap} .admin-subtab{padding:8px 14px;background:none;border:none;color:var(--dim);font-size:12.5px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;transition:color .15s,border-color .15s} .admin-subtab:hover{color:var(--text)} .admin-subtab.selected{color:var(--accent-2);border-bottom-color:var(--accent)} .admin-panel{display:none} .admin-panel.active{display:block}
 .admin-form{display:flex;flex-direction:column;gap:14px} .admin-field{display:flex;flex-direction:column;gap:6px} .admin-field label{font-size:11px;font-weight:600;color:var(--dim);letter-spacing:1.2px;text-transform:uppercase} .admin-field input{background:rgba(10,10,12,.6);border:1px solid var(--line-2);border-radius:10px;padding:11px 13px;color:var(--text);font-size:14px;font-family:inherit;transition:border-color .15s} .admin-field input:focus{outline:none;border-color:var(--accent)}
 .admin-tag-checks{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0} .admin-check{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:rgba(15,15,19,.5);font-size:12.5px;color:var(--text);cursor:pointer;transition:border-color .15s,background .15s,color .15s} .admin-check input{accent-color:var(--accent);margin:0} .admin-check:hover{border-color:#33333d} .admin-check:has(input:checked){border-color:var(--accent);background:rgba(var(--glow-rgb),.1);color:var(--accent-2)}
-.admin-btn{align-self:flex-start;padding:11px 20px;border-radius:11px;border:none;background:var(--accent);color:#fff;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit;transition:background .15s,box-shadow .2s} .admin-btn:hover{background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)} .admin-btn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.4)} .admin-btn-danger{background:#b03030;color:#fff} .admin-btn-danger:hover{background:#e05252;box-shadow:0 6px 22px rgba(224,82,82,.35)} .admin-btn-outline { background: transparent; border: 1px solid var(--line-2); color: var(--text); } .admin-btn-outline:hover { background: rgba(255,255,255,.05); border-color: #33333d; } .admin-btn-danger-outline { background: transparent; border: 1px solid rgba(224,82,82,.3); color: #e05252; } .admin-btn-danger-outline:hover { background: rgba(224,82,82,.1); border-color: #e05252; box-shadow: 0 0 15px rgba(224,82,82,.15); }
+.admin-btn{align-self:flex-start;padding:11px 20px;border-radius:11px;border:none;background:var(--accent);color:#fff;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit;transition:background .15s,box-shadow .2s} .admin-btn:hover:not(:disabled){background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)} .admin-btn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.4)} .admin-btn-danger{background:#b03030;color:#fff} .admin-btn-danger:hover:not(:disabled){background:#e05252;box-shadow:0 6px 22px rgba(224,82,82,.35)} .admin-btn-outline { background: transparent; border: 1px solid var(--line-2); color: var(--text); } .admin-btn-outline:hover { background: rgba(255,255,255,.05); border-color: #33333d; } .admin-btn-danger-outline { background: transparent; border: 1px solid rgba(224,82,82,.3); color: #e05252; } .admin-btn-danger-outline:hover { background: rgba(224,82,82,.1); border-color: #e05252; box-shadow: 0 0 15px rgba(224,82,82,.15); }
 .admin-search{width:100%;background:rgba(10,10,12,.6);border:1px solid var(--line-2);border-radius:8px;padding:7px 11px;color:var(--text);font-size:12.5px;font-family:inherit;margin:0 0 12px;transition:border-color .15s} .admin-search:focus{outline:none;border-color:var(--accent)} .admin-search::placeholder{color:var(--dim)}
 .admin-tag-filter{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px} .admin-tag-chip{padding:5px 11px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--dim);font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s} .admin-tag-chip:hover{border-color:#33333d;color:var(--text)} .admin-tag-chip.on{border-color:var(--accent);background:rgba(var(--glow-rgb),.12);color:var(--accent-2)} .admin-tag-clear{padding:5px 11px;border-radius:999px;border:1px solid transparent;background:transparent;color:var(--dim);font-size:11px;font-weight:500;cursor:pointer;font-family:inherit;transition:color .15s} .admin-tag-clear:hover{color:var(--text)} .admin-tag-clear.hidden{display:none}
 .admin-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 14px;gap:12px} .admin-head h3{margin:0} .admin-head-left{display:flex;align-items:baseline;gap:10px} .admin-count{font-size:11.5px;color:var(--dim);font-weight:500;letter-spacing:.3px} .admin-count b{color:var(--accent-2);font-weight:600} .admin-io{display:flex;gap:6px} .admin-io button{background:transparent;border:1px solid var(--line-2);color:var(--dim);padding:5px 10px;border-radius:8px;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,color .15s,background .15s} .admin-io button:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
-.admin-users{display:flex;flex-direction:column;gap:10px;max-height:520px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none} .admin-users::-webkit-scrollbar{display:none} .admin-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:rgba(10,10,12,.4);border:1px solid var(--line);flex-wrap:wrap} .admin-meta{display:flex;flex-direction:column;gap:2px;min-width:160px;flex:0 0 auto} .admin-meta .admin-name{font-size:13.5px;font-weight:600;color:var(--text); display: flex; align-items: center;} .admin-meta .admin-email{font-size:11.5px;color:var(--dim);word-break:break-all} .admin-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1} .admin-chip{padding:4px 10px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--dim);font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s} .admin-chip:hover{border-color:#33333d;color:var(--text)} .admin-chip.on{border-color:var(--accent);background:rgba(var(--glow-rgb),.12);color:var(--accent-2)} .admin-del{padding:6px 10px;border-radius:8px;background:transparent;border:1px solid var(--line-2);color:var(--dim);font-size:12px;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s} .admin-del:hover{border-color:rgba(224,82,82,.55);color:#e05252;background:rgba(224,82,82,.08)} .admin-empty{color:var(--dim);font-size:13px;padding:8px 0}
+.admin-users{display:flex;flex-direction:column;gap:10px;max-height:520px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none} .admin-users::-webkit-scrollbar{display:none} .admin-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:rgba(10,10,12,.4);border:1px solid var(--line);flex-wrap:wrap} .admin-meta{display:flex;flex-direction:column;gap:2px;min-width:160px;flex:0 0 auto} .admin-meta .admin-name{font-size:13.5px;font-weight:600;color:var(--text); display: flex; align-items: center;} .admin-meta .admin-email{font-size:11.5px;color:var(--dim);word-break:break-all} .admin-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1} .admin-chip{padding:4px 10px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--dim);font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s} .admin-chip:hover:not(:disabled){border-color:#33333d;color:var(--text)} .admin-chip.on{border-color:var(--accent);background:rgba(var(--glow-rgb),.12);color:var(--accent-2)} .admin-chip:disabled{cursor:progress;opacity:.6} .admin-del{padding:6px 10px;border-radius:8px;background:transparent;border:1px solid var(--line-2);color:var(--dim);font-size:12px;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s} .admin-del:hover{border-color:rgba(224,82,82,.55);color:#e05252;background:rgba(224,82,82,.08)} .admin-empty{color:var(--dim);font-size:13px;padding:8px 0}
 .hist-search-wrap{margin:0 0 14px} .hist-list{display:flex;flex-direction:column;gap:8px;max-height:560px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none} .hist-list::-webkit-scrollbar{display:none} .hist-item{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-radius:10px;background:rgba(10,10,12,.4);border:1px solid var(--line)} .hist-icon{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;flex-shrink:0;background:rgba(var(--glow-rgb),.1);color:var(--accent-2)} .hist-icon svg{width:14px;height:14px}
 .hist-icon.h-login{background:rgba(59,130,246,.12);color:#60a5fa} .hist-icon.h-copy{background:rgba(59,130,246,.12);color:#60a5fa} .hist-icon.h-terms_a{background:rgba(16,185,129,.12);color:#34d399} .hist-icon.h-terms_r{background:rgba(224,82,82,.12);color:#e05252} .hist-icon.h-kill{background:rgba(224,82,82,.12);color:#e05252} .hist-icon.h-kill_s{background:rgba(250,204,21,.12);color:#fbbf24} .hist-icon.h-tags{background:rgba(139,92,246,.12);color:#a78bfa} .hist-icon.h-ban{background:rgba(239,68,68,.2);color:#f87171}
 .hist-body{flex:1;min-width:0} .hist-line1{font-size:13px;color:var(--text);line-height:1.4} .hist-line1 strong{font-weight:600} .hist-line1 em{font-style:normal;color:var(--accent-2);font-weight:500} .hist-line2{font-size:11px;color:var(--dim);margin-top:3px} .hist-email{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:11.5px}
@@ -90,7 +97,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .danger-zone{border-color:rgba(224,82,82,.3)!important;background:linear-gradient(180deg,rgba(224,82,82,.05),rgba(10,10,12,.5))!important} .danger-zone h3{color:#e05252!important;display:flex;align-items:center;gap:8px} .danger-zone p{color:rgba(224,82,82,.8)!important}
 .kill-pending-list{display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none} .kill-pending-list::-webkit-scrollbar{display:none} .kill-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:rgba(10,10,12,.4);border:1px solid var(--line)} .kill-row-meta{flex:1;min-width:0} .kill-row-email{font-size:12.5px;color:var(--text);word-break:break-all;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace} .kill-row-sub{font-size:11px;color:var(--dim);margin-top:2px} .kill-row-mode{padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:600;flex-shrink:0} .kill-row-mode.soft{background:rgba(250,204,21,.12);color:#fbbf24} .kill-row-mode.hard{background:rgba(224,82,82,.12);color:#e05252} .kill-row-btn{padding:5px 10px;border-radius:8px;flex-shrink:0;background:transparent;border:1px solid var(--line-2);color:var(--dim);font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,color .15s,background .15s} .kill-row-btn:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
 .block-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line)} .block-row:last-child{border-bottom:none} .block-name{font-size:14px;color:var(--text);font-weight:500;display:flex;align-items:center;gap:10px} .block-status{width:8px;height:8px;border-radius:50%;transition:all .3s} .block-status.on{background:#e05252;box-shadow:0 0 8px rgba(224,82,82,.5)} .block-status.off{background:#10b981;box-shadow:0 0 8px rgba(16,185,129,.5)} .block-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid;transition:all .2s;min-width:110px} .block-btn.btn-block{background:rgba(224,82,82,.05);color:#e05252;border-color:rgba(224,82,82,.3)} .block-btn.btn-block:hover{background:rgba(224,82,82,.15);border-color:#e05252;box-shadow:0 0 12px rgba(224,82,82,.2)} .block-btn.btn-unblock{background:rgba(16,185,129,.05);color:#10b981;border-color:rgba(16,185,129,.3)} .block-btn.btn-unblock:hover{background:rgba(16,185,129,.15);border-color:#10b981;box-shadow:0 0 12px rgba(16,185,129,.2)} .block-btn:disabled{opacity:.7;cursor:not-allowed;box-shadow:none!important} .block-btn svg{width:14px;height:14px}
-.admin-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(19,19,24,.96);border:1px solid var(--line-2);border-radius:10px;padding:11px 18px;color:var(--text);font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:10001} .admin-toast.show{opacity:1;transform:translateX(-50%) translateY(0)} .admin-toast.err{border-color:rgba(224,82,82,.55);color:#e05252}
+.admin-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(19,19,24,.96);border:1px solid var(--line-2);border-radius:10px;padding:11px 18px;color:var(--text);font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:10001;max-width:80vw;text-align:center} .admin-toast.show{opacity:1;transform:translateX(-50%) translateY(0)} .admin-toast.err{border-color:rgba(224,82,82,.55);color:#e05252}
 @keyframes areaIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}} #view-area-body.animate .area-back,#view-area-body.animate .area-title,#view-area-body.animate .area-sub,#view-area-body.animate .area-tabs,#view-area-body.animate .area-card,#view-area-body.animate .area-actions,#view-area-body.animate .area-tag{animation:areaIn .55s cubic-bezier(.2,.8,.2,1) both} #view-area-body.animate .area-back{animation-delay:0s} #view-area-body.animate .area-title{animation-delay:.05s} #view-area-body.animate .area-sub{animation-delay:.1s} #view-area-body.animate .area-tabs{animation-delay:.13s} #view-area-body.animate .area-card:nth-of-type(1){animation-delay:.16s} #view-area-body.animate .area-card:nth-of-type(2){animation-delay:.24s} #view-area-body.animate .area-card:nth-of-type(3){animation-delay:.32s} #view-area-body.animate .area-card:nth-of-type(4){animation-delay:.4s} #view-area-body.animate .area-tag:nth-child(1){animation-delay:.3s} #view-area-body.animate .area-tag:nth-child(2){animation-delay:.34s} #view-area-body.animate .area-tag:nth-child(3){animation-delay:.38s} #view-area-body.animate .area-tag:nth-child(4){animation-delay:.42s} #view-area-body.animate .area-tag:nth-child(5){animation-delay:.46s} #view-area-body.animate .area-tag:nth-child(6){animation-delay:.5s} #view-area-body.animate .area-actions{animation-delay:.4s}
 @keyframes siteIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}} #view-site.animate header,#view-site.animate .rule,#view-site.animate .subtitle,#view-site.animate .card{animation:siteIn .5s cubic-bezier(.2,.8,.2,1) both} #view-site.animate header{animation-delay:0s} #view-site.animate .rule{animation-delay:.05s} #view-site.animate .subtitle{animation-delay:.1s} #view-site.animate .card:nth-child(1){animation-delay:.16s} #view-site.animate .card:nth-child(2){animation-delay:.21s} #view-site.animate .card:nth-child(3){animation-delay:.26s} #view-site.animate .card:nth-child(4){animation-delay:.31s} #view-site.animate .card:nth-child(5){animation-delay:.36s} #view-site.animate .card:nth-child(6){animation-delay:.41s}
 #area-loader{position:fixed;inset:0;z-index:9998;background:rgba(10,10,12,.72);-webkit-backdrop-filter:blur(8px) saturate(.8);backdrop-filter:blur(8px) saturate(.8);display:grid;place-items:center;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility .35s ease;pointer-events:none} #area-loader.show{opacity:1;visibility:visible;pointer-events:all} #area-loader.hidden{display:none} .area-loader-card{background:rgba(19,19,24,.94);border:1px solid var(--line-2);border-radius:16px;padding:36px 40px 30px;width:320px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.55),0 0 0 1px rgba(var(--glow-rgb),.08);animation:loaderPop .35s cubic-bezier(.2,.8,.2,1) both} @keyframes loaderPop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}} .area-loader-card .spinner{width:40px;height:40px;border:3px solid rgba(var(--glow-rgb),.18);border-top-color:var(--accent-2);margin:0 auto} .area-loader-card h3{margin:18px 0 4px;font-size:18px;font-weight:600;color:var(--text);letter-spacing:-.2px} .area-loader-card .exec-sub{margin:0;color:var(--dim);font-size:12.5px}
@@ -102,103 +109,24 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .version-modal {background:linear-gradient(160deg, var(--panel-hi) 0%, var(--panel) 70%);border:1px solid var(--line-2);border-radius:20px;padding:42px 36px;width:100%;max-width:620px;text-align:center;box-shadow:0 30px 100px rgba(0,0,0,.7),0 0 0 1px rgba(var(--glow-rgb),.08),inset 0 1px rgba(255,255,255,.05);animation:execIn .35s cubic-bezier(.2,.8,.2,1);position:relative;overflow:hidden} .version-modal::before {content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:80%;height:50%;background:radial-gradient(ellipse, rgba(var(--glow-rgb),.15) 0%, transparent 70%);pointer-events:none} .version-title {font-family:var(--font-display);font-size:26px;color:var(--text);margin:0 0 8px;letter-spacing:-.5px;position:relative} .version-title b {color:var(--accent-2);font-weight:800} .version-sub {color:var(--dim);font-size:14px;margin-bottom:32px;position:relative} .version-options {display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;position:relative}
 .version-card {background:rgba(10,10,12,.6);border:1px solid var(--line);border-radius:14px;padding:24px 20px;text-align:left;cursor:pointer;transition:all .25s cubic-bezier(.2,.8,.2,1);position:relative;overflow:hidden;display:flex;flex-direction:column} .version-card:hover {border-color:rgba(var(--glow-rgb), .5);background:var(--panel-hi);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(var(--glow-rgb),.2)} .v-glow {position:absolute;top:0;right:0;width:100px;height:100px;background:radial-gradient(circle at top right, rgba(var(--glow-rgb),.15), transparent 70%);opacity:0;transition:opacity .3s} .version-card:hover .v-glow {opacity:1} .v-icon {width:42px;height:42px;border-radius:10px;background:rgba(var(--glow-rgb), .1);border:1px solid rgba(var(--glow-rgb), .2);display:grid;place-items:center;margin-bottom:16px;color:var(--accent-2);transition:transform .3s, background .3s, color .3s} .v-icon svg {width:22px;height:22px} .version-card:hover .v-icon {background:var(--accent);color:#fff;transform:scale(1.05);border-color:var(--accent)} .version-card h3 {font-family:var(--font-display);font-size:18px;color:var(--text);margin:0 0 8px;letter-spacing:-.2px} .version-card p {color:var(--dim);font-size:12.5px;line-height:1.5;margin:0 0 20px;flex:1} .v-badge {display:inline-block;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);color:var(--slate);font-family:var(--font-mono);font-size:10.5px;padding:5px 8px;border-radius:6px;align-self:flex-start;letter-spacing:.3px} .version-card:hover .v-badge {background:rgba(var(--glow-rgb), .1);border-color:rgba(var(--glow-rgb), .3);color:var(--accent-2)} .version-cancel {background:transparent;border:none;color:var(--slate);font-size:13.5px;font-weight:500;cursor:pointer;font-family:var(--font-body);padding:8px 16px;transition:color .15s;position:relative} .version-cancel:hover {color:var(--text)} .version-help-link {display:inline-block;color:var(--slate);font-size:13px;text-decoration:none;border-bottom:1px dashed rgba(255,255,255,.15);transition:color .2s, border-color .2s} .version-help-link:hover {color:var(--accent-2);border-color:var(--accent-2)}
 
-/* ── NOVAS CLASSES DO GERENCIAMENTO ── */
-.admin-select {
-  width: 100%;
-  background: rgba(10,10,12,.6);
-  border: 1px solid var(--line-2);
-  border-radius: 10px;
-  padding: 11px 13px;
-  color: var(--text);
-  font-size: 14px;
-  font-family: inherit;
-  outline: none;
-}
+/* ── GERENCIAMENTO ── */
+.admin-select {width: 100%;background: rgba(10,10,12,.6);border: 1px solid var(--line-2);border-radius: 10px;padding: 11px 13px;color: var(--text);font-size: 14px;font-family: inherit;outline: none;transition: border-color .15s;}
 .admin-select:focus { border-color: var(--accent); }
-
-.perm-table {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.perm-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  background: rgba(255,255,255,.02);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13.5px;
-  color: var(--text);
-  transition: background .15s, border-color .15s;
-}
-.perm-row:hover {
-  background: rgba(255,255,255,.05);
-  border-color: var(--line-2);
-}
-.perm-row input[type="checkbox"] {
-  accent-color: var(--accent);
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
-/* Accordion */
-.mod-accordion {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.mod-item {
-  background: rgba(10,10,12,.5);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  overflow: hidden;
-}
-.mod-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 18px;
-  cursor: pointer;
-  user-select: none;
-  transition: background .15s;
-}
-.mod-header:hover {
-  background: rgba(255,255,255,.03);
-}
-.mod-header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.mod-header-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-}
-.mod-header-email {
-  font-size: 12px;
-  color: var(--dim);
-}
-.mod-header-icon {
-  color: var(--dim);
-  transition: transform .2s;
-}
-.mod-item.open .mod-header-icon {
-  transform: rotate(180deg);
-}
-.mod-body {
-  display: none;
-  padding: 0 18px 18px;
-  border-top: 1px solid var(--line);
-  padding-top: 14px;
-}
-.mod-item.open .mod-body {
-  display: block;
-}
+.perm-table {display: flex;flex-direction: column;gap: 8px;}
+.perm-row {display: flex;align-items: center;gap: 10px;padding: 10px 14px;background: rgba(255,255,255,.02);border: 1px solid var(--line);border-radius: 8px;cursor: pointer;font-size: 13.5px;color: var(--text);transition: background .15s, border-color .15s;}
+.perm-row:hover {background: rgba(255,255,255,.05);border-color: var(--line-2);}
+.perm-row input[type="checkbox"] {accent-color: var(--accent);width: 16px;height: 16px;cursor: pointer;}
+.mod-accordion {display: flex;flex-direction: column;gap: 10px;}
+.mod-item {background: rgba(10,10,12,.5);border: 1px solid var(--line);border-radius: 10px;overflow: hidden;}
+.mod-header {display: flex;align-items: center;justify-content: space-between;padding: 14px 18px;cursor: pointer;user-select: none;transition: background .15s;}
+.mod-header:hover {background: rgba(255,255,255,.03);}
+.mod-header-left {display: flex;flex-direction: column;gap: 2px;}
+.mod-header-name {font-size: 14px;font-weight: 600;color: var(--text);}
+.mod-header-email {font-size: 12px;color: var(--dim);}
+.mod-header-icon {color: var(--dim);transition: transform .2s;}
+.mod-item.open .mod-header-icon {transform: rotate(180deg);}
+.mod-body {display: none;padding: 0 18px 18px;border-top: 1px solid var(--line);padding-top: 14px;}
+.mod-item.open .mod-body {display: block;}
 
 @media (max-width: 600px) {.version-options {grid-template-columns:1fr}.version-modal {padding:32px 24px}}
 @media (max-width:560px){header{padding:14px 18px}.rule{margin:0 18px}main{padding:36px 18px 64px}#view-area{padding:0 18px 64px}.nav .btn span{display:none}.admin-meta{min-width:0}#terms-overlay{padding:12px}.terms-modal{max-height:94vh;border-radius:14px}.terms-header{padding:16px 18px 12px}.terms-header h3{font-size:16px}.terms-content-wrap{padding:12px 14px}.terms-content{padding:16px 16px;font-size:13px}.terms-footer{padding:12px 16px 16px}}
@@ -291,6 +219,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     <div class="terms-footer hidden" id="terms-footer">
       <label class="terms-checkbox" id="terms-checkbox-wrap"><input type="checkbox" id="terms-checkbox"><span>Li, compreendi e <b>concordo integralmente</b> com todos os Termos de Uso acima, incluindo a verificação dos termos específicos de cada bloco antes de utilizá-lo.</span></label>
       <button class="terms-accept" id="terms-accept" type="button" disabled>Concordar e continuar</button>
+      <button class="terms-btn-sm danger" id="terms-logout" type="button" style="display:none;width:100%;margin-top:10px;">Sair da conta</button>
     </div>
   </div>
 </div>
@@ -299,12 +228,14 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 (function () {
   const WORKER_URL  = 'https://lynx-gate.mamaetata216.workers.dev/';
   const SESSION_KEY = 'auth_jwt';
+  const FETCH_TIMEOUT = 15000;
   const viewLogin = document.getElementById('view-login'), viewSite  = document.getElementById('view-site'), viewArea  = document.getElementById('view-area'), grid = document.getElementById('grid'), who = document.getElementById('who'), loginErr  = document.getElementById('login-err');
   const execOverlay = document.getElementById('exec-overlay'), execRunning = document.getElementById('exec-state-running'), execDone = document.getElementById('exec-state-done'), execClose = document.getElementById('exec-close'), execEmail = document.getElementById('exec-email');
   const areaLoader = document.getElementById('area-loader'), areaLoaderSub  = document.getElementById('area-loader-sub'), loaderTitle = document.getElementById('loader-title');
-  const termsOverlay = document.getElementById('terms-overlay'), termsContent = document.getElementById('terms-content'), termsTitle = document.getElementById('terms-title'), termsSubtitle = document.getElementById('terms-subtitle'), termsClose = document.getElementById('terms-close'), termsFooter = document.getElementById('terms-footer'), termsCheckbox = document.getElementById('terms-checkbox'), termsCheckboxWrap = document.getElementById('terms-checkbox-wrap'), termsAccept = document.getElementById('terms-accept');
+  const termsOverlay = document.getElementById('terms-overlay'), termsContent = document.getElementById('terms-content'), termsTitle = document.getElementById('terms-title'), termsSubtitle = document.getElementById('terms-subtitle'), termsClose = document.getElementById('terms-close'), termsFooter = document.getElementById('terms-footer'), termsCheckbox = document.getElementById('terms-checkbox'), termsCheckboxWrap = document.getElementById('terms-checkbox-wrap'), termsAccept = document.getElementById('terms-accept'), termsLogout = document.getElementById('terms-logout');
   const payloads = new Map(), termsCache = {};
   let currentUser = null, areaOpenTimer = null, adminData = null, adminMounted = false, termsMode = 'view', adminSelectedTags = new Set(), killSelectedMode = null;
+  let _killInProgress = false;
 
   async function fetchTerms(key) { if (termsCache[key]) return termsCache[key]; try { const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'getTerms', key: key }) }); const data = await r.json(); if (data.ok) { termsCache[key] = data.text; return data.text; } } catch (e) {} return '<p>Erro ao carregar os termos.</p>'; }
   function jwtEmail(jwt) { try { const b = jwt.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); const p = JSON.parse(atob(b + '='.repeat((4 - b.length % 4) % 4))); return p.email || ''; } catch { return ''; } }
@@ -316,69 +247,282 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   function applyTheme(name) { const t = name || 'azul'; if (t === 'azul') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t); document.querySelectorAll('.theme-swatch').forEach(s => { s.classList.toggle('selected', s.dataset.theme === t); }); }
   document.querySelectorAll('.theme-swatch').forEach(s => { s.addEventListener('click', async () => { const theme = s.dataset.theme; applyTheme(theme); const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) return; try { await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, setTheme: theme }) }); } catch {} }); });
 
-  function openTerms(opts) { termsMode = opts.mode || 'view'; termsTitle.textContent = opts.title || 'Termos de uso'; termsSubtitle.textContent = opts.subtitle || ''; termsContent.innerHTML = opts.content || ''; termsContent.scrollTop = 0; if (termsMode === 'accept') { termsFooter.classList.remove('hidden'); termsClose.classList.add('hidden'); termsCheckbox.checked = false; termsCheckboxWrap.classList.remove('checked'); termsAccept.disabled = true; termsAccept.textContent = opts.acceptLabel || 'Concordar e continuar'; } else { termsFooter.classList.add('hidden'); termsClose.classList.remove('hidden'); } termsOverlay.classList.remove('hidden'); termsAccept._onAccept = opts.onAccept || null; }
+  function openTerms(opts) {
+    termsMode = opts.mode || 'view';
+    termsTitle.textContent = opts.title || 'Termos de uso';
+    termsSubtitle.textContent = opts.subtitle || '';
+    termsContent.innerHTML = opts.content || '';
+    termsContent.scrollTop = 0;
+    if (termsMode === 'accept') {
+      termsFooter.classList.remove('hidden');
+      termsClose.classList.add('hidden');
+      termsCheckbox.checked = false;
+      termsCheckboxWrap.classList.remove('checked');
+      termsAccept.disabled = true;
+      termsAccept.textContent = opts.acceptLabel || 'Concordar e continuar';
+      if (termsLogout) termsLogout.style.display = 'block';
+    } else {
+      termsFooter.classList.add('hidden');
+      termsClose.classList.remove('hidden');
+      if (termsLogout) termsLogout.style.display = 'none';
+    }
+    termsOverlay.classList.remove('hidden');
+    termsAccept._onAccept = opts.onAccept || null;
+  }
   function closeTerms() { if (termsMode === 'accept') return; termsOverlay.classList.add('hidden'); }
   termsClose.addEventListener('click', closeTerms);
   termsOverlay.addEventListener('click', (e) => { if (e.target === termsOverlay && termsMode !== 'accept') closeTerms(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !termsOverlay.classList.contains('hidden') && termsMode !== 'accept') closeTerms(); });
   termsCheckbox.addEventListener('change', () => { termsCheckboxWrap.classList.toggle('checked', termsCheckbox.checked); termsAccept.disabled = !termsCheckbox.checked; });
-  termsAccept.addEventListener('click', async () => { if (!termsCheckbox.checked) return; termsAccept.disabled = true; termsAccept.textContent = 'Salvando…'; const cb = termsAccept._onAccept; try { if (cb) await cb(); } catch {} termsAccept.textContent = 'Concordar e continuar'; });
+  termsAccept.addEventListener('click', async () => {
+    if (!termsCheckbox.checked) return;
+    termsAccept.disabled = true;
+    termsAccept.textContent = 'Salvando…';
+    const cb = termsAccept._onAccept;
+    try { if (cb) await cb(); } catch {}
+    termsAccept.textContent = 'Concordar e continuar';
+    if (!termsOverlay.classList.contains('hidden')) termsAccept.disabled = !termsCheckbox.checked;
+  });
+  if (termsLogout) termsLogout.addEventListener('click', () => {
+    if (!confirm('Sair e voltar à tela de login?')) return;
+    sessionStorage.removeItem(SESSION_KEY);
+    try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
+    kill();
+  });
 
-  document.addEventListener('click', async (e) => { const btn = e.target.closest('.btn-terms'); if (!btn) return; e.preventDefault(); e.stopPropagation(); const card = btn.closest('.card'); const tag = card?.querySelector('h2 em')?.textContent || ''; const termsMap = { 'Lynx': 'lynx', 'Escritor Baiano': 'escritor', 'Baiano do Khan': 'khan', 'Ingles': 'ingles', 'Quizziz': 'quizziz' }; const key = termsMap[tag] || tag.toLowerCase(); const termsText = await fetchTerms(key); openTerms({ mode: 'view', title: tag ? 'Termos — ' + tag : 'Termos de uso', subtitle: 'Leia antes de usar', content: termsText }); });
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.btn-terms');
+    if (!btn) return;
+    e.preventDefault(); e.stopPropagation();
+    const card = btn.closest('.card');
+    const tag = card?.querySelector('h2 em')?.textContent || '';
+    const termsMap = { 'Lynx': 'lynx', 'Escritor Baiano': 'escritor', 'Baiano do Khan': 'khan', 'Ingles': 'ingles', 'Quizziz': 'quizziz' };
+    const key = termsMap[tag] || tag.toLowerCase();
+    const termsText = await fetchTerms(key);
+    openTerms({ mode: 'view', title: tag ? 'Termos — ' + tag : 'Termos de uso', subtitle: 'Leia antes de usar', content: termsText });
+  });
 
-  window.onCredential = async (resp) => { loginErr.textContent = ''; try { sessionStorage.setItem(SESSION_KEY, resp.credential); await enter(resp.credential); } catch (e) { loginErr.textContent = 'conta não autorizada.'; kill(); } };
-  async function tryRestore() { const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) return; try { await enter(jwt); } catch { sessionStorage.removeItem(SESSION_KEY); } }
+  window.onCredential = async (resp) => {
+    loginErr.textContent = '';
+    try {
+      sessionStorage.setItem(SESSION_KEY, resp.credential);
+      await enter(resp.credential);
+    } catch (e) {
+      loginErr.textContent = 'conta não autorizada.';
+      sessionStorage.removeItem(SESSION_KEY);
+      try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
+      kill();
+    }
+  };
+  async function tryRestore() {
+    const jwt = sessionStorage.getItem(SESSION_KEY);
+    if (!jwt) return;
+    try { await enter(jwt); } catch { sessionStorage.removeItem(SESSION_KEY); }
+  }
 
   async function enter(jwt) {
-    const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt }) });
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT);
+    let r;
+    try {
+      r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt }), signal: ctrl.signal });
+    } catch (e) {
+      clearTimeout(timer);
+      sessionStorage.removeItem(SESSION_KEY);
+      loginErr.textContent = 'falha de conexão com o servidor.';
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
     if (!r.ok) {
-      const err = await r.json().catch(() => ({})); sessionStorage.removeItem(SESSION_KEY);
+      const err = await r.json().catch(() => ({}));
+      sessionStorage.removeItem(SESSION_KEY);
       if (err.error === 'banned') loginErr.textContent = 'sua conta foi banida do sistema.';
       else if (err.error === 'not_found') loginErr.textContent = 'seu email não está cadastrado.';
       else if (err.error === 'no_authorized_block') loginErr.textContent = 'sua conta não tem nenhum bloco autorizado.';
       else if (err.error && err.error.startsWith('no_binding_')) loginErr.textContent = 'configuração do servidor incompleta.';
       else loginErr.textContent = 'sem acesso.';
-      kill(); return;
+      kill();
+      return;
     }
-    const data = await r.json(); applyTheme(data.theme || 'azul');
-    currentUser = { name: data.name || '', email: jwtEmail(jwt), isAdmin: !!data.isAdmin, isMod: !!data.isMod, blocks: data.blocks || [], termsAccepted: !!data.termsAccepted, termsAcceptedAt: data.termsAcceptedAt || 0 };
+    const data = await r.json();
+    applyTheme(data.theme || 'azul');
+    currentUser = {
+      name: data.name || '', email: jwtEmail(jwt),
+      isAdmin: !!data.isAdmin, isMod: !!data.isMod,
+      modPermissions: data.modPermissions || [], modRooms: data.modRooms || [],
+      blocks: data.blocks || [], termsAccepted: !!data.termsAccepted, termsAcceptedAt: data.termsAcceptedAt || 0
+    };
     if ((currentUser.isAdmin || currentUser.isMod) && !adminMounted) { adminMounted = true; mountAdminUI(); }
-    who.textContent = currentUser.name || currentUser.email; grid.innerHTML = ''; currentUser.blocks.forEach(b => grid.appendChild(renderBlock(b)));
+    who.textContent = currentUser.name || currentUser.email;
+    grid.innerHTML = '';
+    currentUser.blocks.forEach(b => grid.appendChild(renderBlock(b)));
     if (!currentUser.termsAccepted) {
-      viewSite.classList.add('hidden'); viewArea.classList.add('hidden'); viewLogin.classList.add('hidden');
-      const termsText = await fetchTerms('general'); openTerms({ mode: 'accept', title: 'Termos de uso', subtitle: 'Leia com atenção antes de continuar', content: termsText, acceptLabel: 'Concordar e continuar', onAccept: async () => { await acceptTerms(); } }); return;
+      viewSite.classList.add('hidden');
+      viewArea.classList.add('hidden');
+      viewLogin.classList.add('hidden');
+      const termsText = await fetchTerms('general');
+      openTerms({ mode: 'accept', title: 'Termos de uso', subtitle: 'Leia com atenção antes de continuar', content: termsText, acceptLabel: 'Concordar e continuar', onAccept: async () => { await acceptTerms(); } });
+      return;
     }
-    route(); startPolling();
+    route();
+    startPolling();
   }
 
-  async function acceptTerms() { const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) return; try { const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'acceptTerms' }) }); const data = await r.json(); if (!data.ok) throw new Error(data.error || 'fail'); currentUser.termsAccepted = true; currentUser.termsAcceptedAt = data.acceptedAt || Date.now(); termsOverlay.classList.add('hidden'); route(); startPolling(); } catch (e) { alert('falha ao registrar aceite: ' + e.message); } }
+  async function acceptTerms() {
+    const jwt = sessionStorage.getItem(SESSION_KEY);
+    if (!jwt) { kill(); return; }
+    try {
+      const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'acceptTerms' }) });
+      const data = await r.json();
+      if (!data.ok) {
+        if (data.error === 'bad_jwt' || data.error === 'no_jwt' || data.error === 'not_found') { kill(); return; }
+        throw new Error(data.error || 'fail');
+      }
+      currentUser.termsAccepted = true;
+      currentUser.termsAcceptedAt = data.acceptedAt || Date.now();
+      termsOverlay.classList.add('hidden');
+      route();
+      startPolling();
+    } catch (e) {
+      showMiniToast('falha ao registrar aceite: ' + e.message);
+    }
+  }
 
   function renderBlock(b) {
-    const el = document.createElement('article'); el.className = 'card' + (b.tag === 'Ingles' ? ' gold' : ''); el.dataset.tag = b.tag;
-    if (b.tag === 'Lynx') { payloads.set('Lynx_new', b.payload_new || ''); payloads.set('Lynx_old', b.payload_old || ''); } else { payloads.set(b.tag, b.payload || ''); }
+    const el = document.createElement('article');
+    el.className = 'card' + (b.tag === 'Ingles' ? ' gold' : '');
+    el.dataset.tag = b.tag;
+
+    if (!b.blocked) {
+      if (b.tag === 'Lynx') {
+        payloads.set('Lynx_new', b.payload_new || '');
+        payloads.set('Lynx_old', b.payload_old || '');
+      } else {
+        payloads.set(b.tag, b.payload || '');
+      }
+    } else {
+      payloads.delete('Lynx_new');
+      payloads.delete('Lynx_old');
+      payloads.delete(b.tag);
+    }
+
     const feats = (b.features || []).map(f => '<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>' + escapeHtml(f) + '</li>').join('');
-    let ctaHTML = b.blocked ? `<button class="cta blocked" disabled>Em Manutenção</button>` : `<button class="cta">quero <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>`;
+
+    let ctaHTML;
+    if (b.blocked) {
+      ctaHTML = '<button class="cta blocked" disabled aria-label="Em manutenção"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Em Manutenção</button>';
+    } else {
+      const hasPayload = b.tag === 'Lynx' ? !!(b.payload_new || b.payload_old) : !!b.payload;
+      if (!hasPayload) {
+        ctaHTML = '<button class="cta unavailable" disabled aria-label="Em breve">Em breve</button>';
+      } else {
+        ctaHTML = '<button class="cta" aria-label="Acessar"><span>quero</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>';
+      }
+    }
+
     el.innerHTML = '<div class="kicker">' + escapeHtml(b.kicker || 'a gente faz') + '</div><h2><em>' + escapeHtml(b.tag) + '</em></h2><div class="role">' + escapeHtml(b.sub || '') + '</div><ul class="features">' + feats + '</ul><div class="card-actions">' + ctaHTML + '<button class="btn-terms" type="button">Termos de uso</button></div>';
     return el;
   }
 
-  window.startLynxExec = async function(type) { document.getElementById('lynx-version-overlay').classList.add('hidden'); const payload = payloads.get('Lynx_' + type); openExec('Lynx (' + (type === 'new' ? 'Novo' : 'Antigo') + ')'); if (!payload) { await new Promise(r => setTimeout(r, 600)); finishExec(); execDone.querySelector('h3').textContent = 'Sem payload'; execDone.querySelector('.exec-sub').textContent = 'esse bloco não tem código configurado.'; return; } const ok = await copyToClipboard(payload); if (ok) logCopyToWorker('Lynx'); await new Promise(r => setTimeout(r, 1400)); finishExec(); };
+  window.startLynxExec = async function(type) {
+    document.getElementById('lynx-version-overlay').classList.add('hidden');
+    const payload = payloads.get('Lynx_' + type);
+    if (!payload) { showMiniToast('esta versão ainda não tem payload.'); return; }
+    openExec('Lynx (' + (type === 'new' ? 'Novo' : 'Antigo') + ')');
+    const ok = await copyToClipboard(payload);
+    if (ok) logCopyToWorker('Lynx');
+    await new Promise(r => setTimeout(r, 1400));
+    finishExec(ok);
+  };
 
   grid.addEventListener('click', async (e) => {
-    const btn = e.target.closest('.cta'); if (!btn || btn.classList.contains('blocked')) return;
-    const card = btn.closest('.card'), tag  = card?.querySelector('h2 em')?.textContent || '';
-    if (tag === 'Lynx') { document.getElementById('lynx-version-overlay').classList.remove('hidden'); return; }
-    const payload = payloads.get(tag) || ''; openExec(tag);
-    if (!payload) { await new Promise(r => setTimeout(r, 600)); finishExec(); execDone.querySelector('h3').textContent = 'Sem payload'; execDone.querySelector('.exec-sub').textContent = 'esse bloco não tem código configurado.'; return; }
-    const ok = await copyToClipboard(payload); if (ok) logCopyToWorker(tag); await new Promise(r => setTimeout(r, 1400)); finishExec();
+    const btn = e.target.closest('.cta');
+    if (!btn) return;
+    if (btn.disabled || btn.classList.contains('loading') || btn.classList.contains('success')) return;
+    if (btn.classList.contains('blocked') || btn.classList.contains('unavailable')) return;
+
+    const card = btn.closest('.card');
+    const tag = card?.querySelector('h2 em')?.textContent || '';
+
+    if (tag === 'Lynx') {
+      document.getElementById('lynx-version-overlay').classList.remove('hidden');
+      return;
+    }
+
+    const payload = payloads.get(tag) || '';
+    if (!payload) { showMiniToast('bloco sem payload configurado.'); return; }
+
+    const originalHTML = btn.innerHTML;
+    btn.classList.add('loading');
+    btn.innerHTML = '<span>copiando</span>';
+
+    openExec(tag);
+    const ok = await copyToClipboard(payload);
+    if (ok) logCopyToWorker(tag);
+    await new Promise(r => setTimeout(r, 1400));
+    finishExec(ok);
+
+    btn.classList.remove('loading');
+    if (ok) {
+      btn.classList.add('success');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px;"><path d="M20 6 9 17l-5-5"/></svg><span>copiado</span>';
+      setTimeout(() => {
+        btn.classList.remove('success');
+        btn.innerHTML = originalHTML;
+      }, 2200);
+    } else {
+      btn.innerHTML = originalHTML;
+    }
   });
 
-  function openExec(name) { execEmail.textContent = name || '—'; execRunning.classList.remove('hidden'); execDone.classList.add('hidden'); execClose.classList.add('hidden'); execOverlay.classList.remove('hidden'); }
-  function finishExec() { execRunning.classList.add('hidden'); execDone.classList.remove('hidden'); execClose.classList.remove('hidden'); }
-  function closeExec() { execOverlay.classList.add('hidden'); }
-  async function copyToClipboard(text) { try { await navigator.clipboard.writeText(text); return true; } catch { const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch {} document.body.removeChild(ta); return ok; } }
-  function logCopyToWorker(tag) { const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) return; try { window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'logCopy', tag }) }).catch(() => {}); } catch {} }
-  execClose.addEventListener('click', closeExec); execOverlay.addEventListener('click', (e) => { if (e.target === execOverlay) closeExec(); });
+  function openExec(name) {
+    execEmail.textContent = name || '—';
+    execRunning.classList.remove('hidden');
+    execDone.classList.add('hidden');
+    execClose.classList.add('hidden');
+    execOverlay.classList.remove('hidden');
+    clearTimeout(execOverlay._safety);
+    execOverlay._safety = setTimeout(() => {
+      if (!execOverlay.classList.contains('hidden')) finishExec(false, 'Tempo excedido');
+    }, 12000);
+  }
+  function finishExec(success, customTitle) {
+    clearTimeout(execOverlay._safety);
+    execRunning.classList.add('hidden');
+    execDone.classList.remove('hidden');
+    execClose.classList.remove('hidden');
+    const h3 = execDone.querySelector('h3'), sub = execDone.querySelector('.exec-sub');
+    if (success === false) {
+      h3.textContent = customTitle || 'Falha ao copiar';
+      sub.textContent = 'tente novamente.';
+    } else {
+      h3.textContent = customTitle || 'Processo finalizado';
+      sub.textContent = 'código copiado para a área de transferência.';
+    }
+  }
+  function closeExec() { clearTimeout(execOverlay._safety); execOverlay.classList.add('hidden'); }
+  async function copyToClipboard(text) {
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:absolute;left:-9999px;top:0;opacity:0;';
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch {}
+      document.body.removeChild(ta);
+      return ok;
+    }
+  }
+  function logCopyToWorker(tag) {
+    const jwt = sessionStorage.getItem(SESSION_KEY);
+    if (!jwt) return;
+    try { window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'logCopy', tag }) }).catch(() => {}); } catch {}
+  }
+  execClose.addEventListener('click', closeExec);
+  execOverlay.addEventListener('click', (e) => { if (e.target === execOverlay) closeExec(); });
 
   function showLoader(title, sub) { loaderTitle.innerHTML = title + '<span class="dots"><span>.</span><span>.</span><span>.</span></span>'; areaLoaderSub.textContent = sub || ''; areaLoader.classList.remove('hidden'); void areaLoader.offsetWidth; areaLoader.classList.add('show'); }
   function hideLoader() { areaLoader.classList.remove('show'); setTimeout(() => areaLoader.classList.add('hidden'), 380); }
@@ -389,11 +533,19 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 
   function renderArea() {
     if (!currentUser) return;
-    document.getElementById('area-name').textContent  = currentUser.name || '—'; document.getElementById('area-email').textContent = currentUser.email || '—';
+    document.getElementById('area-name').textContent  = currentUser.name || '—';
+    document.getElementById('area-email').textContent = currentUser.email || '—';
     const statusEl = document.getElementById('terms-status');
-    if (statusEl) { if (currentUser.termsAccepted) { statusEl.textContent = 'aceito em ' + fmtDate(currentUser.termsAcceptedAt); statusEl.style.color = ''; } else { statusEl.textContent = 'não aceito'; statusEl.style.color = 'var(--danger)'; } }
+    if (statusEl) {
+      if (currentUser.termsAccepted) { statusEl.textContent = 'aceito em ' + fmtDate(currentUser.termsAcceptedAt); statusEl.style.color = ''; }
+      else { statusEl.textContent = 'não aceito'; statusEl.style.color = 'var(--danger)'; }
+    }
     const wrap = document.getElementById('area-tags'); wrap.innerHTML = '';
-    if (!currentUser.blocks.length) { wrap.innerHTML = '<span style="color:var(--dim);font-size:13px">nenhum bloco liberado.</span>'; } else { currentUser.blocks.forEach(b => { const span = document.createElement('span'); span.className = 'area-tag' + (b.tag === 'Ingles' ? ' gold' : ''); span.textContent = b.tag; wrap.appendChild(span); }); }
+    if (!currentUser.blocks.length) {
+      wrap.innerHTML = '<span style="color:var(--dim);font-size:13px">nenhum bloco liberado.</span>';
+    } else {
+      currentUser.blocks.forEach(b => { const span = document.createElement('span'); span.className = 'area-tag' + (b.tag === 'Ingles' ? ' gold' : ''); span.textContent = b.tag; wrap.appendChild(span); });
+    }
   }
 
   function openArea() { const sub = currentUser && currentUser.name ? 'carregando dados de ' + currentUser.name : 'carregando seus dados'; withLoader('Abrindo área', sub, () => { selectTab('perfil'); renderArea(); showView('area'); playAreaEntrance(); }); }
@@ -402,23 +554,42 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   function wireTabs() { document.querySelectorAll('.area-tab').forEach(t => { t.removeEventListener('click', onTabClick); t.addEventListener('click', onTabClick); }); }
   function onTabClick(e) { selectTab(e.currentTarget.dataset.tab); }
 
-  function selectAdminTab(name) { 
-    document.querySelectorAll('.admin-subtab').forEach(t => t.classList.toggle('selected', t.dataset.subtab === name)); 
-    document.querySelectorAll('.admin-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === name)); 
-    if (name === 'acessos') loadAdmin(); 
-    if (name === 'gerenciamento') loadAdmin(); 
-    if (name === 'kill') loadKills(); 
-    if (name === 'historico') { loadLogs(); const inp = document.getElementById('hist-search'); if(inp) inp.value = ''; document.getElementById('hist-list').innerHTML = '<div class="admin-empty">Digite um email acima.</div>'; } 
-    if (name === 'bloqueio') loadAdmin(); 
+  function selectAdminTab(name) {
+    document.querySelectorAll('.admin-subtab').forEach(t => t.classList.toggle('selected', t.dataset.subtab === name));
+    document.querySelectorAll('.admin-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === name));
+    if (name === 'acessos') loadAdmin();
+    if (name === 'gerenciamento') loadAdmin();
+    if (name === 'kill') loadKills();
+    if (name === 'historico') {
+      const canLogs = currentUser && (currentUser.isAdmin || (currentUser.modPermissions || []).includes('logs'));
+      if (canLogs) loadLogs();
+      else { const el = document.getElementById('admin-log-list'); if (el) el.innerHTML = '<div class="admin-empty">sem permissão para ver logs.</div>'; }
+      const inp = document.getElementById('hist-search');
+      if (inp) inp.value = '';
+      document.getElementById('hist-list').innerHTML = '<div class="admin-empty">Digite um email acima.</div>';
+    }
+    if (name === 'bloqueio') loadAdmin();
   }
   function wireAdminTabs() { document.querySelectorAll('.admin-subtab').forEach(t => { t.removeEventListener('click', onAdminTabClick); t.addEventListener('click', onAdminTabClick); }); }
   function onAdminTabClick(e) { selectAdminTab(e.currentTarget.dataset.subtab); }
 
   document.getElementById('btn-view-terms').addEventListener('click', async () => { const termsText = await fetchTerms('general'); openTerms({ mode: 'view', title: 'Termos de uso', subtitle: 'Versão vigente', content: termsText }); });
-  document.getElementById('btn-revoke-terms').addEventListener('click', async () => { if (!confirm('Revogar seu aceite dos Termos de Uso?\n\nVocê será desconectado e precisará aceitar novamente.')) return; const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) return; try { await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'revokeTerms' }) }); sessionStorage.removeItem(SESSION_KEY); try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {} kill(); } catch (e) { alert('falha ao revogar: ' + e.message); } });
+  document.getElementById('btn-revoke-terms').addEventListener('click', async () => {
+    if (!confirm('Revogar seu aceite dos Termos de Uso?\n\nVocê será desconectado e precisará aceitar novamente.')) return;
+    const jwt = sessionStorage.getItem(SESSION_KEY);
+    if (!jwt) return;
+    try {
+      await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'revokeTerms' }) });
+      sessionStorage.removeItem(SESSION_KEY);
+      try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
+      kill();
+    } catch (e) { showMiniToast('falha ao revogar: ' + e.message); }
+  });
 
   function mountAdminUI() {
-    const tabsBar = document.getElementById('area-tabs'); const areaBody = document.getElementById('view-area-body'); if (!tabsBar || !areaBody) return;
+    const tabsBar = document.getElementById('area-tabs');
+    const areaBody = document.getElementById('view-area-body');
+    if (!tabsBar || !areaBody) return;
     const tabBtn = document.createElement('button'); tabBtn.className = 'area-tab'; tabBtn.dataset.tab = 'acesso'; tabBtn.id = 'tab-acesso'; tabBtn.textContent = 'Acesso'; tabsBar.appendChild(tabBtn);
     const panel = document.createElement('div'); panel.className = 'area-panel hidden'; panel.dataset.panel = 'acesso';
     panel.innerHTML = `
@@ -450,12 +621,10 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
         <div class="area-card" style="background: rgba(10,10,12,.75); border: 1px solid var(--line); border-radius: 12px;">
           <h3>Gerenciar Moderador</h3>
           <p style="color:var(--dim);font-size:12.5px;margin:0 0 16px">Digite o email para adicionar ou remover um moderador.</p>
-          
           <div class="admin-field" style="margin-bottom: 16px;">
             <label>EMAIL DO USUÁRIO</label>
             <input id="mod-email" type="email" placeholder="nome.sobrenome@escola.pr.gov.br">
           </div>
-
           <div class="admin-field" style="margin-bottom: 16px;">
             <label>SALA PERMITIDA</label>
             <select id="mod-room" class="admin-select">
@@ -465,7 +634,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
               <option value="Sala C">Sala C</option>
             </select>
           </div>
-
           <div class="admin-field" style="margin-bottom: 20px;">
             <label>PERMISSÕES</label>
             <div class="perm-table">
@@ -475,12 +643,10 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
               <label class="perm-row"><input type="checkbox" id="perm-logs" value="logs"> <span>Ver Admin Logs</span></label>
             </div>
           </div>
-
           <button class="admin-btn" id="mod-toggle-btn" style="width: 100%; justify-content: center;">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Tornar Moderador
           </button>
         </div>
-
         <div class="area-card" style="background: rgba(10,10,12,.75); border: 1px solid var(--line); border-radius: 12px;">
           <h3>Moderadores Ativos</h3>
           <div id="mod-list-accordion" class="mod-accordion">
@@ -524,12 +690,22 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
           <div id="block-list" style="display:flex; flex-direction:column; gap:0;"></div>
         </div>
       </div>`;
-    areaBody.appendChild(panel); wireTabs(); wireAdminTabs();
+    areaBody.appendChild(panel);
+    wireTabs();
+    wireAdminTabs();
 
     document.getElementById('admin-add-form').addEventListener('submit', async (e) => {
-      e.preventDefault(); const form = e.target; const email = form.email.value.trim().toLowerCase(); const name  = form.name.value.trim(); const tags  = [...form.querySelectorAll('input[type=checkbox]:checked')].map(c => c.value);
+      e.preventDefault();
+      const form = e.target;
+      const email = form.email.value.trim().toLowerCase();
+      const name  = form.name.value.trim();
+      const tags  = [...form.querySelectorAll('input[type=checkbox]:checked')].map(c => c.value);
       if (!email.includes('@') || !name) { toast('dados inválidos', true); return; }
-      try { await adminCall('admin:setUser', { email, name, tags }); toast('adicionado'); form.reset(); await loadAdmin(); } catch (e) { toast('falha: ' + e.message, true); }
+      const btn = form.querySelector('button[type=submit]');
+      btn.disabled = true;
+      try { await adminCall('admin:setUser', { email, name, tags }); toast('adicionado'); form.reset(); await loadAdmin(); }
+      catch (e) { toast('falha: ' + e.message, true); }
+      finally { btn.disabled = false; }
     });
 
     const modEmailInp = document.getElementById('mod-email');
@@ -541,13 +717,12 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     const modToggleBtn = document.getElementById('mod-toggle-btn');
 
     function updateModToggleState() {
+      if (!adminData || !modEmailInp) return;
       const email = modEmailInp.value.trim().toLowerCase();
-      const target = adminData?.people?.find(x => x.email === email);
-      
+      const target = adminData.people?.find(x => x.email === email);
       if (target && target.isMod) {
         modToggleBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Remover Moderador';
         modToggleBtn.className = 'admin-btn admin-btn-danger';
-        
         modRoomSel.value = target.modRooms?.[0] || '';
         modPermBan.checked = target.modPermissions?.includes('ban') || false;
         modPermKill.checked = target.modPermissions?.includes('kill') || false;
@@ -558,39 +733,33 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
         modToggleBtn.className = 'admin-btn';
       }
     }
+    window.__updateModToggleState = updateModToggleState;
 
     modEmailInp.addEventListener('input', updateModToggleState);
 
     modToggleBtn.addEventListener('click', async () => {
       const email = modEmailInp.value.trim().toLowerCase();
       if (!email.includes('@')) { toast('email inválido', true); return; }
-      
       const target = adminData.people.find(x => x.email === email);
       const isMod = target?.isMod;
-      
+      if (!target && !isMod) {
+        if (!confirm('O email ' + email + ' não está cadastrado. Criar moderador mesmo assim?\n\nO usuário vai precisar de blocos autorizados pra logar.')) return;
+      }
       const perms = [];
       if (modPermBan.checked) perms.push('ban');
       if (modPermKill.checked) perms.push('kill');
       if (modPermHist.checked) perms.push('history');
       if (modPermLogs.checked) perms.push('logs');
       const room = modRoomSel.value;
-
       modToggleBtn.disabled = true;
+      const originalHTML = modToggleBtn.innerHTML;
       modToggleBtn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
-
       try {
         if (isMod) {
           await adminCall('admin:setUser', { email, isMod: false, modPermissions: [], modRooms: [] });
           toast('moderador removido');
         } else {
-          await adminCall('admin:setUser', { 
-            email, 
-            name: target?.name || '', 
-            tags: target?.tags || [], 
-            isMod: true, 
-            modPermissions: perms, 
-            modRooms: room ? [room] : [] 
-          });
+          await adminCall('admin:setUser', { email, name: target?.name || '', tags: target?.tags || [], isMod: true, modPermissions: perms, modRooms: room ? [room] : [] });
           toast('moderador salvo');
         }
         await loadAdmin();
@@ -598,6 +767,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
         updateModToggleState();
       } catch (e) {
         toast('falha: ' + e.message, true);
+        modToggleBtn.innerHTML = originalHTML;
       } finally {
         modToggleBtn.disabled = false;
       }
@@ -610,36 +780,125 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 
     let histTimer = null;
     document.getElementById('hist-search').addEventListener('input', (e) => {
-      clearTimeout(histTimer); const val = e.target.value.trim().toLowerCase();
-      histTimer = setTimeout(() => { if (!val || !val.includes('@')) { document.getElementById('hist-list').innerHTML = '<div class="admin-empty">digite um email acima.</div>'; return; } loadHistory(val); }, 400);
+      clearTimeout(histTimer);
+      const val = e.target.value.trim().toLowerCase();
+      histTimer = setTimeout(() => {
+        if (!val || !val.includes('@')) { document.getElementById('hist-list').innerHTML = '<div class="admin-empty">digite um email acima.</div>'; return; }
+        loadHistory(val);
+      }, 400);
     });
 
-    document.querySelectorAll('.kill-opt').forEach(opt => { opt.addEventListener('click', () => { document.querySelectorAll('.kill-opt').forEach(o => o.classList.remove('selected')); opt.classList.add('selected'); killSelectedMode = opt.dataset.mode; document.getElementById('kill-submit').disabled = false; }); });
+    document.querySelectorAll('.kill-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.kill-opt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        killSelectedMode = opt.dataset.mode;
+        document.getElementById('kill-submit').disabled = false;
+      });
+    });
 
     document.getElementById('kill-form').addEventListener('submit', async (e) => {
-      e.preventDefault(); const email = document.getElementById('kill-email').value.trim().toLowerCase();
+      e.preventDefault();
+      const email = document.getElementById('kill-email').value.trim().toLowerCase();
       if (!email.includes('@') || !killSelectedMode) { toast('dados inválidos', true); return; }
       if (!confirm('Executar ' + killSelectedMode + ' em ' + email + '?')) return;
-      try { await adminCall('admin:killSession', { email, mode: killSelectedMode, targetTags: (adminData.people.find(p => p.email === email)||{}).tags }); toast('enviado'); e.target.reset(); killSelectedMode = null; document.getElementById('kill-submit').disabled = true; document.querySelectorAll('.kill-opt').forEach(o => o.classList.remove('selected')); await loadKills(); } catch (err) { toast('falha: ' + err.message, true); }
+      const submitBtn = document.getElementById('kill-submit');
+      submitBtn.disabled = true;
+      try {
+        await adminCall('admin:killSession', { email, mode: killSelectedMode, targetTags: (adminData.people.find(p => p.email === email)||{}).tags });
+        toast('enviado');
+        e.target.reset();
+        killSelectedMode = null;
+        document.querySelectorAll('.kill-opt').forEach(o => o.classList.remove('selected'));
+        await loadKills();
+      } catch (err) { toast('falha: ' + err.message, true); }
     });
 
     document.getElementById('admin-kill-all').addEventListener('click', async () => {
       if (!confirm('Encerrar a sessão de TODOS os usuários agora?')) return;
-      try { const r = await adminCall('admin:killAll', { mode: 'hard' }); toast('sessões encerradas: ' + r.count); await loadKills(); } catch (e) { toast('falha: ' + e.message, true); }
+      const btn = document.getElementById('admin-kill-all');
+      btn.disabled = true;
+      try { const r = await adminCall('admin:killAll', { mode: 'hard' }); toast('sessões encerradas: ' + r.count); await loadKills(); }
+      catch (e) { toast('falha: ' + e.message, true); }
+      finally { btn.disabled = false; }
     });
   }
 
-  function toast(msg, isErr) { const el = document.getElementById('admin-toast'); if (!el) return; el.textContent = msg; el.classList.toggle('err', !!isErr); el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2200); }
-  async function adminCall(action, extra) { const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) throw new Error('no_jwt'); const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action, ...(extra || {}) }) }); if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || ('http ' + r.status)); } return r.json(); }
+  function toast(msg, isErr) {
+    const el = document.getElementById('admin-toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.toggle('err', !!isErr);
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+  function showMiniToast(msg) { const t = document.createElement('div'); t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(19,19,24,.96);border:1px solid #26262e;border-radius:10px;padding:11px 18px;color:#e8e8ea;font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.55);z-index:10002;transition:opacity .22s, transform .22s;opacity:0;max-width:80vw;text-align:center;'; t.textContent = msg; document.body.appendChild(t); requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; }); setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 2400); setTimeout(() => t.remove(), 2800); }
 
-  async function loadAdmin() { try { adminData = await adminCall('admin:list'); renderAdminTagsInput(); renderAdminTagFilter(); renderAdminUsers(); updateAdminCount(); renderBlockList(); renderModeratorsAccordion(); } catch (e) { toast('falha ao carregar: ' + e.message, true); } }
+  async function adminCall(action, extra) {
+    const jwt = sessionStorage.getItem(SESSION_KEY);
+    if (!jwt) throw new Error('no_jwt');
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 20000);
+    let r, data;
+    try {
+      r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action, ...(extra || {}) }), signal: ctrl.signal });
+      data = await r.json().catch(() => ({}));
+    } catch (e) {
+      clearTimeout(timer);
+      throw new Error(e.name === 'AbortError' ? 'timeout' : 'rede');
+    } finally {
+      clearTimeout(timer);
+    }
+    if (!r.ok) {
+      if (r.status === 401 || data.error === 'no_jwt' || data.error === 'bad_jwt' || data.error === 'not_found') {
+        kill();
+      }
+      throw new Error(data.error || ('http ' + r.status));
+    }
+    return data;
+  }
+
+  async function loadAdmin() {
+    try {
+      adminData = await adminCall('admin:list');
+      renderAdminTagsInput();
+      renderAdminTagFilter();
+      renderAdminUsers();
+      updateAdminCount();
+      renderBlockList();
+      renderModeratorsAccordion();
+      if (window.__updateModToggleState) window.__updateModToggleState();
+    } catch (e) { toast('falha ao carregar: ' + e.message, true); }
+  }
   function updateAdminCount() { const el = document.getElementById('admin-count'); if (!el) return; const total = adminData && adminData.count != null ? adminData.count : 0; el.innerHTML = '<b>' + total + '</b> pessoa' + (total === 1 ? '' : 's'); }
 
   function renderAdminTagsInput() { const wrap = document.getElementById('admin-new-tags'); if (!wrap) return; wrap.innerHTML = ''; if (!adminData || !adminData.allTags || !adminData.allTags.length) { wrap.innerHTML = '<span style="color:var(--dim);font-size:12.5px">sem tags no catálogo.</span>'; return; } for (const tag of adminData.allTags) { const label = document.createElement('label'); label.className = 'admin-check'; const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = tag; label.append(cb, document.createTextNode(tag)); wrap.appendChild(label); } }
   function renderAdminTagFilter() {
     const wrap = document.getElementById('admin-tag-filter'); if (!wrap) return; wrap.innerHTML = ''; if (!adminData || !adminData.allTags || !adminData.allTags.length) return;
-    for (const tag of adminData.allTags) { const c = document.createElement('button'); c.type = 'button'; c.className = 'admin-tag-chip' + (adminSelectedTags.has(tag) ? ' on' : ''); c.textContent = tag; c.addEventListener('click', () => { if (adminSelectedTags.has(tag)) adminSelectedTags.delete(tag); else adminSelectedTags.add(tag); c.classList.toggle('on'); const clearBtn = wrap.querySelector('.admin-tag-clear'); if (clearBtn) clearBtn.classList.toggle('hidden', adminSelectedTags.size === 0); applyAdminFilter(); }); wrap.appendChild(c); }
-    const clearBtn = document.createElement('button'); clearBtn.type = 'button'; clearBtn.className = 'admin-tag-clear' + (adminSelectedTags.size === 0 ? ' hidden' : ''); clearBtn.textContent = 'limpar filtros'; clearBtn.addEventListener('click', () => { adminSelectedTags.clear(); wrap.querySelectorAll('.admin-tag-chip').forEach(c => c.classList.remove('on')); clearBtn.classList.add('hidden'); applyAdminFilter(); }); wrap.appendChild(clearBtn);
+    for (const tag of adminData.allTags) {
+      const c = document.createElement('button'); c.type = 'button';
+      c.className = 'admin-tag-chip' + (adminSelectedTags.has(tag) ? ' on' : '');
+      c.textContent = tag;
+      c.addEventListener('click', () => {
+        if (adminSelectedTags.has(tag)) adminSelectedTags.delete(tag); else adminSelectedTags.add(tag);
+        c.classList.toggle('on');
+        const clearBtn = wrap.querySelector('.admin-tag-clear');
+        if (clearBtn) clearBtn.classList.toggle('hidden', adminSelectedTags.size === 0);
+        applyAdminFilter();
+      });
+      wrap.appendChild(c);
+    }
+    const clearBtn = document.createElement('button'); clearBtn.type = 'button';
+    clearBtn.className = 'admin-tag-clear' + (adminSelectedTags.size === 0 ? ' hidden' : '');
+    clearBtn.textContent = 'limpar filtros';
+    clearBtn.addEventListener('click', () => {
+      adminSelectedTags.clear();
+      wrap.querySelectorAll('.admin-tag-chip').forEach(c => c.classList.remove('on'));
+      clearBtn.classList.add('hidden');
+      applyAdminFilter();
+    });
+    wrap.appendChild(clearBtn);
   }
   function normalize(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s@._-]/g, '').trim(); }
   function levenshtein(a, b) { if (a === b) return 0; if (!a.length) return b.length; if (!b.length) return a.length; const prev = new Array(b.length + 1), curr = new Array(b.length + 1); for (let j = 0; j <= b.length; j++) prev[j] = j; for (let i = 1; i <= a.length; i++) { curr[0] = i; for (let j = 1; j <= b.length; j++) { const cost = a[i-1] === b[j-1] ? 0 : 1; curr[j] = Math.min(curr[j-1]+1, prev[j]+1, prev[j-1]+cost); } for (let j = 0; j <= b.length; j++) prev[j] = curr[j]; } return prev[b.length]; }
@@ -648,37 +907,79 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   function applyAdminFilter() { const input = document.getElementById('admin-search'); if (!input) return; const term = input.value.trim(); document.querySelectorAll('#admin-users .admin-row').forEach(row => { const hay = row.dataset.search || ''; const tags = (row.dataset.tags || '').split('|').filter(Boolean); const tagsOk = [...adminSelectedTags].every(t => tags.includes(t)); const searchOk = fuzzyMatch(term, hay); row.style.display = (tagsOk && searchOk) ? '' : 'none'; }); }
 
   function doExport() { if (!adminData) { toast('nada para exportar', true); return; } const data = { exportedAt: new Date().toISOString(), authorizedTags: adminData.allTags, people: adminData.people }; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'lynx-access-' + new Date().toISOString().slice(0, 10) + '.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 500); toast('exportado'); }
-  async function doImport(e) { const file = e.target.files && e.target.files[0]; e.target.value = ''; if (!file) return; try { const text = await file.text(); const parsed = JSON.parse(text); const people = Array.isArray(parsed) ? parsed : parsed.people; if (!Array.isArray(people) || !people.length) { toast('arquivo inválido', true); return; } const r = await adminCall('admin:import', { people }); toast('importado: ' + r.imported); await loadAdmin(); } catch (err) { toast('falha: ' + err.message, true); } }
+  async function doImport(e) {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const people = Array.isArray(parsed) ? parsed : parsed.people;
+      if (!Array.isArray(people) || !people.length) { toast('arquivo inválido', true); return; }
+      if (!confirm('Importar ' + people.length + ' pessoa' + (people.length === 1 ? '' : 's') + '? Emails existentes serão sobrescritos.')) return;
+      const r = await adminCall('admin:import', { people });
+      toast('importado: ' + r.imported);
+      await loadAdmin();
+    } catch (err) { toast('falha: ' + err.message, true); }
+  }
 
   function renderAdminUsers() {
     const list = document.getElementById('admin-users'); if (!list) return; list.innerHTML = '';
     if (!adminData || !adminData.people || !adminData.people.length) { list.innerHTML = '<div class="admin-empty">nenhum usuário.</div>'; return; }
     for (const p of adminData.people) {
-      const row = document.createElement('div'); row.className = 'admin-row'; row.dataset.search = ((p.name || '') + ' ' + (p.email || '')).toLowerCase(); row.dataset.tags = (p.tags || []).join('|');
+      const row = document.createElement('div');
+      row.className = 'admin-row';
+      row.dataset.search = ((p.name || '') + ' ' + (p.email || '')).toLowerCase();
+      row.dataset.tags = (p.tags || []).join('|');
       const meta = document.createElement('div'); meta.className = 'admin-meta';
-      
       const nm = document.createElement('div'); nm.className = 'admin-name';
       let nameText = escapeHtml(p.name || '(sem nome)');
-      if (p.isMod) {
-        nameText += ` <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#e05252" stroke-width="2.5" style="vertical-align:middle; margin-left:4px; margin-bottom:2px;" title="Moderador"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
-      }
+      if (p.isAdmin) nameText += ` <span style="font-size:10px;color:#d4af37;border:1px solid rgba(212,175,55,.5);padding:1px 6px;border-radius:999px;margin-left:4px;letter-spacing:.3px;">admin</span>`;
+      else if (p.isMod) nameText += ` <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#e05252" stroke-width="2.5" style="vertical-align:middle; margin-left:4px; margin-bottom:2px;" title="Moderador"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
       nm.innerHTML = nameText;
-      
       const em = document.createElement('div'); em.className = 'admin-email'; em.textContent = p.email;
       meta.append(nm, em);
 
       const chips = document.createElement('div'); chips.className = 'admin-chips';
       for (const tag of adminData.allTags) {
-        const c = document.createElement('button'); c.type = 'button'; c.className = 'admin-chip' + ((p.tags || []).includes(tag) ? ' on' : ''); c.textContent = tag;
+        const c = document.createElement('button');
+        c.type = 'button';
+        c.className = 'admin-chip' + ((p.tags || []).includes(tag) ? ' on' : '');
+        c.textContent = tag;
         c.addEventListener('click', async () => {
-          const set = new Set(p.tags || []); if (set.has(tag)) set.delete(tag); else set.add(tag); p.tags = [...set]; c.classList.toggle('on'); row.dataset.tags = p.tags.join('|');
-          try { await adminCall('admin:setUser', { email: p.email, name: p.name || '', tags: p.tags }); toast('atualizado'); applyAdminFilter(); } catch (e) { c.classList.toggle('on'); toast('falha: ' + e.message, true); }
+          if (c.disabled) return;
+          const set = new Set(p.tags || []);
+          if (set.has(tag)) set.delete(tag); else set.add(tag);
+          p.tags = [...set];
+          c.classList.toggle('on');
+          row.dataset.tags = p.tags.join('|');
+          chips.querySelectorAll('.admin-chip').forEach(x => x.disabled = true);
+          try {
+            await adminCall('admin:setUser', { email: p.email, name: p.name || '', tags: p.tags });
+            toast('atualizado');
+            applyAdminFilter();
+          } catch (e) {
+            c.classList.toggle('on');
+            toast('falha: ' + e.message, true);
+          } finally {
+            chips.querySelectorAll('.admin-chip').forEach(x => x.disabled = false);
+          }
         });
         chips.appendChild(c);
       }
-      const del = document.createElement('button'); del.type = 'button'; del.className = 'admin-del'; del.textContent = 'remover';
-      del.addEventListener('click', async () => { if (!confirm('remover ' + p.email + '?')) return; try { await adminCall('admin:deleteUser', { email: p.email }); toast('removido'); await loadAdmin(); } catch (e) { toast('falha: ' + e.message, true); } });
-      row.append(meta, chips, del); list.appendChild(row);
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'admin-del';
+      del.textContent = 'remover';
+      del.addEventListener('click', async () => {
+        if (del.disabled) return;
+        if (!confirm('remover ' + p.email + '?')) return;
+        del.disabled = true;
+        try { await adminCall('admin:deleteUser', { email: p.email }); toast('removido'); await loadAdmin(); }
+        catch (e) { toast('falha: ' + e.message, true); del.disabled = false; }
+      });
+      row.append(meta, chips, del);
+      list.appendChild(row);
     }
     applyAdminFilter();
   }
@@ -687,19 +988,11 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     const wrap = document.getElementById('mod-list-accordion');
     if (!wrap || !adminData) return;
     wrap.innerHTML = '';
-    
     const mods = adminData.people.filter(p => p.isMod);
-    if (mods.length === 0) {
-      wrap.innerHTML = '<div class="admin-empty">Nenhum moderador ativo.</div>';
-      return;
-    }
-
+    if (mods.length === 0) { wrap.innerHTML = '<div class="admin-empty">Nenhum moderador ativo.</div>'; return; }
     mods.forEach(mod => {
-      const item = document.createElement('div');
-      item.className = 'mod-item';
-      
-      const header = document.createElement('div');
-      header.className = 'mod-header';
+      const item = document.createElement('div'); item.className = 'mod-item';
+      const header = document.createElement('div'); header.className = 'mod-header';
       header.innerHTML = `
         <div class="mod-header-left">
           <span class="mod-header-name">${escapeHtml(mod.name || '(sem nome)')}</span>
@@ -707,14 +1000,10 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
         </div>
         <svg class="mod-header-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
       `;
-      
-      const body = document.createElement('div');
-      body.className = 'mod-body';
-      
+      const body = document.createElement('div'); body.className = 'mod-body';
       const innerEmail = `mod-${mod.email.replace(/[^a-z0-9]/g, '')}`;
       const roomId = `room-${innerEmail}`;
       const currentRoom = (mod.modRooms && mod.modRooms[0]) || '';
-      
       body.innerHTML = `
         <div class="admin-field" style="margin-bottom: 12px;">
           <label>SALA</label>
@@ -736,28 +1025,18 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
         </div>
         <button class="admin-btn" style="margin-top: 16px; width: 100%; justify-content: center;" data-save-mod="${mod.email}">Salvar Alterações</button>
       `;
-
       header.addEventListener('click', () => item.classList.toggle('open'));
-
-      const saveBtn = body.querySelector(`[data-save-mod="${mod.email}"]`);
+      const saveBtn = body.querySelector(`[data-save-mod]`);
       saveBtn.addEventListener('click', async () => {
+        if (saveBtn.disabled) return;
         const newRoom = body.querySelector(`#${roomId}`).value;
         const newPerms = [];
-        body.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-          if (cb.checked) newPerms.push(cb.dataset.perm);
-        });
-        
+        body.querySelectorAll('input[type="checkbox"]').forEach(cb => { if (cb.checked) newPerms.push(cb.dataset.perm); });
+        const originalHTML = saveBtn.innerHTML;
         saveBtn.disabled = true;
         saveBtn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
         try {
-          await adminCall('admin:setUser', {
-            email: mod.email,
-            name: mod.name,
-            tags: mod.tags,
-            isMod: true,
-            modPermissions: newPerms,
-            modRooms: newRoom ? [newRoom] : []
-          });
+          await adminCall('admin:setUser', { email: mod.email, name: mod.name, tags: mod.tags, isMod: true, modPermissions: newPerms, modRooms: newRoom ? [newRoom] : [] });
           toast('moderador atualizado');
           await loadAdmin();
           const updatedItem = [...wrap.children].find(el => el.innerText.includes(mod.email));
@@ -765,10 +1044,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
         } catch (e) {
           toast('falha: ' + e.message, true);
           saveBtn.disabled = false;
-          saveBtn.innerHTML = 'Salvar Alterações';
+          saveBtn.innerHTML = originalHTML;
         }
       });
-
       item.appendChild(header);
       item.appendChild(body);
       wrap.appendChild(item);
@@ -781,32 +1059,73 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     for (const tag of allTags) {
       const isBlocked = (adminData.blockedModules || []).includes(tag);
       const row = document.createElement('div'); row.className = 'block-row';
-      const nameDiv = document.createElement('div'); nameDiv.className = 'block-name'; nameDiv.innerHTML = `<span class="block-status ${isBlocked ? 'on' : 'off'}"></span> ${escapeHtml(tag)}`;
-      const btn = document.createElement('button'); btn.className = `block-btn ${isBlocked ? 'btn-unblock' : 'btn-block'}`;
-      const iconSvg = isBlocked ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
+      const nameDiv = document.createElement('div'); nameDiv.className = 'block-name';
+      nameDiv.innerHTML = `<span class="block-status ${isBlocked ? 'on' : 'off'}"></span> ${escapeHtml(tag)}`;
+      const btn = document.createElement('button');
+      btn.className = `block-btn ${isBlocked ? 'btn-unblock' : 'btn-block'}`;
+      const iconSvg = isBlocked
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
       btn.innerHTML = iconSvg + (isBlocked ? 'Desbloquear' : 'Bloquear');
-      btn.onclick = async () => { 
-        const originalHTML = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>'; 
-        try { await adminCall('admin:blockModule', { tag, block: !isBlocked }); toast(tag + (isBlocked ? ' desbloqueado' : ' bloqueado'), false); await loadAdmin(); } catch (e) { toast(e.message, true); btn.disabled = false; btn.innerHTML = originalHTML; } 
+      btn.onclick = async () => {
+        if (btn.disabled) return;
+        const originalHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
+        try {
+          await adminCall('admin:blockModule', { tag, block: !isBlocked });
+          toast(tag + (isBlocked ? ' desbloqueado' : ' bloqueado'));
+          await loadAdmin();
+        } catch (e) {
+          toast(e.message, true);
+          btn.disabled = false;
+          btn.innerHTML = originalHTML;
+        }
       };
-      row.appendChild(nameDiv); row.appendChild(btn); wrap.appendChild(row);
+      row.appendChild(nameDiv);
+      row.appendChild(btn);
+      wrap.appendChild(row);
     }
   }
 
-  async function loadHistory(email) { const list = document.getElementById('hist-list'); const countEl = document.getElementById('hist-count'); if (!list) return; list.innerHTML = '<div class="admin-empty">carregando…</div>'; try { const r = await adminCall('admin:history', { email, limit: 200 }); const events = r.events || []; list.innerHTML = ''; if (!events.length) { list.innerHTML = '<div class="admin-empty">nenhum evento.</div>'; countEl.textContent = ''; return; } countEl.innerHTML = '<b>' + events.length + '</b> eventos'; for (const ev of events) list.appendChild(renderHistItem(ev, email)); } catch (e) { list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>'; } }
-  async function loadLogs() { const list = document.getElementById('admin-log-list'); if (!list) return; list.innerHTML = '<div class="admin-empty">carregando…</div>'; try { const r = await adminCall('admin:logs'); const logs = r.logs || []; list.innerHTML = ''; if (!logs.length) { list.innerHTML = '<div class="admin-empty">nenhum log.</div>'; return; } for (const ev of logs) list.appendChild(renderHistItem(ev, null)); } catch (e) { list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>'; } }
+  async function loadHistory(email) {
+    const list = document.getElementById('hist-list');
+    const countEl = document.getElementById('hist-count');
+    if (!list) return;
+    list.innerHTML = '<div class="admin-empty">carregando…</div>';
+    const target = adminData?.people?.find(p => p.email === email);
+    const targetTags = target?.tags || [];
+    try {
+      const r = await adminCall('admin:history', { email, limit: 200, targetTags });
+      const events = r.events || [];
+      list.innerHTML = '';
+      if (!events.length) { list.innerHTML = '<div class="admin-empty">nenhum evento.</div>'; countEl.textContent = ''; return; }
+      countEl.innerHTML = '<b>' + events.length + '</b> eventos';
+      for (const ev of events) list.appendChild(renderHistItem(ev, email));
+    } catch (e) { list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>'; }
+  }
+  async function loadLogs() {
+    const list = document.getElementById('admin-log-list');
+    if (!list) return;
+    list.innerHTML = '<div class="admin-empty">carregando…</div>';
+    try {
+      const r = await adminCall('admin:logs');
+      const logs = r.logs || [];
+      list.innerHTML = '';
+      if (!logs.length) { list.innerHTML = '<div class="admin-empty">nenhum log.</div>'; return; }
+      for (const ev of logs) list.appendChild(renderHistItem(ev, null));
+    } catch (e) { list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>'; }
+  }
 
   function renderHistItem(ev, emailParam) {
-    const row = document.createElement('div'); 
+    const row = document.createElement('div');
     row.className = 'hist-item';
-    let iconClass = 'h-login'; 
-    let iconSvg = '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>'; 
+    let iconClass = 'h-login';
+    let iconSvg = '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>';
     let line1 = '';
-
     const autor = ev.by ? `<em>${escapeHtml(ev.by)}</em>` : 'Sistema';
     const alvo = ev.target ? `<em>${escapeHtml(ev.target)}</em>` : (emailParam ? `<em>${escapeHtml(emailParam)}</em>` : 'Alguém');
     const bloco = ev.target ? `<em>${escapeHtml(ev.target)}</em>` : '?';
-
     switch (ev.type) {
       case 'login': line1 = 'fez login no site'; break;
       case 'copy': iconClass = 'h-copy'; iconSvg = '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>'; line1 = 'copiou o bloco ' + bloco; break;
@@ -820,13 +1139,13 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       case 'block': iconClass = 'h-ban'; iconSvg = '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>'; line1 = `${autor} <em style="color:#e05252">bloqueou</em> o bloco ${bloco}`; break;
       case 'unblock': iconClass = 'h-tags'; iconSvg = '<path d="M20 6 9 17l-5-5"/>'; line1 = `${autor} <em style="color:#10b981">desbloqueou</em> o bloco ${bloco}`; break;
       case 'kill_all': iconClass = 'h-kill'; iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/>'; line1 = `${autor} <em style="color:#e05252">DERRUBOU TODAS as sessões</em> do site`; break;
+      case 'import': iconClass = 'h-tags'; iconSvg = '<path d="M20 6 9 17l-5-5"/>'; line1 = `${autor} importou <em>${escapeHtml(String(ev.count || 0))}</em> pessoa(s)`; break;
+      case 'delete': iconClass = 'h-ban'; iconSvg = '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>'; line1 = `${autor} <em style="color:#e05252">removeu</em> ${alvo}`; break;
       default: line1 = escapeHtml(ev.type || '?');
     }
-
     let line2Str = escapeHtml(fmtDate(ev.ts));
-    if (ev.target && ev.type !== 'kill_all') line2Str += ` · Alvo: <span class="hist-email">${escapeHtml(ev.target)}</span>`;
+    if (ev.target && ev.type !== 'kill_all' && ev.type !== 'import') line2Str += ` · Alvo: <span class="hist-email">${escapeHtml(ev.target)}</span>`;
     else if (emailParam && ev.type !== 'kill_all') line2Str += ` · <span class="hist-email">${escapeHtml(emailParam)}</span>`;
-
     row.innerHTML = `
       <div class="hist-icon ${iconClass}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${iconSvg}</svg>
@@ -838,66 +1157,173 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     return row;
   }
 
-  async function loadKills() { const list = document.getElementById('kill-pending-list'); if (!list) return; list.innerHTML = '<div class="admin-empty">carregando…</div>'; try { const r = await adminCall('admin:listKills'); const kills = r.kills || []; list.innerHTML = ''; if (!kills.length) { list.innerHTML = '<div class="admin-empty">nenhum pendente.</div>'; return; } for (const k of kills) { const row = document.createElement('div'); row.className = 'kill-row'; const modeLabel = k.mode === 'hard' ? 'deslogar' : 'fechar'; row.innerHTML = '<div class="kill-row-meta"><div class="kill-row-email">' + escapeHtml(k.email) + '</div><div class="kill-row-sub">' + escapeHtml(fmtRelative(k.ts)) + '</div></div><span class="kill-row-mode ' + k.mode + '">' + modeLabel + '</span>'; const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'kill-row-btn'; btn.textContent = 'limpar'; btn.addEventListener('click', async () => { try { await adminCall('admin:clearKill', { email: k.email }); await loadKills(); } catch (e) { toast(e.message, true); } }); row.appendChild(btn); list.appendChild(row); } } catch (e) { list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>'; } }
+  async function loadKills() {
+    const list = document.getElementById('kill-pending-list');
+    if (!list) return;
+    list.innerHTML = '<div class="admin-empty">carregando…</div>';
+    try {
+      const r = await adminCall('admin:listKills');
+      const kills = r.kills || [];
+      list.innerHTML = '';
+      if (!kills.length) { list.innerHTML = '<div class="admin-empty">nenhum pendente.</div>'; return; }
+      for (const k of kills) {
+        const row = document.createElement('div'); row.className = 'kill-row';
+        const modeLabel = k.mode === 'hard' ? 'deslogar' : 'fechar';
+        row.innerHTML = '<div class="kill-row-meta"><div class="kill-row-email">' + escapeHtml(k.email) + '</div><div class="kill-row-sub">' + escapeHtml(fmtRelative(k.ts)) + '</div></div><span class="kill-row-mode ' + k.mode + '">' + modeLabel + '</span>';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'kill-row-btn';
+        btn.textContent = 'limpar';
+        btn.addEventListener('click', async () => {
+          if (btn.disabled) return;
+          btn.disabled = true;
+          try { await adminCall('admin:clearKill', { email: k.email }); await loadKills(); }
+          catch (e) { toast(e.message, true); btn.disabled = false; }
+        });
+        row.appendChild(btn);
+        list.appendChild(row);
+      }
+    } catch (e) { list.innerHTML = '<div class="admin-empty">falha: ' + escapeHtml(e.message) + '</div>'; }
+  }
 
   wireTabs();
   let pollTimer = null; let knownTags = new Set();
 
-  async function _post(payload) { try { const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); if (!r.ok) return null; return await r.json(); } catch { return null; } }
-  function showMiniToast(msg) { const t = document.createElement('div'); t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(19,19,24,.96);border:1px solid #26262e;border-radius:10px;padding:11px 18px;color:#e8e8ea;font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.55);z-index:10002;transition:opacity .22s, transform .22s;opacity:0;'; t.textContent = msg; document.body.appendChild(t); requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; }); setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 2400); setTimeout(() => t.remove(), 2800); }
-  function fadeOutAndRemove(el, cb) { if (!el) return cb && cb(); el.style.transition = 'opacity .25s, transform .25s'; el.style.opacity = '0'; el.style.transform = 'scale(.96)'; setTimeout(() => { el.remove(); cb && cb(); }, 260); }
-  function fadeIn(el) { el.style.opacity = '0'; el.style.transform = 'translateY(12px)'; requestAnimationFrame(() => { el.style.transition = 'opacity .4s cubic-bezier(.2,.8,.2,1), transform .4s cubic-bezier(.2,.8,.2,1)'; el.style.opacity = '1'; el.style.transform = 'none'; }); }
+  async function _post(payload) {
+    try {
+      const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      try { return await r.json(); } catch { return null; }
+    } catch { return null; }
+  }
+  function fadeIn(el) {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(12px)';
+    requestAnimationFrame(() => {
+      el.style.transition = 'opacity .4s cubic-bezier(.2,.8,.2,1), transform .4s cubic-bezier(.2,.8,.2,1)';
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
+  }
 
   function applyBlocksDiff(incoming) {
     const incomingMap = new Map((incoming || []).map(b => [b.tag, b]));
-    const added = []; const removed = []; const changed = [];
-    for (const b of (currentUser.blocks || [])) { if (!incomingMap.has(b.tag)) removed.push(b); else { const inc = incomingMap.get(b.tag); if (JSON.stringify(b) !== JSON.stringify(inc)) changed.push(inc); } }
+    const added = [], removed = [], changed = [];
+    for (const b of (currentUser.blocks || [])) {
+      if (!incomingMap.has(b.tag)) removed.push(b);
+      else {
+        const inc = incomingMap.get(b.tag);
+        if (JSON.stringify(b) !== JSON.stringify(inc)) changed.push(inc);
+      }
+    }
     for (const inc of (incoming || [])) { if (!knownTags.has(inc.tag)) added.push(inc); }
     if (!added.length && !removed.length && !changed.length) return;
-    currentUser.blocks = incoming || []; knownTags = new Set(currentUser.blocks.map(b => b.tag));
-    for (const b of removed) { const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag); if (card) { card.style.transition = 'opacity .25s, transform .25s'; card.style.opacity = '0'; card.style.transform = 'scale(.95)'; setTimeout(() => card.remove(), 260); } payloads.delete(b.tag + '_new'); payloads.delete(b.tag + '_old'); payloads.delete(b.tag); }
-    for (const b of changed) { const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag); if (!card) continue; const fresh = renderBlock(b); card.replaceWith(fresh); fadeIn(fresh); }
-    added.forEach((b, i) => { const el = renderBlock(b); setTimeout(() => { grid.appendChild(el); fadeIn(el); }, i * 90); });
+    currentUser.blocks = incoming || [];
+    knownTags = new Set(currentUser.blocks.map(b => b.tag));
+
+    for (const b of removed) {
+      const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
+      if (card) {
+        card.style.transition = 'opacity .25s, transform .25s';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(.95)';
+        setTimeout(() => card.remove(), 260);
+      }
+      payloads.delete(b.tag + '_new');
+      payloads.delete(b.tag + '_old');
+      payloads.delete(b.tag);
+    }
+    for (const b of changed) {
+      const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
+      if (!card) continue;
+      const fresh = renderBlock(b);
+      card.replaceWith(fresh);
+      fadeIn(fresh);
+    }
+    added.forEach((b, i) => {
+      const el = renderBlock(b);
+      setTimeout(() => { grid.appendChild(el); fadeIn(el); }, i * 90);
+    });
   }
 
   async function _handleKill(kill) {
+    if (_killInProgress) return;
+    _killInProgress = true;
     stopPolling();
-    try { sessionStorage.removeItem(SESSION_KEY); } catch {} try { localStorage.clear(); } catch {}
-    document.documentElement.innerHTML = '';
-    window.close();
-    setTimeout(() => { window.location.replace('about:blank'); window.close(); }, 500);
+    try { sessionStorage.removeItem(SESSION_KEY); } catch {}
+    try { localStorage.clear(); } catch {}
+    try { document.documentElement.innerHTML = ''; } catch {}
+    try { window.close(); } catch {}
+    setTimeout(() => { try { window.location.replace('about:blank'); window.close(); } catch {} }, 500);
   }
 
   async function pollTick() {
-    const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) return;
+    const jwt = sessionStorage.getItem(SESSION_KEY);
+    if (!jwt) return;
     const data = await _post({ jwt, action: 'checkState' });
-    if (!data || !data.ok) return;
+    if (!data) return;
+    if (data.ok === false) {
+      if (data.error === 'no_jwt' || data.error === 'bad_jwt' || data.error === 'not_found' || data.error === 'banned') {
+        await _handleKill({ mode: 'hard' });
+      }
+      return;
+    }
     if (data.banned) { await _handleKill({ mode: 'hard' }); return; }
-    if (data.kill) { try { await _post({ jwt, action: 'ackKill' }); } catch {} await _handleKill(data.kill); return; }
-    if (data.theme) applyTheme(data.theme); applyBlocksDiff(data.blocks || []);
+    if (data.kill) {
+      try { await _post({ jwt, action: 'ackKill' }); } catch {}
+      await _handleKill(data.kill);
+      return;
+    }
+    if (data.theme) applyTheme(data.theme);
+    if (data.isAdmin !== undefined && currentUser) currentUser.isAdmin = !!data.isAdmin;
+    if (data.isMod !== undefined && currentUser) currentUser.isMod = !!data.isMod;
+    if (Array.isArray(data.modPermissions) && currentUser) currentUser.modPermissions = data.modPermissions;
+    if (Array.isArray(data.modRooms) && currentUser) currentUser.modRooms = data.modRooms;
+    applyBlocksDiff(data.blocks || []);
   }
 
-  function startPolling() { stopPolling(); if (!currentUser) return; knownTags = new Set((currentUser.blocks || []).map(b => b.tag)); pollTimer = setInterval(pollTick, 5000); document.addEventListener('visibilitychange', onVisibilityForPoll); }
+  function startPolling() {
+    stopPolling();
+    if (!currentUser) return;
+    knownTags = new Set((currentUser.blocks || []).map(b => b.tag));
+    pollTimer = setInterval(pollTick, 5000);
+    document.addEventListener('visibilitychange', onVisibilityForPoll);
+  }
   function onVisibilityForPoll() { if (document.visibilityState === 'visible') pollTick(); }
   function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } document.removeEventListener('visibilitychange', onVisibilityForPoll); }
-  function kill_now() { try { window.__guardKill && window.__guardKill('admin_kill'); } catch { try { location.replace('about:blank'); } catch {} } if (document.body) { document.body.innerHTML = ''; document.body.style.background = '#000'; document.title = 'Sessão Encerrada'; } }
 
   function route() {
     if (currentUser && !currentUser.termsAccepted) return;
     const path = location.pathname.replace(/\/+$/, '') || '/';
-    if (path === '/area') { if (!currentUser) { showView('login'); return; } if (!viewArea.classList.contains('hidden')) { renderArea(); return; } openArea(); }
-    else { if (!currentUser) { showView('login'); return; } if (!viewSite.classList.contains('hidden')) return; showView('site'); playSiteEntrance(); }
+    if (path === '/area') {
+      if (!currentUser) { showView('login'); return; }
+      if (!viewArea.classList.contains('hidden')) { renderArea(); return; }
+      openArea();
+    } else {
+      if (!currentUser) { showView('login'); return; }
+      if (!viewSite.classList.contains('hidden')) return;
+      showView('site'); playSiteEntrance();
+    }
   }
-
-  function go(path) { if (location.pathname !== path) history.pushState({}, '', path); route(); }
   window.addEventListener('popstate', route);
 
   document.getElementById('btn-area').addEventListener('click', () => { if (location.pathname !== '/area') history.pushState({}, '', '/area'); openArea(); });
   document.getElementById('btn-home').addEventListener('click', () => { if (location.pathname !== '/') history.pushState({}, '', '/'); backHome(); });
   document.getElementById('btn-back').addEventListener('click', () => { if (location.pathname !== '/') history.pushState({}, '', '/'); backHome(); });
 
-  function kill() { try { window.__guardKill && window.__guardKill('app_kill'); } catch { try { location.replace('about:blank'); } catch {} } }
-  ['btn-logout','btn-logout-2','btn-logout-3'].forEach(id => { document.getElementById(id).addEventListener('click', () => { sessionStorage.removeItem(SESSION_KEY); try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {} kill(); }); });
+  function kill() {
+    stopPolling();
+    try { window.__guardKill && window.__guardKill('app_kill'); }
+    catch { try { location.replace('about:blank'); } catch {} }
+  }
+  ['btn-logout','btn-logout-2','btn-logout-3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('click', () => {
+      sessionStorage.removeItem(SESSION_KEY);
+      try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
+      kill();
+    });
+  });
 
   tryRestore();
 })();
