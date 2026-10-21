@@ -101,6 +101,105 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .terms-footer{padding:16px 26px 22px;border-top:1px solid var(--line);flex-shrink:0;background:rgba(15,15,18,.5)} .terms-footer.hidden{display:none} .terms-checkbox{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#d4d4d8;padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:rgba(10,10,12,.5);transition:border-color .15s,background .15s;user-select:none} .terms-checkbox:hover{border-color:#33333d;background:rgba(21,21,26,.5)} .terms-checkbox.checked{border-color:var(--accent);background:rgba(var(--glow-rgb),.1)} .terms-checkbox input{margin:2px 0 0;accent-color:var(--accent);flex-shrink:0;width:16px;height:16px;cursor:pointer} .terms-checkbox span{flex:1;line-height:1.5} .terms-checkbox b{color:var(--text)} .terms-accept{margin-top:14px;width:100%;padding:13px 20px;border-radius:11px;background:var(--accent);color:#fff;font-weight:600;font-size:14.5px;border:none;cursor:pointer;font-family:inherit;transition:background .15s,box-shadow .2s,opacity .15s} .terms-accept:hover:not(:disabled){background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)} .terms-accept:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.4)}
 .version-modal {background:linear-gradient(160deg, var(--panel-hi) 0%, var(--panel) 70%);border:1px solid var(--line-2);border-radius:20px;padding:42px 36px;width:100%;max-width:620px;text-align:center;box-shadow:0 30px 100px rgba(0,0,0,.7),0 0 0 1px rgba(var(--glow-rgb),.08),inset 0 1px rgba(255,255,255,.05);animation:execIn .35s cubic-bezier(.2,.8,.2,1);position:relative;overflow:hidden} .version-modal::before {content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:80%;height:50%;background:radial-gradient(ellipse, rgba(var(--glow-rgb),.15) 0%, transparent 70%);pointer-events:none} .version-title {font-family:var(--font-display);font-size:26px;color:var(--text);margin:0 0 8px;letter-spacing:-.5px;position:relative} .version-title b {color:var(--accent-2);font-weight:800} .version-sub {color:var(--dim);font-size:14px;margin-bottom:32px;position:relative} .version-options {display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;position:relative}
 .version-card {background:rgba(10,10,12,.6);border:1px solid var(--line);border-radius:14px;padding:24px 20px;text-align:left;cursor:pointer;transition:all .25s cubic-bezier(.2,.8,.2,1);position:relative;overflow:hidden;display:flex;flex-direction:column} .version-card:hover {border-color:rgba(var(--glow-rgb), .5);background:var(--panel-hi);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(var(--glow-rgb),.2)} .v-glow {position:absolute;top:0;right:0;width:100px;height:100px;background:radial-gradient(circle at top right, rgba(var(--glow-rgb),.15), transparent 70%);opacity:0;transition:opacity .3s} .version-card:hover .v-glow {opacity:1} .v-icon {width:42px;height:42px;border-radius:10px;background:rgba(var(--glow-rgb), .1);border:1px solid rgba(var(--glow-rgb), .2);display:grid;place-items:center;margin-bottom:16px;color:var(--accent-2);transition:transform .3s, background .3s, color .3s} .v-icon svg {width:22px;height:22px} .version-card:hover .v-icon {background:var(--accent);color:#fff;transform:scale(1.05);border-color:var(--accent)} .version-card h3 {font-family:var(--font-display);font-size:18px;color:var(--text);margin:0 0 8px;letter-spacing:-.2px} .version-card p {color:var(--dim);font-size:12.5px;line-height:1.5;margin:0 0 20px;flex:1} .v-badge {display:inline-block;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);color:var(--slate);font-family:var(--font-mono);font-size:10.5px;padding:5px 8px;border-radius:6px;align-self:flex-start;letter-spacing:.3px} .version-card:hover .v-badge {background:rgba(var(--glow-rgb), .1);border-color:rgba(var(--glow-rgb), .3);color:var(--accent-2)} .version-cancel {background:transparent;border:none;color:var(--slate);font-size:13.5px;font-weight:500;cursor:pointer;font-family:var(--font-body);padding:8px 16px;transition:color .15s;position:relative} .version-cancel:hover {color:var(--text)} .version-help-link {display:inline-block;color:var(--slate);font-size:13px;text-decoration:none;border-bottom:1px dashed rgba(255,255,255,.15);transition:color .2s, border-color .2s} .version-help-link:hover {color:var(--accent-2);border-color:var(--accent-2)}
+
+/* ── NOVAS CLASSES DO GERENCIAMENTO ── */
+.admin-select {
+  width: 100%;
+  background: rgba(10,10,12,.6);
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  padding: 11px 13px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+.admin-select:focus { border-color: var(--accent); }
+
+.perm-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.perm-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,.02);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: var(--text);
+  transition: background .15s, border-color .15s;
+}
+.perm-row:hover {
+  background: rgba(255,255,255,.05);
+  border-color: var(--line-2);
+}
+.perm-row input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* Accordion */
+.mod-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mod-item {
+  background: rgba(10,10,12,.5);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.mod-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s;
+}
+.mod-header:hover {
+  background: rgba(255,255,255,.03);
+}
+.mod-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mod-header-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+.mod-header-email {
+  font-size: 12px;
+  color: var(--dim);
+}
+.mod-header-icon {
+  color: var(--dim);
+  transition: transform .2s;
+}
+.mod-item.open .mod-header-icon {
+  transform: rotate(180deg);
+}
+.mod-body {
+  display: none;
+  padding: 0 18px 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+.mod-item.open .mod-body {
+  display: block;
+}
+
 @media (max-width: 600px) {.version-options {grid-template-columns:1fr}.version-modal {padding:32px 24px}}
 @media (max-width:560px){header{padding:14px 18px}.rule{margin:0 18px}main{padding:36px 18px 64px}#view-area{padding:0 18px 64px}.nav .btn span{display:none}.admin-meta{min-width:0}#terms-overlay{padding:12px}.terms-modal{max-height:94vh;border-radius:14px}.terms-header{padding:16px 18px 12px}.terms-header h3{font-size:16px}.terms-content-wrap{padding:12px 14px}.terms-content{padding:16px 16px;font-size:13px}.terms-footer{padding:12px 16px 16px}}
 </style>
@@ -348,38 +447,45 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
         </div>
       </div>
       <div class="admin-panel" data-panel="gerenciamento">
-        <div class="area-card">
-          <h3>Gerenciar Moderadores</h3>
-          <p style="color:var(--dim);font-size:12.5px;margin:0 0 16px">Selecione um usuário para torná-lo moderador e defina as permissões.</p>
-          <form class="admin-form" id="mod-form" style="max-width: 600px;">
-            <div class="admin-field">
-              <label>email do usuário</label>
-              <div style="display:flex; gap:8px;">
-                <input id="mod-email" type="email" required placeholder="nome.sobrenome@escola.pr.gov.br" style="flex:1;">
-                <div id="mod-status-container"></div>
-              </div>
+        <div class="area-card" style="background: rgba(10,10,12,.75); border: 1px solid var(--line); border-radius: 12px;">
+          <h3>Gerenciar Moderador</h3>
+          <p style="color:var(--dim);font-size:12.5px;margin:0 0 16px">Digite o email para adicionar ou remover um moderador.</p>
+          
+          <div class="admin-field" style="margin-bottom: 16px;">
+            <label>EMAIL DO USUÁRIO</label>
+            <input id="mod-email" type="email" placeholder="nome.sobrenome@escola.pr.gov.br">
+          </div>
+
+          <div class="admin-field" style="margin-bottom: 16px;">
+            <label>SALA PERMITIDA</label>
+            <select id="mod-room" class="admin-select">
+              <option value="">Nenhuma (Todas)</option>
+              <option value="Sala A">Sala A</option>
+              <option value="Sala B">Sala B</option>
+              <option value="Sala C">Sala C</option>
+            </select>
+          </div>
+
+          <div class="admin-field" style="margin-bottom: 20px;">
+            <label>PERMISSÕES</label>
+            <div class="perm-table">
+              <label class="perm-row"><input type="checkbox" id="perm-ban" value="ban"> <span>Banir Usuários</span></label>
+              <label class="perm-row"><input type="checkbox" id="perm-kill" value="kill"> <span>Desligar Sessão</span></label>
+              <label class="perm-row"><input type="checkbox" id="perm-history" value="history"> <span>Ver Histórico</span></label>
+              <label class="perm-row"><input type="checkbox" id="perm-logs" value="logs"> <span>Ver Admin Logs</span></label>
             </div>
-            <div class="admin-field" style="margin-top: 8px;">
-              <label>permissões</label>
-              <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                <label class="admin-check"><input type="checkbox" id="perm-ban" value="ban"> <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg> Banir</label>
-                <label class="admin-check"><input type="checkbox" id="perm-kill" value="kill"> <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg> Desligar Sessão</label>
-                <label class="admin-check"><input type="checkbox" id="perm-history" value="history"> <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Ver Histórico</label>
-              </div>
-            </div>
-            <div class="admin-field" style="margin-top: 8px;">
-              <label>salas permitidas</label>
-              <div class="admin-tag-checks" id="mod-rooms-checks">
-                <label class="admin-check"><input type="checkbox" value="Sala A"> Sala A</label>
-                <label class="admin-check"><input type="checkbox" value="Sala B"> Sala B</label>
-                <label class="admin-check"><input type="checkbox" value="Sala C"> Sala C</label>
-              </div>
-            </div>
-            <div style="display:flex; gap:12px; margin-top: 12px;">
-              <button class="admin-btn" type="submit" id="mod-submit" style="display:flex; align-items:center; gap:6px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Salvar Moderador</button>
-              <button class="admin-btn admin-btn-danger-outline" type="button" id="mod-remove" style="display:flex; align-items:center; gap:6px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Remover Moderador</button>
-            </div>
-          </form>
+          </div>
+
+          <button class="admin-btn" id="mod-toggle-btn" style="width: 100%; justify-content: center;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Tornar Moderador
+          </button>
+        </div>
+
+        <div class="area-card" style="background: rgba(10,10,12,.75); border: 1px solid var(--line); border-radius: 12px;">
+          <h3>Moderadores Ativos</h3>
+          <div id="mod-list-accordion" class="mod-accordion">
+            <div class="admin-empty">carregando...</div>
+          </div>
         </div>
       </div>
       <div class="admin-panel" data-panel="historico">
@@ -426,16 +532,75 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       try { await adminCall('admin:setUser', { email, name, tags }); toast('adicionado'); form.reset(); await loadAdmin(); } catch (e) { toast('falha: ' + e.message, true); }
     });
 
-    document.getElementById('mod-form').addEventListener('submit', async (e) => {
-      e.preventDefault(); const email = document.getElementById('mod-email').value.trim().toLowerCase(); const perms = [...document.querySelectorAll('.admin-check input:checked')].map(c => c.value); const rooms = [...document.querySelectorAll('#mod-rooms-checks input:checked')].map(c => c.value); const targetUser = adminData.people.find(x => x.email === email);
-      try { await adminCall('admin:setUser', { email, name: targetUser ? targetUser.name : '', tags: targetUser ? targetUser.tags : [], isMod: true, modPermissions: perms, modRooms: rooms }); toast('moderador salvo'); } catch (e) { toast('falha: ' + e.message, true); }
-    });
+    const modEmailInp = document.getElementById('mod-email');
+    const modRoomSel = document.getElementById('mod-room');
+    const modPermBan = document.getElementById('perm-ban');
+    const modPermKill = document.getElementById('perm-kill');
+    const modPermHist = document.getElementById('perm-history');
+    const modPermLogs = document.getElementById('perm-logs');
+    const modToggleBtn = document.getElementById('mod-toggle-btn');
 
-    document.getElementById('mod-remove').addEventListener('click', async () => {
-      const email = document.getElementById('mod-email').value.trim().toLowerCase();
+    function updateModToggleState() {
+      const email = modEmailInp.value.trim().toLowerCase();
+      const target = adminData?.people?.find(x => x.email === email);
+      
+      if (target && target.isMod) {
+        modToggleBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Remover Moderador';
+        modToggleBtn.className = 'admin-btn admin-btn-danger';
+        
+        modRoomSel.value = target.modRooms?.[0] || '';
+        modPermBan.checked = target.modPermissions?.includes('ban') || false;
+        modPermKill.checked = target.modPermissions?.includes('kill') || false;
+        modPermHist.checked = target.modPermissions?.includes('history') || false;
+        modPermLogs.checked = target.modPermissions?.includes('logs') || false;
+      } else {
+        modToggleBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Tornar Moderador';
+        modToggleBtn.className = 'admin-btn';
+      }
+    }
+
+    modEmailInp.addEventListener('input', updateModToggleState);
+
+    modToggleBtn.addEventListener('click', async () => {
+      const email = modEmailInp.value.trim().toLowerCase();
       if (!email.includes('@')) { toast('email inválido', true); return; }
-      if (!confirm('Remover status de moderador de ' + email + '?')) return;
-      try { await adminCall('admin:setUser', { email, isMod: false, modPermissions: [] }); toast('moderador removido'); } catch (e) { toast('falha: ' + e.message, true); }
+      
+      const target = adminData.people.find(x => x.email === email);
+      const isMod = target?.isMod;
+      
+      const perms = [];
+      if (modPermBan.checked) perms.push('ban');
+      if (modPermKill.checked) perms.push('kill');
+      if (modPermHist.checked) perms.push('history');
+      if (modPermLogs.checked) perms.push('logs');
+      const room = modRoomSel.value;
+
+      modToggleBtn.disabled = true;
+      modToggleBtn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
+
+      try {
+        if (isMod) {
+          await adminCall('admin:setUser', { email, isMod: false, modPermissions: [], modRooms: [] });
+          toast('moderador removido');
+        } else {
+          await adminCall('admin:setUser', { 
+            email, 
+            name: target?.name || '', 
+            tags: target?.tags || [], 
+            isMod: true, 
+            modPermissions: perms, 
+            modRooms: room ? [room] : [] 
+          });
+          toast('moderador salvo');
+        }
+        await loadAdmin();
+        modEmailInp.value = '';
+        updateModToggleState();
+      } catch (e) {
+        toast('falha: ' + e.message, true);
+      } finally {
+        modToggleBtn.disabled = false;
+      }
     });
 
     document.getElementById('admin-search').addEventListener('input', applyAdminFilter);
@@ -467,7 +632,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   function toast(msg, isErr) { const el = document.getElementById('admin-toast'); if (!el) return; el.textContent = msg; el.classList.toggle('err', !!isErr); el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2200); }
   async function adminCall(action, extra) { const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) throw new Error('no_jwt'); const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action, ...(extra || {}) }) }); if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || ('http ' + r.status)); } return r.json(); }
 
-  async function loadAdmin() { try { adminData = await adminCall('admin:list'); renderAdminTagsInput(); renderAdminTagFilter(); renderAdminUsers(); updateAdminCount(); renderBlockList(); } catch (e) { toast('falha ao carregar: ' + e.message, true); } }
+  async function loadAdmin() { try { adminData = await adminCall('admin:list'); renderAdminTagsInput(); renderAdminTagFilter(); renderAdminUsers(); updateAdminCount(); renderBlockList(); renderModeratorsAccordion(); } catch (e) { toast('falha ao carregar: ' + e.message, true); } }
   function updateAdminCount() { const el = document.getElementById('admin-count'); if (!el) return; const total = adminData && adminData.count != null ? adminData.count : 0; el.innerHTML = '<b>' + total + '</b> pessoa' + (total === 1 ? '' : 's'); }
 
   function renderAdminTagsInput() { const wrap = document.getElementById('admin-new-tags'); if (!wrap) return; wrap.innerHTML = ''; if (!adminData || !adminData.allTags || !adminData.allTags.length) { wrap.innerHTML = '<span style="color:var(--dim);font-size:12.5px">sem tags no catálogo.</span>'; return; } for (const tag of adminData.allTags) { const label = document.createElement('label'); label.className = 'admin-check'; const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = tag; label.append(cb, document.createTextNode(tag)); wrap.appendChild(label); } }
@@ -516,6 +681,98 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       row.append(meta, chips, del); list.appendChild(row);
     }
     applyAdminFilter();
+  }
+
+  function renderModeratorsAccordion() {
+    const wrap = document.getElementById('mod-list-accordion');
+    if (!wrap || !adminData) return;
+    wrap.innerHTML = '';
+    
+    const mods = adminData.people.filter(p => p.isMod);
+    if (mods.length === 0) {
+      wrap.innerHTML = '<div class="admin-empty">Nenhum moderador ativo.</div>';
+      return;
+    }
+
+    mods.forEach(mod => {
+      const item = document.createElement('div');
+      item.className = 'mod-item';
+      
+      const header = document.createElement('div');
+      header.className = 'mod-header';
+      header.innerHTML = `
+        <div class="mod-header-left">
+          <span class="mod-header-name">${escapeHtml(mod.name || '(sem nome)')}</span>
+          <span class="mod-header-email">${escapeHtml(mod.email)}</span>
+        </div>
+        <svg class="mod-header-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      `;
+      
+      const body = document.createElement('div');
+      body.className = 'mod-body';
+      
+      const innerEmail = `mod-${mod.email.replace(/[^a-z0-9]/g, '')}`;
+      const roomId = `room-${innerEmail}`;
+      const currentRoom = (mod.modRooms && mod.modRooms[0]) || '';
+      
+      body.innerHTML = `
+        <div class="admin-field" style="margin-bottom: 12px;">
+          <label>SALA</label>
+          <select class="admin-select" id="${roomId}">
+            <option value="">Nenhuma (Todas)</option>
+            <option value="Sala A" ${currentRoom === 'Sala A' ? 'selected' : ''}>Sala A</option>
+            <option value="Sala B" ${currentRoom === 'Sala B' ? 'selected' : ''}>Sala B</option>
+            <option value="Sala C" ${currentRoom === 'Sala C' ? 'selected' : ''}>Sala C</option>
+          </select>
+        </div>
+        <div class="admin-field">
+          <label>PERMISSÕES</label>
+          <div class="perm-table">
+            <label class="perm-row"><input type="checkbox" data-perm="ban" ${mod.modPermissions?.includes('ban') ? 'checked' : ''}> <span>Banir Usuários</span></label>
+            <label class="perm-row"><input type="checkbox" data-perm="kill" ${mod.modPermissions?.includes('kill') ? 'checked' : ''}> <span>Desligar Sessão</span></label>
+            <label class="perm-row"><input type="checkbox" data-perm="history" ${mod.modPermissions?.includes('history') ? 'checked' : ''}> <span>Ver Histórico</span></label>
+            <label class="perm-row"><input type="checkbox" data-perm="logs" ${mod.modPermissions?.includes('logs') ? 'checked' : ''}> <span>Ver Admin Logs</span></label>
+          </div>
+        </div>
+        <button class="admin-btn" style="margin-top: 16px; width: 100%; justify-content: center;" data-save-mod="${mod.email}">Salvar Alterações</button>
+      `;
+
+      header.addEventListener('click', () => item.classList.toggle('open'));
+
+      const saveBtn = body.querySelector(`[data-save-mod="${mod.email}"]`);
+      saveBtn.addEventListener('click', async () => {
+        const newRoom = body.querySelector(`#${roomId}`).value;
+        const newPerms = [];
+        body.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+          if (cb.checked) newPerms.push(cb.dataset.perm);
+        });
+        
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
+        try {
+          await adminCall('admin:setUser', {
+            email: mod.email,
+            name: mod.name,
+            tags: mod.tags,
+            isMod: true,
+            modPermissions: newPerms,
+            modRooms: newRoom ? [newRoom] : []
+          });
+          toast('moderador atualizado');
+          await loadAdmin();
+          const updatedItem = [...wrap.children].find(el => el.innerText.includes(mod.email));
+          if (updatedItem) updatedItem.classList.add('open');
+        } catch (e) {
+          toast('falha: ' + e.message, true);
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = 'Salvar Alterações';
+        }
+      });
+
+      item.appendChild(header);
+      item.appendChild(body);
+      wrap.appendChild(item);
+    });
   }
 
   function renderBlockList() {
