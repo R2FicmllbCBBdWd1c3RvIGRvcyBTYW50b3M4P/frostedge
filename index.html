@@ -50,7 +50,7 @@
 </script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
-:root{--bg:#0a0a0c;--panel:#101013;--card:#131318;--line:#1e1e24;--line-2:#26262e;--text:#e8e8ea;--dim:#8a8a94;--accent:#3b82f6;--accent-2:#60a5fa;--accent-dim:#1e3a8a;--gold:#d4af37;--gold-2:#e8c766;--gold-dim:#a67c00;--glow-rgb:59,130,246;--gold-rgb:212,175,55;--danger:#e05252;--success:#10b981}
+:root{--bg:#0a0a0c;--panel:#101013;--card:#131318;--line:#1e1e24;--line-2:#26262e;--text:#e8e8ea;--dim:#8a8a94;--accent:#3b82f6;--accent-2:#60a5fa;--accent-dim:#1e3a8a;--gold:#d4af37;--gold-2:#e8c766;--gold-dim:#a67c00;--glow-rgb:59,130,246;--gold-rgb:212,175,55;--danger:#e05252}
 html[data-theme="roxo"]{--accent:#8b5cf6;--accent-2:#a78bfa;--accent-dim:#4c1d95;--glow-rgb:139,92,246;--gold:#a855f7;--gold-2:#c084fc;--gold-dim:#6b21a8;--gold-rgb:168,85,247}
 html[data-theme="verde"]{--accent:#10b981;--accent-2:#34d399;--accent-dim:#064e3b;--glow-rgb:16,185,129}
 html[data-theme="vermelho"]{--accent:#ef4444;--accent-2:#f87171;--accent-dim:#7f1d1d;--glow-rgb:239,68,68}
@@ -62,16 +62,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));max-width:1100px;margin:0 auto} .card{background:linear-gradient(180deg,rgba(19,19,24,.92),rgba(15,15,18,.92));border:1px solid var(--line);border-radius:16px;padding:26px 24px 22px;display:flex;flex-direction:column;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);box-shadow:0 0 0 1px rgba(var(--glow-rgb),.1),0 0 22px rgba(var(--glow-rgb),.08),0 8px 32px rgba(0,0,0,.3);transition:border-color .15s,box-shadow .25s,transform .15s} .card:hover{border-color:rgba(var(--glow-rgb),.35);box-shadow:0 0 0 1px rgba(var(--glow-rgb),.22),0 0 32px rgba(var(--glow-rgb),.18),0 0 64px rgba(var(--glow-rgb),.08),0 12px 40px rgba(0,0,0,.4)}
 .card .kicker{font-size:11px;letter-spacing:1.4px;color:var(--dim);text-transform:uppercase;margin-bottom:14px} .card h2{margin:0 0 2px;font-size:26px;font-weight:600;letter-spacing:-.3px} .card h2 em{font-style:normal;color:var(--accent-2)} .card .role{color:var(--dim);font-size:13.5px;margin-bottom:20px}
 .features{list-style:none;margin:0 0 22px;padding:0;display:flex;flex-direction:column;gap:11px} .features li{display:flex;align-items:center;gap:10px;font-size:14px;color:#d4d4d8} .features li svg{width:15px;height:15px;color:var(--accent-2);flex:0 0 auto}
-.card-actions{margin-top:auto;display:flex;align-items:stretch;gap:8px} .card .cta{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:background .15s,box-shadow .2s,opacity .15s;position:relative;min-height:42px} .card .cta:hover:not(:disabled){background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)} .card .cta svg{width:15px;height:15px}
-.card .cta.blocked{background:#26262e;color:#8a8a94;cursor:not-allowed;border:1px solid #33333d;box-shadow:none}
-.card .cta.unavailable{background:rgba(255,255,255,.04);color:#5c5c66;cursor:not-allowed;border:1px dashed rgba(255,255,255,.08);font-weight:500}
-.card .cta.loading{background:var(--accent-dim);color:#c7d2fe;cursor:progress}
-.card .cta.loading::after{content:'';width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;animation:spin .7s linear infinite;flex-shrink:0}
-.card .cta.success{background:var(--success);color:#fff;box-shadow:0 6px 22px rgba(16,185,129,.35)}
-.card .cta.success:hover{background:#34d399}
-.card .cta:disabled{cursor:not-allowed}
+.card-actions{margin-top:auto;display:flex;align-items:stretch;gap:8px} .card .cta{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:background .15s,box-shadow .2s} .card .cta:hover{background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)} .card .cta svg{width:15px;height:15px} .card .cta.blocked{background:#26262e;color:#8a8a94;cursor:not-allowed;border:1px solid #33333d;box-shadow:none}
 .card .btn-terms{flex:0 0 auto;display:flex;align-items:center;justify-content:center;padding:11px 12px;border-radius:11px;background:rgba(255,255,255,.025);color:#5c5c66;font-size:11.5px;font-weight:500;border:1px solid rgba(255,255,255,.05);cursor:pointer;font-family:inherit;letter-spacing:.2px;transition:background .15s,color .15s,border-color .15s} .card .btn-terms:hover{background:rgba(255,255,255,.05);color:#8a8a94;border-color:rgba(255,255,255,.09)}
-.card.gold{border-color:rgba(var(--gold-rgb),.55);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.25),0 0 24px rgba(var(--gold-rgb),.18),0 0 60px rgba(var(--gold-rgb),.1),inset 0 0 32px rgba(var(--gold-rgb),.05)} .card.gold:hover{border-color:rgba(var(--gold-rgb),.85);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.4),0 0 32px rgba(var(--gold-rgb),.3),0 0 80px rgba(var(--gold-rgb),.14),inset 0 0 40px rgba(var(--gold-rgb),.08)} .card.gold .kicker{color:rgba(var(--gold-rgb),.85)} .card.gold h2 em{color:var(--gold-2)} .card.gold .features li svg{color:var(--gold-2)} .card.gold .cta{background:linear-gradient(180deg,var(--gold),var(--gold-dim));color:#0a0a0c} .card.gold .cta:hover:not(:disabled){background:linear-gradient(180deg,var(--gold-2),var(--gold));box-shadow:0 6px 22px rgba(var(--gold-rgb),.4)} .card.gold .btn-terms{border-color:rgba(var(--gold-rgb),.12);color:rgba(var(--gold-rgb),.45);background:rgba(var(--gold-rgb),.03)} .card.gold .btn-terms:hover{border-color:rgba(var(--gold-rgb),.32);color:rgba(var(--gold-rgb),.85);background:rgba(var(--gold-rgb),.07)}
+.card.gold{border-color:rgba(var(--gold-rgb),.55);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.25),0 0 24px rgba(var(--gold-rgb),.18),0 0 60px rgba(var(--gold-rgb),.1),inset 0 0 32px rgba(var(--gold-rgb),.05)} .card.gold:hover{border-color:rgba(var(--gold-rgb),.85);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.4),0 0 32px rgba(var(--gold-rgb),.3),0 0 80px rgba(var(--gold-rgb),.14),inset 0 0 40px rgba(var(--gold-rgb),.08)} .card.gold .kicker{color:rgba(var(--gold-rgb),.85)} .card.gold h2 em{color:var(--gold-2)} .card.gold .features li svg{color:var(--gold-2)} .card.gold .cta{background:linear-gradient(180deg,var(--gold),var(--gold-dim));color:#0a0a0c} .card.gold .cta:hover{background:linear-gradient(180deg,var(--gold-2),var(--gold));box-shadow:0 6px 22px rgba(var(--gold-rgb),.4)} .card.gold .btn-terms{border-color:rgba(var(--gold-rgb),.12);color:rgba(var(--gold-rgb),.45);background:rgba(var(--gold-rgb),.03)} .card.gold .btn-terms:hover{border-color:rgba(var(--gold-rgb),.32);color:rgba(var(--gold-rgb),.85);background:rgba(var(--gold-rgb),.07)}
 #view-area{padding:0 32px 80px;max-width:1120px;margin:0 auto;position:relative;z-index:2} #view-area-body{max-width:760px;margin:0 auto;padding:36px 0 80px} .area-back{display:inline-flex;align-items:center;gap:6px;color:var(--dim);font-size:13.5px;font-weight:500;background:none;border:none;cursor:pointer;padding:0;margin:0 0 28px;transition:color .15s;font-family:inherit} .area-back:hover{color:var(--text)} .area-back svg{width:14px;height:14px} .area-title{margin:0 0 6px;font-size:30px;font-weight:600;letter-spacing:-.5px} .area-title em{font-style:normal;color:var(--accent-2)} .area-sub{color:var(--dim);font-size:13.5px;margin:0 0 36px}
 .area-card{background:linear-gradient(180deg,rgba(19,19,24,.92),rgba(15,15,18,.92));border:1px solid var(--line);border-radius:16px;padding:24px 26px 18px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);box-shadow:0 0 0 1px rgba(var(--glow-rgb),.08),0 8px 32px rgba(0,0,0,.3);margin-bottom:18px} .area-card h3{margin:0 0 14px;font-size:11px;font-weight:600;color:var(--dim);letter-spacing:1.4px;text-transform:uppercase} .area-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);gap:16px} .area-row:last-child{border-bottom:none} .area-row .k{color:var(--dim);font-size:13.5px;flex:0 0 auto} .area-row .v{color:var(--text);font-size:13.5px;font-weight:500;text-align:right;word-break:break-all;min-width:0}
 .area-tags{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0} .area-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;border:1px solid rgba(var(--glow-rgb),.3);background:rgba(var(--glow-rgb),.09);color:var(--accent-2);font-size:12.5px;font-weight:500} .area-tag.gold{border-color:rgba(var(--gold-rgb),.45);background:rgba(var(--gold-rgb),.09);color:var(--gold-2)} .area-actions{margin-top:22px} .area-actions .btn{width:100%;justify-content:center;padding:12px 16px}
@@ -81,11 +74,11 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .admin-subtabs{display:flex;gap:4px;margin:0 0 20px;border-bottom:1px solid var(--line);flex-wrap:wrap} .admin-subtab{padding:8px 14px;background:none;border:none;color:var(--dim);font-size:12.5px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;transition:color .15s,border-color .15s} .admin-subtab:hover{color:var(--text)} .admin-subtab.selected{color:var(--accent-2);border-bottom-color:var(--accent)} .admin-panel{display:none} .admin-panel.active{display:block}
 .admin-form{display:flex;flex-direction:column;gap:14px} .admin-field{display:flex;flex-direction:column;gap:6px} .admin-field label{font-size:11px;font-weight:600;color:var(--dim);letter-spacing:1.2px;text-transform:uppercase} .admin-field input{background:rgba(10,10,12,.6);border:1px solid var(--line-2);border-radius:10px;padding:11px 13px;color:var(--text);font-size:14px;font-family:inherit;transition:border-color .15s} .admin-field input:focus{outline:none;border-color:var(--accent)}
 .admin-tag-checks{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0} .admin-check{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:rgba(15,15,19,.5);font-size:12.5px;color:var(--text);cursor:pointer;transition:border-color .15s,background .15s,color .15s} .admin-check input{accent-color:var(--accent);margin:0} .admin-check:hover{border-color:#33333d} .admin-check:has(input:checked){border-color:var(--accent);background:rgba(var(--glow-rgb),.1);color:var(--accent-2)}
-.admin-btn{align-self:flex-start;padding:11px 20px;border-radius:11px;border:none;background:var(--accent);color:#fff;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit;transition:background .15s,box-shadow .2s} .admin-btn:hover:not(:disabled){background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)} .admin-btn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.4)} .admin-btn-danger{background:#b03030;color:#fff} .admin-btn-danger:hover:not(:disabled){background:#e05252;box-shadow:0 6px 22px rgba(224,82,82,.35)} .admin-btn-outline { background: transparent; border: 1px solid var(--line-2); color: var(--text); } .admin-btn-outline:hover { background: rgba(255,255,255,.05); border-color: #33333d; } .admin-btn-danger-outline { background: transparent; border: 1px solid rgba(224,82,82,.3); color: #e05252; } .admin-btn-danger-outline:hover { background: rgba(224,82,82,.1); border-color: #e05252; box-shadow: 0 0 15px rgba(224,82,82,.15); }
+.admin-btn{align-self:flex-start;padding:11px 20px;border-radius:11px;border:none;background:var(--accent);color:#fff;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit;transition:background .15s,box-shadow .2s} .admin-btn:hover{background:var(--accent-2);box-shadow:0 6px 22px rgba(var(--glow-rgb),.35)} .admin-btn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.4)} .admin-btn-danger{background:#b03030;color:#fff} .admin-btn-danger:hover{background:#e05252;box-shadow:0 6px 22px rgba(224,82,82,.35)} .admin-btn-outline { background: transparent; border: 1px solid var(--line-2); color: var(--text); } .admin-btn-outline:hover { background: rgba(255,255,255,.05); border-color: #33333d; } .admin-btn-danger-outline { background: transparent; border: 1px solid rgba(224,82,82,.3); color: #e05252; } .admin-btn-danger-outline:hover { background: rgba(224,82,82,.1); border-color: #e05252; box-shadow: 0 0 15px rgba(224,82,82,.15); }
 .admin-search{width:100%;background:rgba(10,10,12,.6);border:1px solid var(--line-2);border-radius:8px;padding:7px 11px;color:var(--text);font-size:12.5px;font-family:inherit;margin:0 0 12px;transition:border-color .15s} .admin-search:focus{outline:none;border-color:var(--accent)} .admin-search::placeholder{color:var(--dim)}
 .admin-tag-filter{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px} .admin-tag-chip{padding:5px 11px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--dim);font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s} .admin-tag-chip:hover{border-color:#33333d;color:var(--text)} .admin-tag-chip.on{border-color:var(--accent);background:rgba(var(--glow-rgb),.12);color:var(--accent-2)} .admin-tag-clear{padding:5px 11px;border-radius:999px;border:1px solid transparent;background:transparent;color:var(--dim);font-size:11px;font-weight:500;cursor:pointer;font-family:inherit;transition:color .15s} .admin-tag-clear:hover{color:var(--text)} .admin-tag-clear.hidden{display:none}
 .admin-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 14px;gap:12px} .admin-head h3{margin:0} .admin-head-left{display:flex;align-items:baseline;gap:10px} .admin-count{font-size:11.5px;color:var(--dim);font-weight:500;letter-spacing:.3px} .admin-count b{color:var(--accent-2);font-weight:600} .admin-io{display:flex;gap:6px} .admin-io button{background:transparent;border:1px solid var(--line-2);color:var(--dim);padding:5px 10px;border-radius:8px;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,color .15s,background .15s} .admin-io button:hover{border-color:#33333d;color:var(--text);background:rgba(21,21,26,.6)}
-.admin-users{display:flex;flex-direction:column;gap:10px;max-height:520px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none} .admin-users::-webkit-scrollbar{display:none} .admin-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:rgba(10,10,12,.4);border:1px solid var(--line);flex-wrap:wrap} .admin-meta{display:flex;flex-direction:column;gap:2px;min-width:160px;flex:0 0 auto} .admin-meta .admin-name{font-size:13.5px;font-weight:600;color:var(--text); display: flex; align-items: center;} .admin-meta .admin-email{font-size:11.5px;color:var(--dim);word-break:break-all} .admin-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1} .admin-chip{padding:4px 10px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--dim);font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s} .admin-chip:hover:not(:disabled){border-color:#33333d;color:var(--text)} .admin-chip.on{border-color:var(--accent);background:rgba(var(--glow-rgb),.12);color:var(--accent-2)} .admin-chip:disabled{cursor:progress;opacity:.6} .admin-del{padding:6px 10px;border-radius:8px;background:transparent;border:1px solid var(--line-2);color:var(--dim);font-size:12px;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s} .admin-del:hover{border-color:rgba(224,82,82,.55);color:#e05252;background:rgba(224,82,82,.08)} .admin-empty{color:var(--dim);font-size:13px;padding:8px 0}
+.admin-users{display:flex;flex-direction:column;gap:10px;max-height:520px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none} .admin-users::-webkit-scrollbar{display:none} .admin-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:rgba(10,10,12,.4);border:1px solid var(--line);flex-wrap:wrap} .admin-meta{display:flex;flex-direction:column;gap:2px;min-width:160px;flex:0 0 auto} .admin-meta .admin-name{font-size:13.5px;font-weight:600;color:var(--text); display: flex; align-items: center;} .admin-meta .admin-email{font-size:11.5px;color:var(--dim);word-break:break-all} .admin-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1} .admin-chip{padding:4px 10px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--dim);font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s} .admin-chip:hover{border-color:#33333d;color:var(--text)} .admin-chip.on{border-color:var(--accent);background:rgba(var(--glow-rgb),.12);color:var(--accent-2)} .admin-del{padding:6px 10px;border-radius:8px;background:transparent;border:1px solid var(--line-2);color:var(--dim);font-size:12px;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s} .admin-del:hover{border-color:rgba(224,82,82,.55);color:#e05252;background:rgba(224,82,82,.08)} .admin-empty{color:var(--dim);font-size:13px;padding:8px 0}
 .hist-search-wrap{margin:0 0 14px} .hist-list{display:flex;flex-direction:column;gap:8px;max-height:560px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none} .hist-list::-webkit-scrollbar{display:none} .hist-item{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-radius:10px;background:rgba(10,10,12,.4);border:1px solid var(--line)} .hist-icon{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;flex-shrink:0;background:rgba(var(--glow-rgb),.1);color:var(--accent-2)} .hist-icon svg{width:14px;height:14px}
 .hist-icon.h-login{background:rgba(59,130,246,.12);color:#60a5fa} .hist-icon.h-copy{background:rgba(59,130,246,.12);color:#60a5fa} .hist-icon.h-terms_a{background:rgba(16,185,129,.12);color:#34d399} .hist-icon.h-terms_r{background:rgba(224,82,82,.12);color:#e05252} .hist-icon.h-kill{background:rgba(224,82,82,.12);color:#e05252} .hist-icon.h-kill_s{background:rgba(250,204,21,.12);color:#fbbf24} .hist-icon.h-tags{background:rgba(139,92,246,.12);color:#a78bfa} .hist-icon.h-ban{background:rgba(239,68,68,.2);color:#f87171}
 .hist-body{flex:1;min-width:0} .hist-line1{font-size:13px;color:var(--text);line-height:1.4} .hist-line1 strong{font-weight:600} .hist-line1 em{font-style:normal;color:var(--accent-2);font-weight:500} .hist-line2{font-size:11px;color:var(--dim);margin-top:3px} .hist-email{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:11.5px}
@@ -109,7 +102,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .version-modal {background:linear-gradient(160deg, var(--panel-hi) 0%, var(--panel) 70%);border:1px solid var(--line-2);border-radius:20px;padding:42px 36px;width:100%;max-width:620px;text-align:center;box-shadow:0 30px 100px rgba(0,0,0,.7),0 0 0 1px rgba(var(--glow-rgb),.08),inset 0 1px rgba(255,255,255,.05);animation:execIn .35s cubic-bezier(.2,.8,.2,1);position:relative;overflow:hidden} .version-modal::before {content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:80%;height:50%;background:radial-gradient(ellipse, rgba(var(--glow-rgb),.15) 0%, transparent 70%);pointer-events:none} .version-title {font-family:var(--font-display);font-size:26px;color:var(--text);margin:0 0 8px;letter-spacing:-.5px;position:relative} .version-title b {color:var(--accent-2);font-weight:800} .version-sub {color:var(--dim);font-size:14px;margin-bottom:32px;position:relative} .version-options {display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;position:relative}
 .version-card {background:rgba(10,10,12,.6);border:1px solid var(--line);border-radius:14px;padding:24px 20px;text-align:left;cursor:pointer;transition:all .25s cubic-bezier(.2,.8,.2,1);position:relative;overflow:hidden;display:flex;flex-direction:column} .version-card:hover {border-color:rgba(var(--glow-rgb), .5);background:var(--panel-hi);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(var(--glow-rgb),.2)} .v-glow {position:absolute;top:0;right:0;width:100px;height:100px;background:radial-gradient(circle at top right, rgba(var(--glow-rgb),.15), transparent 70%);opacity:0;transition:opacity .3s} .version-card:hover .v-glow {opacity:1} .v-icon {width:42px;height:42px;border-radius:10px;background:rgba(var(--glow-rgb), .1);border:1px solid rgba(var(--glow-rgb), .2);display:grid;place-items:center;margin-bottom:16px;color:var(--accent-2);transition:transform .3s, background .3s, color .3s} .v-icon svg {width:22px;height:22px} .version-card:hover .v-icon {background:var(--accent);color:#fff;transform:scale(1.05);border-color:var(--accent)} .version-card h3 {font-family:var(--font-display);font-size:18px;color:var(--text);margin:0 0 8px;letter-spacing:-.2px} .version-card p {color:var(--dim);font-size:12.5px;line-height:1.5;margin:0 0 20px;flex:1} .v-badge {display:inline-block;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);color:var(--slate);font-family:var(--font-mono);font-size:10.5px;padding:5px 8px;border-radius:6px;align-self:flex-start;letter-spacing:.3px} .version-card:hover .v-badge {background:rgba(var(--glow-rgb), .1);border-color:rgba(var(--glow-rgb), .3);color:var(--accent-2)} .version-cancel {background:transparent;border:none;color:var(--slate);font-size:13.5px;font-weight:500;cursor:pointer;font-family:var(--font-body);padding:8px 16px;transition:color .15s;position:relative} .version-cancel:hover {color:var(--text)} .version-help-link {display:inline-block;color:var(--slate);font-size:13px;text-decoration:none;border-bottom:1px dashed rgba(255,255,255,.15);transition:color .2s, border-color .2s} .version-help-link:hover {color:var(--accent-2);border-color:var(--accent-2)}
 
-/* ── GERENCIAMENTO ── */
+/* ── GERENCIAMENTO (moderadores) ── */
 .admin-select {width: 100%;background: rgba(10,10,12,.6);border: 1px solid var(--line-2);border-radius: 10px;padding: 11px 13px;color: var(--text);font-size: 14px;font-family: inherit;outline: none;transition: border-color .15s;}
 .admin-select:focus { border-color: var(--accent); }
 .perm-table {display: flex;flex-direction: column;gap: 8px;}
@@ -219,7 +212,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     <div class="terms-footer hidden" id="terms-footer">
       <label class="terms-checkbox" id="terms-checkbox-wrap"><input type="checkbox" id="terms-checkbox"><span>Li, compreendi e <b>concordo integralmente</b> com todos os Termos de Uso acima, incluindo a verificação dos termos específicos de cada bloco antes de utilizá-lo.</span></label>
       <button class="terms-accept" id="terms-accept" type="button" disabled>Concordar e continuar</button>
-      <button class="terms-btn-sm danger" id="terms-logout" type="button" style="display:none;width:100%;margin-top:10px;">Sair da conta</button>
     </div>
   </div>
 </div>
@@ -229,13 +221,16 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   const WORKER_URL  = 'https://lynx-gate.mamaetata216.workers.dev/';
   const SESSION_KEY = 'auth_jwt';
   const FETCH_TIMEOUT = 15000;
+  const ADMIN_TIMEOUT = 20000;
   const viewLogin = document.getElementById('view-login'), viewSite  = document.getElementById('view-site'), viewArea  = document.getElementById('view-area'), grid = document.getElementById('grid'), who = document.getElementById('who'), loginErr  = document.getElementById('login-err');
   const execOverlay = document.getElementById('exec-overlay'), execRunning = document.getElementById('exec-state-running'), execDone = document.getElementById('exec-state-done'), execClose = document.getElementById('exec-close'), execEmail = document.getElementById('exec-email');
   const areaLoader = document.getElementById('area-loader'), areaLoaderSub  = document.getElementById('area-loader-sub'), loaderTitle = document.getElementById('loader-title');
-  const termsOverlay = document.getElementById('terms-overlay'), termsContent = document.getElementById('terms-content'), termsTitle = document.getElementById('terms-title'), termsSubtitle = document.getElementById('terms-subtitle'), termsClose = document.getElementById('terms-close'), termsFooter = document.getElementById('terms-footer'), termsCheckbox = document.getElementById('terms-checkbox'), termsCheckboxWrap = document.getElementById('terms-checkbox-wrap'), termsAccept = document.getElementById('terms-accept'), termsLogout = document.getElementById('terms-logout');
+  const termsOverlay = document.getElementById('terms-overlay'), termsContent = document.getElementById('terms-content'), termsTitle = document.getElementById('terms-title'), termsSubtitle = document.getElementById('terms-subtitle'), termsClose = document.getElementById('terms-close'), termsFooter = document.getElementById('terms-footer'), termsCheckbox = document.getElementById('terms-checkbox'), termsCheckboxWrap = document.getElementById('terms-checkbox-wrap'), termsAccept = document.getElementById('terms-accept');
   const payloads = new Map(), termsCache = {};
   let currentUser = null, areaOpenTimer = null, adminData = null, adminMounted = false, termsMode = 'view', adminSelectedTags = new Set(), killSelectedMode = null;
   let _killInProgress = false;
+  const _tagInflight = new Set();
+  const _delInflight = new Set();
 
   async function fetchTerms(key) { if (termsCache[key]) return termsCache[key]; try { const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'getTerms', key: key }) }); const data = await r.json(); if (data.ok) { termsCache[key] = data.text; return data.text; } } catch (e) {} return '<p>Erro ao carregar os termos.</p>'; }
   function jwtEmail(jwt) { try { const b = jwt.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); const p = JSON.parse(atob(b + '='.repeat((4 - b.length % 4) % 4))); return p.email || ''; } catch { return ''; } }
@@ -260,11 +255,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       termsCheckboxWrap.classList.remove('checked');
       termsAccept.disabled = true;
       termsAccept.textContent = opts.acceptLabel || 'Concordar e continuar';
-      if (termsLogout) termsLogout.style.display = 'block';
     } else {
       termsFooter.classList.add('hidden');
       termsClose.classList.remove('hidden');
-      if (termsLogout) termsLogout.style.display = 'none';
     }
     termsOverlay.classList.remove('hidden');
     termsAccept._onAccept = opts.onAccept || null;
@@ -282,12 +275,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     try { if (cb) await cb(); } catch {}
     termsAccept.textContent = 'Concordar e continuar';
     if (!termsOverlay.classList.contains('hidden')) termsAccept.disabled = !termsCheckbox.checked;
-  });
-  if (termsLogout) termsLogout.addEventListener('click', () => {
-    if (!confirm('Sair e voltar à tela de login?')) return;
-    sessionStorage.removeItem(SESSION_KEY);
-    try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
-    kill();
   });
 
   document.addEventListener('click', async (e) => {
@@ -385,7 +372,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       route();
       startPolling();
     } catch (e) {
-      showMiniToast('falha ao registrar aceite: ' + e.message);
+      alert('falha ao registrar aceite: ' + e.message);
     }
   }
 
@@ -408,18 +395,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     }
 
     const feats = (b.features || []).map(f => '<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>' + escapeHtml(f) + '</li>').join('');
-
-    let ctaHTML;
-    if (b.blocked) {
-      ctaHTML = '<button class="cta blocked" disabled aria-label="Em manutenção"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Em Manutenção</button>';
-    } else {
-      const hasPayload = b.tag === 'Lynx' ? !!(b.payload_new || b.payload_old) : !!b.payload;
-      if (!hasPayload) {
-        ctaHTML = '<button class="cta unavailable" disabled aria-label="Em breve">Em breve</button>';
-      } else {
-        ctaHTML = '<button class="cta" aria-label="Acessar"><span>quero</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>';
-      }
-    }
+    let ctaHTML = b.blocked
+      ? `<button class="cta blocked" disabled>Em Manutenção</button>`
+      : `<button class="cta">quero <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>`;
 
     el.innerHTML = '<div class="kicker">' + escapeHtml(b.kicker || 'a gente faz') + '</div><h2><em>' + escapeHtml(b.tag) + '</em></h2><div class="role">' + escapeHtml(b.sub || '') + '</div><ul class="features">' + feats + '</ul><div class="card-actions">' + ctaHTML + '<button class="btn-terms" type="button">Termos de uso</button></div>';
     return el;
@@ -428,51 +406,48 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   window.startLynxExec = async function(type) {
     document.getElementById('lynx-version-overlay').classList.add('hidden');
     const payload = payloads.get('Lynx_' + type);
-    if (!payload) { showMiniToast('esta versão ainda não tem payload.'); return; }
     openExec('Lynx (' + (type === 'new' ? 'Novo' : 'Antigo') + ')');
+    if (!payload) {
+      await new Promise(r => setTimeout(r, 600));
+      finishExec();
+      execDone.querySelector('h3').textContent = 'Sem payload';
+      execDone.querySelector('.exec-sub').textContent = 'esse bloco não tem código configurado.';
+      return;
+    }
     const ok = await copyToClipboard(payload);
     if (ok) logCopyToWorker('Lynx');
     await new Promise(r => setTimeout(r, 1400));
-    finishExec(ok);
+    finishExec();
   };
 
   grid.addEventListener('click', async (e) => {
     const btn = e.target.closest('.cta');
     if (!btn) return;
-    if (btn.disabled || btn.classList.contains('loading') || btn.classList.contains('success')) return;
-    if (btn.classList.contains('blocked') || btn.classList.contains('unavailable')) return;
-
-    const card = btn.closest('.card');
-    const tag = card?.querySelector('h2 em')?.textContent || '';
-
-    if (tag === 'Lynx') {
-      document.getElementById('lynx-version-overlay').classList.remove('hidden');
-      return;
-    }
-
-    const payload = payloads.get(tag) || '';
-    if (!payload) { showMiniToast('bloco sem payload configurado.'); return; }
-
-    const originalHTML = btn.innerHTML;
-    btn.classList.add('loading');
-    btn.innerHTML = '<span>copiando</span>';
-
-    openExec(tag);
-    const ok = await copyToClipboard(payload);
-    if (ok) logCopyToWorker(tag);
-    await new Promise(r => setTimeout(r, 1400));
-    finishExec(ok);
-
-    btn.classList.remove('loading');
-    if (ok) {
-      btn.classList.add('success');
-      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px;"><path d="M20 6 9 17l-5-5"/></svg><span>copiado</span>';
-      setTimeout(() => {
-        btn.classList.remove('success');
-        btn.innerHTML = originalHTML;
-      }, 2200);
-    } else {
-      btn.innerHTML = originalHTML;
+    if (btn.classList.contains('blocked') || btn.disabled) return;
+    if (btn.dataset.busy === '1') return;
+    btn.dataset.busy = '1';
+    try {
+      const card = btn.closest('.card');
+      const tag  = card?.querySelector('h2 em')?.textContent || '';
+      if (tag === 'Lynx') {
+        document.getElementById('lynx-version-overlay').classList.remove('hidden');
+        return;
+      }
+      const payload = payloads.get(tag) || '';
+      openExec(tag);
+      if (!payload) {
+        await new Promise(r => setTimeout(r, 600));
+        finishExec();
+        execDone.querySelector('h3').textContent = 'Sem payload';
+        execDone.querySelector('.exec-sub').textContent = 'esse bloco não tem código configurado.';
+        return;
+      }
+      const ok = await copyToClipboard(payload);
+      if (ok) logCopyToWorker(tag);
+      await new Promise(r => setTimeout(r, 1400));
+      finishExec();
+    } finally {
+      delete btn.dataset.busy;
     }
   });
 
@@ -484,22 +459,14 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     execOverlay.classList.remove('hidden');
     clearTimeout(execOverlay._safety);
     execOverlay._safety = setTimeout(() => {
-      if (!execOverlay.classList.contains('hidden')) finishExec(false, 'Tempo excedido');
+      if (!execRunning.classList.contains('hidden')) finishExec();
     }, 12000);
   }
-  function finishExec(success, customTitle) {
+  function finishExec() {
     clearTimeout(execOverlay._safety);
     execRunning.classList.add('hidden');
     execDone.classList.remove('hidden');
     execClose.classList.remove('hidden');
-    const h3 = execDone.querySelector('h3'), sub = execDone.querySelector('.exec-sub');
-    if (success === false) {
-      h3.textContent = customTitle || 'Falha ao copiar';
-      sub.textContent = 'tente novamente.';
-    } else {
-      h3.textContent = customTitle || 'Processo finalizado';
-      sub.textContent = 'código copiado para a área de transferência.';
-    }
   }
   function closeExec() { clearTimeout(execOverlay._safety); execOverlay.classList.add('hidden'); }
   async function copyToClipboard(text) {
@@ -583,7 +550,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       sessionStorage.removeItem(SESSION_KEY);
       try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
       kill();
-    } catch (e) { showMiniToast('falha ao revogar: ' + e.message); }
+    } catch (e) { alert('falha ao revogar: ' + e.message); }
   });
 
   function mountAdminUI() {
@@ -697,15 +664,15 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     document.getElementById('admin-add-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const form = e.target;
+      if (form.dataset.busy === '1') return;
       const email = form.email.value.trim().toLowerCase();
       const name  = form.name.value.trim();
       const tags  = [...form.querySelectorAll('input[type=checkbox]:checked')].map(c => c.value);
       if (!email.includes('@') || !name) { toast('dados inválidos', true); return; }
-      const btn = form.querySelector('button[type=submit]');
-      btn.disabled = true;
+      form.dataset.busy = '1';
       try { await adminCall('admin:setUser', { email, name, tags }); toast('adicionado'); form.reset(); await loadAdmin(); }
       catch (e) { toast('falha: ' + e.message, true); }
-      finally { btn.disabled = false; }
+      finally { delete form.dataset.busy; }
     });
 
     const modEmailInp = document.getElementById('mod-email');
@@ -738,6 +705,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     modEmailInp.addEventListener('input', updateModToggleState);
 
     modToggleBtn.addEventListener('click', async () => {
+      if (modToggleBtn.dataset.busy === '1') return;
       const email = modEmailInp.value.trim().toLowerCase();
       if (!email.includes('@')) { toast('email inválido', true); return; }
       const target = adminData.people.find(x => x.email === email);
@@ -751,6 +719,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       if (modPermHist.checked) perms.push('history');
       if (modPermLogs.checked) perms.push('logs');
       const room = modRoomSel.value;
+      modToggleBtn.dataset.busy = '1';
       modToggleBtn.disabled = true;
       const originalHTML = modToggleBtn.innerHTML;
       modToggleBtn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
@@ -770,6 +739,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
         modToggleBtn.innerHTML = originalHTML;
       } finally {
         modToggleBtn.disabled = false;
+        delete modToggleBtn.dataset.busy;
       }
     });
 
@@ -799,28 +769,32 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 
     document.getElementById('kill-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const form = e.target;
+      if (form.dataset.busy === '1') return;
       const email = document.getElementById('kill-email').value.trim().toLowerCase();
       if (!email.includes('@') || !killSelectedMode) { toast('dados inválidos', true); return; }
       if (!confirm('Executar ' + killSelectedMode + ' em ' + email + '?')) return;
-      const submitBtn = document.getElementById('kill-submit');
-      submitBtn.disabled = true;
+      form.dataset.busy = '1';
       try {
         await adminCall('admin:killSession', { email, mode: killSelectedMode, targetTags: (adminData.people.find(p => p.email === email)||{}).tags });
         toast('enviado');
         e.target.reset();
         killSelectedMode = null;
         document.querySelectorAll('.kill-opt').forEach(o => o.classList.remove('selected'));
+        document.getElementById('kill-submit').disabled = true;
         await loadKills();
       } catch (err) { toast('falha: ' + err.message, true); }
+      finally { delete form.dataset.busy; }
     });
 
     document.getElementById('admin-kill-all').addEventListener('click', async () => {
-      if (!confirm('Encerrar a sessão de TODOS os usuários agora?')) return;
       const btn = document.getElementById('admin-kill-all');
-      btn.disabled = true;
+      if (btn.dataset.busy === '1') return;
+      if (!confirm('Encerrar a sessão de TODOS os usuários agora?')) return;
+      btn.dataset.busy = '1';
       try { const r = await adminCall('admin:killAll', { mode: 'hard' }); toast('sessões encerradas: ' + r.count); await loadKills(); }
       catch (e) { toast('falha: ' + e.message, true); }
-      finally { btn.disabled = false; }
+      finally { delete btn.dataset.busy; }
     });
   }
 
@@ -833,13 +807,12 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     clearTimeout(el._t);
     el._t = setTimeout(() => el.classList.remove('show'), 2200);
   }
-  function showMiniToast(msg) { const t = document.createElement('div'); t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(19,19,24,.96);border:1px solid #26262e;border-radius:10px;padding:11px 18px;color:#e8e8ea;font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.55);z-index:10002;transition:opacity .22s, transform .22s;opacity:0;max-width:80vw;text-align:center;'; t.textContent = msg; document.body.appendChild(t); requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; }); setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 2400); setTimeout(() => t.remove(), 2800); }
 
   async function adminCall(action, extra) {
     const jwt = sessionStorage.getItem(SESSION_KEY);
     if (!jwt) throw new Error('no_jwt');
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 20000);
+    const timer = setTimeout(() => ctrl.abort(), ADMIN_TIMEOUT);
     let r, data;
     try {
       r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action, ...(extra || {}) }), signal: ctrl.signal });
@@ -947,13 +920,15 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
         c.className = 'admin-chip' + ((p.tags || []).includes(tag) ? ' on' : '');
         c.textContent = tag;
         c.addEventListener('click', async () => {
-          if (c.disabled) return;
+          const key = p.email + ':' + tag;
+          if (_tagInflight.has(key)) return;
+          _tagInflight.add(key);
+          const wasOn = c.classList.contains('on');
           const set = new Set(p.tags || []);
-          if (set.has(tag)) set.delete(tag); else set.add(tag);
+          if (wasOn) set.delete(tag); else set.add(tag);
           p.tags = [...set];
           c.classList.toggle('on');
           row.dataset.tags = p.tags.join('|');
-          chips.querySelectorAll('.admin-chip').forEach(x => x.disabled = true);
           try {
             await adminCall('admin:setUser', { email: p.email, name: p.name || '', tags: p.tags });
             toast('atualizado');
@@ -962,7 +937,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
             c.classList.toggle('on');
             toast('falha: ' + e.message, true);
           } finally {
-            chips.querySelectorAll('.admin-chip').forEach(x => x.disabled = false);
+            _tagInflight.delete(key);
           }
         });
         chips.appendChild(c);
@@ -972,11 +947,12 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       del.className = 'admin-del';
       del.textContent = 'remover';
       del.addEventListener('click', async () => {
-        if (del.disabled) return;
+        if (_delInflight.has(p.email)) return;
         if (!confirm('remover ' + p.email + '?')) return;
-        del.disabled = true;
+        _delInflight.add(p.email);
         try { await adminCall('admin:deleteUser', { email: p.email }); toast('removido'); await loadAdmin(); }
-        catch (e) { toast('falha: ' + e.message, true); del.disabled = false; }
+        catch (e) { toast('falha: ' + e.message, true); }
+        finally { _delInflight.delete(p.email); }
       });
       row.append(meta, chips, del);
       list.appendChild(row);
@@ -1028,11 +1004,12 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       header.addEventListener('click', () => item.classList.toggle('open'));
       const saveBtn = body.querySelector(`[data-save-mod]`);
       saveBtn.addEventListener('click', async () => {
-        if (saveBtn.disabled) return;
+        if (saveBtn.dataset.busy === '1') return;
         const newRoom = body.querySelector(`#${roomId}`).value;
         const newPerms = [];
         body.querySelectorAll('input[type="checkbox"]').forEach(cb => { if (cb.checked) newPerms.push(cb.dataset.perm); });
         const originalHTML = saveBtn.innerHTML;
+        saveBtn.dataset.busy = '1';
         saveBtn.disabled = true;
         saveBtn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
         try {
@@ -1043,8 +1020,10 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
           if (updatedItem) updatedItem.classList.add('open');
         } catch (e) {
           toast('falha: ' + e.message, true);
-          saveBtn.disabled = false;
           saveBtn.innerHTML = originalHTML;
+        } finally {
+          saveBtn.disabled = false;
+          delete saveBtn.dataset.busy;
         }
       });
       item.appendChild(header);
@@ -1068,8 +1047,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
         : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
       btn.innerHTML = iconSvg + (isBlocked ? 'Desbloquear' : 'Bloquear');
       btn.onclick = async () => {
-        if (btn.disabled) return;
+        if (btn.dataset.busy === '1') return;
         const originalHTML = btn.innerHTML;
+        btn.dataset.busy = '1';
         btn.disabled = true;
         btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
         try {
@@ -1080,6 +1060,8 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
           toast(e.message, true);
           btn.disabled = false;
           btn.innerHTML = originalHTML;
+        } finally {
+          delete btn.dataset.busy;
         }
       };
       row.appendChild(nameDiv);
@@ -1175,10 +1157,11 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
         btn.className = 'kill-row-btn';
         btn.textContent = 'limpar';
         btn.addEventListener('click', async () => {
-          if (btn.disabled) return;
-          btn.disabled = true;
+          if (btn.dataset.busy === '1') return;
+          btn.dataset.busy = '1';
           try { await adminCall('admin:clearKill', { email: k.email }); await loadKills(); }
-          catch (e) { toast(e.message, true); btn.disabled = false; }
+          catch (e) { toast(e.message, true); }
+          finally { delete btn.dataset.busy; }
         });
         row.appendChild(btn);
         list.appendChild(row);
