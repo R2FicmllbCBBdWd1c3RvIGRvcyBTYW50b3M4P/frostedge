@@ -1655,7 +1655,10 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     let line1 = '';
     const autor = ev.by ? `<em>${escapeHtml(ev.by)}</em>` : 'Sistema';
     const alvo = ev.target ? `<em>${escapeHtml(ev.target)}</em>` : (emailParam ? `<em>${escapeHtml(emailParam)}</em>` : 'Alguém');
-    const bloco = ev.target ? `<em>${escapeHtml(ev.target)}</em>` : '?';
+    
+    // Correção: Puxa o "tag" caso exista, senão tenta o "target"
+    const bloco = `<em>${escapeHtml(ev.tag || ev.target || '?')}</em>`;
+
     switch (ev.type) {
       case 'login': line1 = 'fez login no site'; break;
       case 'copy': iconClass = 'h-copy'; iconSvg = '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>'; line1 = 'copiou o bloco ' + bloco; break;
@@ -1678,6 +1681,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     let line2Str = escapeHtml(fmtDate(ev.ts));
     if (ev.target && ev.type !== 'kill_all' && ev.type !== 'import') line2Str += ` · Alvo: <span class="hist-email">${escapeHtml(ev.target)}</span>`;
     else if (emailParam && ev.type !== 'kill_all') line2Str += ` · <span class="hist-email">${escapeHtml(emailParam)}</span>`;
+    
     row.innerHTML = `
       <div class="hist-icon ${iconClass}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${iconSvg}</svg>
