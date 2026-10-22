@@ -1088,7 +1088,15 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 
   function renderAdminUsers() {
     const list = document.getElementById('admin-users'); if (!list) return; list.innerHTML = '';
-    if (!adminData || !adminData.people || !adminData.people.length) { list.innerHTML = '<div class="admin-empty">nenhum usuário.</div>'; return; }
+    
+    if (!adminData || !adminData.people || !adminData.people.length) {
+      let msg = 'nenhum usuário.';
+      if (currentUser && !currentUser.isAdmin && currentUser.modRooms && currentUser.modRooms.length > 0) {
+        msg = 'Nenhum usuário encontrado na sua sala (' + escapeHtml(currentUser.modRooms[0]) + ').';
+      }
+      list.innerHTML = '<div class="admin-empty">' + msg + '</div>';
+      return;
+    }
     
     const iAmAdmin = currentUser && currentUser.isAdmin;
     
@@ -1097,9 +1105,23 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       row.className = 'admin-row';
       row.dataset.search = ((p.name || '') + ' ' + (p.nick || '') + ' ' + (p.email || '')).toLowerCase();
       row.dataset.tags = (p.tags || []).join('|');
-      const meta = document.createElement('div'); meta.className = 'admin-meta';
-      const nm = document.createElement('div'); nm.className = 'admin-name';
       
+      // --- METADADOS E DROPDOWN DE SALA ---
+      const meta = document.createElement('div'); 
+      meta.className = 'admin-meta';
+      meta.style.display = 'flex';
+      meta.style.flexDirection = 'row';
+      meta.style.justifyContent = 'space-between';
+      meta.style.alignItems = 'center';
+      meta.style.gap = '16px';
+      meta.style.minWidth = '240px';
+
+      const metaInfo = document.createElement('div');
+      metaInfo.style.display = 'flex';
+      metaInfo.style.flexDirection = 'column';
+      metaInfo.style.gap = '2px';
+
+      const nm = document.createElement('div'); nm.className = 'admin-name';
       let isBanned = p.isBanned;
       if (banOverrides.has(p.email)) {
         isBanned = banOverrides.get(p.email);
@@ -1109,19 +1131,60 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       let nameText = escapeHtml(p.name || '(sem nome)');
       if (p.isAdmin) nameText += ` <span style="font-size:10px;color:#d4af37;border:1px solid rgba(212,175,55,.5);padding:1px 6px;border-radius:999px;margin-left:4px;letter-spacing:.3px;">admin</span>`;
       else if (p.isMod) nameText += ` <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#e05252" stroke-width="2.5" style="vertical-align:middle; margin-left:4px; margin-bottom:2px;" title="Moderador"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
-      
       if (isBanned) nameText += ` <span style="font-size:10px;color:#e05252;border:1px solid rgba(224,82,82,.55);padding:1px 6px;border-radius:999px;margin-left:4px;letter-spacing:.3px;background:rgba(224,82,82,.08);">banido</span>`;
       
       nm.innerHTML = nameText;
       const em = document.createElement('div'); em.className = 'admin-email'; em.textContent = p.email;
-      meta.append(nm, em);
+      metaInfo.append(nm, em);
       if (p.nick) {
         const nk = document.createElement('div'); nk.className = 'admin-email'; nk.style.color = 'var(--accent-2)'; nk.textContent = '@' + p.nick;
-        meta.append(nk);
+        metaInfo.append(nk);
       }
+      meta.appendChild(metaInfo);
 
-      const chips = document.createElement('div'); chips.className = 'admin-chips';
+      // Dropdown de Sala
+      if (iAmAdmin) {
+        const currentSala = (p.tags || []).find(t => t === 'Sala A' || t === 'Sala B' || t === 'Sala C') || '';
+        const salaSel = document.createElement('select');
+        salaSel.className = 'admin-select';
+        salaSel.style.width = '100px';
+        salaSel.style.padding = '4px 8px';
+        salaSel.style.fontSize = '11.5px';
+        salaSel.style.background = 'rgba(10,10,12,.8)';
+        salaSel.style.borderColor = currentSala ? 'rgba(var(--glow-rgb),.5)' : 'var(--line-2)';
+        salaSel.innerHTML = `
+          <option value="">Sem sala</option>
+          <option value="Sala A" ${currentSala === 'Sala A' ? 'selected' : ''}>Sala A</option>
+          <option value="Sala B" ${currentSala === 'Sala B' ? 'selected' : ''}>Sala B</option>
+          <option value="Sala C" ${currentSala === 'Sala C' ? 'selected' : ''}>Sala C</option>
+        `;
+        salaSel.addEventListener('change', async () => {
+          const newSala = salaSel.value;
+          const oldSala = (p.tags || []).find(t => t === 'Sala A' || t === 'Sala B' || t === 'Sala C');
+          
+          const set = new Set(p.tags || []);
+          if (oldSala) set.delete(oldSala);
+          if (newSala) set.add(newSala);
+          
+          salaSel.disabled = true;
+          try {
+            await adminCall('admin:setUser', { email: p.email, name: p.name || '', tags: [...set] });
+            toast('sala alterada');
+            await loadAdmin();
+          } catch (e) {
+            toast('falha: ' + e.message, true);
+            salaSel.value = currentSala;
+          } finally {
+            salaSel.disabled = false;
+          }
+        });
+        meta.appendChild(salaSel);
+      }
       
+      row.appendChild(meta);
+
+      // --- CHIPS DE BLOCOS ---
+      const chips = document.createElement('div'); chips.className = 'admin-chips';
       for (const tag of adminData.allTags) {
         const hasTag = (p.tags || []).includes(tag);
         if (iAmAdmin) {
@@ -1159,9 +1222,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
           chips.appendChild(span);
         }
       }
+      row.appendChild(chips);
 
-      row.append(meta, chips);
-
+      // --- BOTÕES ---
       if (currentUser.isAdmin || (currentUser.modPermissions || []).includes('ban')) {
         const banBtn = document.createElement('button');
         banBtn.type = 'button';
@@ -1184,11 +1247,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
           try {
             await adminCall(action, { email: p.email, targetTags: p.tags || [] });
             toast(isBanned ? 'desbanido' : 'banido');
-            
             const newBanned = !isBanned;
             banOverrides.set(p.email, newBanned);
             p.isBanned = newBanned;
-            
             await loadAdmin();
           } catch (e) {
             toast('falha: ' + e.message, true);
