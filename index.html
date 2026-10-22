@@ -161,6 +161,24 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   color: var(--text);
 }
 
+/* OVERLAY DE LOADING DO ADMIN */
+.area-panel[data-panel="acesso"] { position: relative; }
+.admin-loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 12, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 12px;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
 #banned-overlay {
   position: fixed; inset: 0; z-index: 9999999;
   background: var(--bg);
@@ -746,6 +764,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     const panel = document.createElement('div'); 
     panel.className = 'area-panel hidden'; 
     panel.dataset.panel = 'acesso';
+    panel.style.position = 'relative';
     
     const iAmAdmin = currentUser.isAdmin;
     const perms = currentUser.modPermissions || [];
@@ -1338,7 +1357,24 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     return data;
   }
 
+  function setAdminLoading(isLoading) {
+    const panel = document.querySelector('.area-panel[data-panel="acesso"]');
+    if (!panel) return;
+    let ov = panel.querySelector('.admin-loading-overlay');
+    if (isLoading) {
+      if (!ov) {
+        ov = document.createElement('div');
+        ov.className = 'admin-loading-overlay';
+        ov.innerHTML = '<div class="spinner"></div><span style="font-size:13px;color:var(--dim);margin-top:14px;">carregando dados...</span>';
+        panel.appendChild(ov);
+      }
+    } else {
+      if (ov) ov.remove();
+    }
+  }
+
   async function loadAdmin() {
+    setAdminLoading(true);
     try {
       adminData = await adminCall('admin:list');
       
@@ -1357,7 +1393,11 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       renderModeratorsAccordion();
       refreshPeopleDatalist();
       if (window.__updateModToggleState) window.__updateModToggleState();
-    } catch (e) { toast('falha ao carregar: ' + e.message, true); }
+    } catch (e) { 
+      toast('falha ao carregar: ' + e.message, true); 
+    } finally {
+      setAdminLoading(false);
+    }
   }
   function updateAdminCount() { const el = document.getElementById('admin-count'); if (!el) return; const total = adminData && adminData.count != null ? adminData.count : 0; el.innerHTML = '<b>' + total + '</b> pessoa' + (total === 1 ? '' : 's'); }
 
