@@ -275,6 +275,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   let _killInProgress = false;
   const _tagInflight = new Set();
   const _delInflight = new Set();
+  const banOverrides = new Map();
 
   function displayName(u) {
     if (!u) return '';
@@ -616,6 +617,13 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     const inp = document.getElementById('nick-input');
     inp.focus();
     
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('nick-save-btn').click();
+      }
+    });
+
     document.getElementById('nick-cancel-btn').addEventListener('click', renderArea);
     document.getElementById('nick-save-btn').addEventListener('click', async () => {
       const btn = document.getElementById('nick-save-btn');
@@ -1082,10 +1090,19 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       row.dataset.tags = (p.tags || []).join('|');
       const meta = document.createElement('div'); meta.className = 'admin-meta';
       const nm = document.createElement('div'); nm.className = 'admin-name';
+      
+      let isBanned = p.isBanned;
+      if (banOverrides.has(p.email)) {
+        isBanned = banOverrides.get(p.email);
+        if (p.isBanned === isBanned) banOverrides.delete(p.email);
+      }
+
       let nameText = escapeHtml(p.name || '(sem nome)');
       if (p.isAdmin) nameText += ` <span style="font-size:10px;color:#d4af37;border:1px solid rgba(212,175,55,.5);padding:1px 6px;border-radius:999px;margin-left:4px;letter-spacing:.3px;">admin</span>`;
       else if (p.isMod) nameText += ` <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#e05252" stroke-width="2.5" style="vertical-align:middle; margin-left:4px; margin-bottom:2px;" title="Moderador"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
-      if (p.banned) nameText += ` <span style="font-size:10px;color:#e05252;border:1px solid rgba(224,82,82,.55);padding:1px 6px;border-radius:999px;margin-left:4px;letter-spacing:.3px;background:rgba(224,82,82,.08);">banido</span>`;
+      
+      if (isBanned) nameText += ` <span style="font-size:10px;color:#e05252;border:1px solid rgba(224,82,82,.55);padding:1px 6px;border-radius:999px;margin-left:4px;letter-spacing:.3px;background:rgba(224,82,82,.08);">banido</span>`;
+      
       nm.innerHTML = nameText;
       const em = document.createElement('div'); em.className = 'admin-email'; em.textContent = p.email;
       meta.append(nm, em);
@@ -1133,23 +1150,30 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 
       const banBtn = document.createElement('button');
       banBtn.type = 'button';
-      banBtn.className = 'admin-ban-btn ' + (p.banned ? 'unban' : 'ban');
-      banBtn.innerHTML = p.banned 
+      banBtn.className = 'admin-ban-btn ' + (isBanned ? 'unban' : 'ban');
+      banBtn.innerHTML = isBanned 
         ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Desbanir'
         : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg> Banir';
         
       banBtn.addEventListener('click', async () => {
         if (banBtn.dataset.busy === '1') return;
-        if (p.isAdmin && !p.banned) { toast('não pode banir admin.', true); return; }
-        const action = p.banned ? 'admin:unbanUser' : 'admin:banUser';
-        const msg = p.banned ? 'desbanir ' + p.email + '?' : 'BANIR ' + p.email + '?\n\nA sessão dele cai na hora.';
+        if (p.isAdmin && !isBanned) { toast('não pode banir admin.', true); return; }
+        const action = isBanned ? 'admin:unbanUser' : 'admin:banUser';
+        const msg = isBanned ? 'desbanir ' + p.email + '?' : 'BANIR ' + p.email + '?\n\nA sessão dele cai na hora.';
         if (!confirm(msg)) return;
+        
         banBtn.dataset.busy = '1'; banBtn.disabled = true;
         const oldHtml = banBtn.innerHTML;
         banBtn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
+        
         try {
           await adminCall(action, { email: p.email, targetTags: p.tags || [] });
-          toast(p.banned ? 'desbanido' : 'banido');
+          toast(isBanned ? 'desbanido' : 'banido');
+          
+          const newBanned = !isBanned;
+          banOverrides.set(p.email, newBanned);
+          p.isBanned = newBanned;
+          
           await loadAdmin();
         } catch (e) {
           toast('falha: ' + e.message, true);
@@ -1169,7 +1193,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
           if (_delInflight.has(p.email)) return;
           if (!confirm('remover ' + p.email + '?')) return;
           _delInflight.add(p.email);
-          try { await adminCall('admin:deleteUser', { email: p.email }); toast('removido'); await loadAdmin(); }
+          try { await adminCall('admin:deleteUser', { email: p.email }); toast('removido'); banOverrides.delete(p.email); await loadAdmin(); }
           catch (e) { toast('falha: ' + e.message, true); }
           finally { _delInflight.delete(p.email); }
         });
@@ -1483,10 +1507,24 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     if (data.theme) applyTheme(data.theme);
     if (data.name !== undefined && currentUser) { currentUser.name = data.name; who.textContent = displayName(currentUser); }
     if (data.nick !== undefined && currentUser) { currentUser.nick = data.nick; who.textContent = displayName(currentUser); }
-    if (data.isAdmin !== undefined && currentUser) currentUser.isAdmin = !!data.isAdmin;
-    if (data.isMod !== undefined && currentUser) currentUser.isMod = !!data.isMod;
-    if (Array.isArray(data.modPermissions) && currentUser) currentUser.modPermissions = data.modPermissions;
-    if (Array.isArray(data.modRooms) && currentUser) currentUser.modRooms = data.modRooms;
+    
+    if (data.isAdmin !== undefined && currentUser) {
+      currentUser.isAdmin = !!data.isAdmin;
+      currentUser.isMod = !!data.isMod;
+      currentUser.modPermissions = Array.isArray(data.modPermissions) ? data.modPermissions : currentUser.modPermissions;
+      currentUser.modRooms = Array.isArray(data.modRooms) ? data.modRooms : currentUser.modRooms;
+      
+      if (!currentUser.isAdmin && !currentUser.isMod) {
+        const tab = document.getElementById('tab-acesso');
+        if (tab) tab.style.display = 'none';
+        const panel = document.querySelector('.area-panel[data-panel="acesso"]');
+        if (panel) panel.classList.add('hidden');
+        if (location.pathname === '/area' && document.querySelector('.area-tab[data-tab="acesso"]')?.classList.contains('selected')) {
+          selectTab('perfil');
+        }
+      }
+    }
+    
     applyBlocksDiff(data.blocks || []);
   }
 
