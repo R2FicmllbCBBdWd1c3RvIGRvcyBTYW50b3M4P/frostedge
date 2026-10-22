@@ -130,6 +130,37 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 .mod-body {display: none;padding: 0 18px 18px;border-top: 1px solid var(--line);padding-top: 14px;}
 .mod-item.open .mod-body {display: block;}
 
+/* TAG SELECT INLINE */
+.tag-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(var(--glow-rgb), 0.12);
+  color: var(--accent-2);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  outline: none;
+  text-align: center;
+  line-height: 1.2;
+  vertical-align: middle;
+}
+.tag-select.empty {
+  background: transparent;
+  color: var(--dim);
+  border-color: var(--line-2);
+  border-style: dashed;
+  font-weight: 500;
+}
+.tag-select option {
+  background: var(--panel);
+  color: var(--text);
+}
+
 #banned-overlay {
   position: fixed; inset: 0; z-index: 9999999;
   background: var(--bg);
@@ -695,6 +726,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   });
 
   function mountAdminUI() {
+    adminSelectedTags.clear();
     const tabsBar = document.getElementById('area-tabs');
     const areaBody = document.getElementById('view-area-body');
     if (!tabsBar || !areaBody) return;
@@ -1106,85 +1138,71 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       row.dataset.search = ((p.name || '') + ' ' + (p.nick || '') + ' ' + (p.email || '')).toLowerCase();
       row.dataset.tags = (p.tags || []).join('|');
       
-      // --- METADADOS E DROPDOWN DE SALA ---
-      const meta = document.createElement('div'); 
-      meta.className = 'admin-meta';
-      meta.style.display = 'flex';
-      meta.style.flexDirection = 'row';
-      meta.style.justifyContent = 'space-between';
-      meta.style.alignItems = 'center';
-      meta.style.gap = '16px';
-      meta.style.minWidth = '240px';
-
-      const metaInfo = document.createElement('div');
-      metaInfo.style.display = 'flex';
-      metaInfo.style.flexDirection = 'column';
-      metaInfo.style.gap = '2px';
-
+      const meta = document.createElement('div'); meta.className = 'admin-meta';
       const nm = document.createElement('div'); nm.className = 'admin-name';
+      
       let isBanned = p.isBanned;
       if (banOverrides.has(p.email)) {
         isBanned = banOverrides.get(p.email);
         if (p.isBanned === isBanned) banOverrides.delete(p.email);
       }
 
-      let nameText = escapeHtml(p.name || '(sem nome)');
-      if (p.isAdmin) nameText += ` <span style="font-size:10px;color:#d4af37;border:1px solid rgba(212,175,55,.5);padding:1px 6px;border-radius:999px;margin-left:4px;letter-spacing:.3px;">admin</span>`;
-      else if (p.isMod) nameText += ` <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#e05252" stroke-width="2.5" style="vertical-align:middle; margin-left:4px; margin-bottom:2px;" title="Moderador"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
-      if (isBanned) nameText += ` <span style="font-size:10px;color:#e05252;border:1px solid rgba(224,82,82,.55);padding:1px 6px;border-radius:999px;margin-left:4px;letter-spacing:.3px;background:rgba(224,82,82,.08);">banido</span>`;
-      
-      nm.innerHTML = nameText;
+      let nameHtml = escapeHtml(p.name || '(sem nome)');
+      if (p.isAdmin) nameHtml += ` <span style="font-size:10px;color:#d4af37;border:1px solid rgba(212,175,55,.5);padding:1px 6px;border-radius:999px;margin-left:4px;letter-spacing:.3px;">admin</span>`;
+      else if (p.isMod) nameHtml += ` <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#e05252" stroke-width="2.5" style="vertical-align:middle; margin-left:4px; margin-bottom:2px;" title="Moderador"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
+      if (isBanned) nameHtml += ` <span style="font-size:10px;color:#e05252;border:1px solid rgba(224,82,82,.55);padding:1px 6px;border-radius:999px;margin-left:4px;letter-spacing:.3px;background:rgba(224,82,82,.08);">banido</span>`;
+
+      // Tag Select de Sala (admin)
+      const currentSala = (p.tags || []).find(t => t === 'Sala A' || t === 'Sala B' || t === 'Sala C') || '';
+      if (iAmAdmin) {
+        nameHtml += `
+          <select class="tag-select ${currentSala ? '' : 'empty'}" data-sala="${p.email}">
+            <option value="" ${!currentSala ? 'selected' : ''}>#sala</option>
+            <option value="Sala A" ${currentSala === 'Sala A' ? 'selected' : ''}>#A</option>
+            <option value="Sala B" ${currentSala === 'Sala B' ? 'selected' : ''}>#B</option>
+            <option value="Sala C" ${currentSala === 'Sala C' ? 'selected' : ''}>#C</option>
+          </select>
+        `;
+      } else if (currentSala) {
+        const shortSala = currentSala.replace('Sala ', '');
+        nameHtml += ` <span style="font-size:10px; font-weight:600; color:var(--accent-2); margin-left:4px;">#${shortSala}</span>`;
+      }
+
+      nm.innerHTML = nameHtml;
+
+      if (iAmAdmin) {
+        const sel = nm.querySelector('select');
+        if (sel) {
+          sel.addEventListener('change', async () => {
+            const newSala = sel.value;
+            const set = new Set(p.tags || []);
+            if (currentSala) set.delete(currentSala);
+            if (newSala) set.add(newSala);
+            
+            sel.disabled = true;
+            try {
+              await adminCall('admin:setUser', { email: p.email, name: p.name || '', tags: [...set] });
+              toast('sala alterada');
+              await loadAdmin();
+            } catch (err) {
+              toast('falha: ' + err.message, true);
+              sel.value = currentSala;
+            } finally {
+              sel.disabled = false;
+            }
+          });
+        }
+      }
+
       const em = document.createElement('div'); em.className = 'admin-email'; em.textContent = p.email;
-      metaInfo.append(nm, em);
+      meta.append(nm, em);
       if (p.nick) {
         const nk = document.createElement('div'); nk.className = 'admin-email'; nk.style.color = 'var(--accent-2)'; nk.textContent = '@' + p.nick;
-        metaInfo.append(nk);
+        meta.append(nk);
       }
-      meta.appendChild(metaInfo);
 
-      // Dropdown de Sala
-      if (iAmAdmin) {
-        const currentSala = (p.tags || []).find(t => t === 'Sala A' || t === 'Sala B' || t === 'Sala C') || '';
-        const salaSel = document.createElement('select');
-        salaSel.className = 'admin-select';
-        salaSel.style.width = '100px';
-        salaSel.style.padding = '4px 8px';
-        salaSel.style.fontSize = '11.5px';
-        salaSel.style.background = 'rgba(10,10,12,.8)';
-        salaSel.style.borderColor = currentSala ? 'rgba(var(--glow-rgb),.5)' : 'var(--line-2)';
-        salaSel.innerHTML = `
-          <option value="">Sem sala</option>
-          <option value="Sala A" ${currentSala === 'Sala A' ? 'selected' : ''}>Sala A</option>
-          <option value="Sala B" ${currentSala === 'Sala B' ? 'selected' : ''}>Sala B</option>
-          <option value="Sala C" ${currentSala === 'Sala C' ? 'selected' : ''}>Sala C</option>
-        `;
-        salaSel.addEventListener('change', async () => {
-          const newSala = salaSel.value;
-          const oldSala = (p.tags || []).find(t => t === 'Sala A' || t === 'Sala B' || t === 'Sala C');
-          
-          const set = new Set(p.tags || []);
-          if (oldSala) set.delete(oldSala);
-          if (newSala) set.add(newSala);
-          
-          salaSel.disabled = true;
-          try {
-            await adminCall('admin:setUser', { email: p.email, name: p.name || '', tags: [...set] });
-            toast('sala alterada');
-            await loadAdmin();
-          } catch (e) {
-            toast('falha: ' + e.message, true);
-            salaSel.value = currentSala;
-          } finally {
-            salaSel.disabled = false;
-          }
-        });
-        meta.appendChild(salaSel);
-      }
-      
-      row.appendChild(meta);
-
-      // --- CHIPS DE BLOCOS ---
       const chips = document.createElement('div'); chips.className = 'admin-chips';
+      
       for (const tag of adminData.allTags) {
         const hasTag = (p.tags || []).includes(tag);
         if (iAmAdmin) {
@@ -1222,10 +1240,13 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
           chips.appendChild(span);
         }
       }
+      row.appendChild(meta);
       row.appendChild(chips);
 
-      // --- BOTÕES ---
-      if (currentUser.isAdmin || (currentUser.modPermissions || []).includes('ban')) {
+      const targetIsAdminOrMod = p.isAdmin || p.isMod;
+      const canTarget = iAmAdmin || !targetIsAdminOrMod;
+
+      if (canTarget && (iAmAdmin || (currentUser.modPermissions || []).includes('ban'))) {
         const banBtn = document.createElement('button');
         banBtn.type = 'button';
         banBtn.className = 'admin-ban-btn ' + (isBanned ? 'unban' : 'ban');
@@ -1320,6 +1341,14 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   async function loadAdmin() {
     try {
       adminData = await adminCall('admin:list');
+      
+      adminSelectedTags.clear();
+      document.querySelectorAll('.admin-tag-chip').forEach(c => c.classList.remove('on'));
+      const clearBtn = document.querySelector('.admin-tag-clear');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      const searchInp = document.getElementById('admin-search');
+      if (searchInp) searchInp.value = '';
+      
       renderAdminTagsInput();
       renderAdminTagFilter();
       renderAdminUsers();
