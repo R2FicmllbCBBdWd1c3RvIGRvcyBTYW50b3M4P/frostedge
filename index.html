@@ -707,16 +707,27 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 
   function openArea() { const sub = currentUser && (currentUser.nick || currentUser.name) ? 'carregando dados de ' + displayName(currentUser) : 'carregando seus dados'; withLoader('Abrindo área', sub, () => { selectTab('perfil'); renderArea(); showView('area'); playAreaEntrance(); }); }
   function backHome() { const sub = currentUser && (currentUser.nick || currentUser.name) ? 'voltando ao painel de ' + displayName(currentUser) : 'voltando ao painel'; withLoader('Voltando', sub, () => { showView('site'); playSiteEntrance(); }); }
-  function selectTab(name) { document.querySelectorAll('.area-tab').forEach(t => t.classList.toggle('selected', t.dataset.tab === name)); document.querySelectorAll('.area-panel').forEach(p => p.classList.toggle('hidden', p.dataset.panel !== name)); if (name === 'acesso' && (currentUser.isAdmin || currentUser.isMod)) loadAdmin(); }
+  function selectTab(name) { 
+    document.querySelectorAll('.area-tab').forEach(t => t.classList.toggle('selected', t.dataset.tab === name)); 
+    document.querySelectorAll('.area-panel').forEach(p => p.classList.toggle('hidden', p.dataset.panel !== name)); 
+    
+    if (name === 'acesso' && (currentUser.isAdmin || currentUser.isMod)) {
+      if (!adminData) loadAdmin(); // Só carrega se a lista ainda não veio
+    } 
+  }
   function wireTabs() { document.querySelectorAll('.area-tab').forEach(t => { t.removeEventListener('click', onTabClick); t.addEventListener('click', onTabClick); }); }
   function onTabClick(e) { selectTab(e.currentTarget.dataset.tab); }
 
   function selectAdminTab(name) {
     document.querySelectorAll('.admin-subtab').forEach(t => t.classList.toggle('selected', t.dataset.subtab === name));
     document.querySelectorAll('.admin-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === name));
-    if (name === 'acessos') loadAdmin();
-    if (name === 'gerenciamento') loadAdmin();
+    
+    if (name === 'acessos' || name === 'gerenciamento' || name === 'bloqueio') {
+      if (!adminData) loadAdmin();
+    }
+    
     if (name === 'kill') loadKills();
+    
     if (name === 'historico') {
       const canLogs = currentUser && (currentUser.isAdmin || (currentUser.modPermissions || []).includes('logs'));
       if (canLogs) loadLogs();
@@ -725,7 +736,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       if (inp) inp.value = '';
       document.getElementById('hist-list').innerHTML = '<div class="admin-empty">Digite um email acima.</div>';
     }
-    if (name === 'bloqueio') loadAdmin();
   }
   function wireAdminTabs() { document.querySelectorAll('.admin-subtab').forEach(t => { t.removeEventListener('click', onAdminTabClick); t.addEventListener('click', onAdminTabClick); }); }
   function onAdminTabClick(e) { selectAdminTab(e.currentTarget.dataset.subtab); }
@@ -1374,7 +1384,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   }
 
   async function loadAdmin() {
-    setAdminLoading(true);
+    const isFirstLoad = !adminData;
+    if (isFirstLoad) setAdminLoading(true);
+    
     try {
       adminData = await adminCall('admin:list');
       
@@ -1396,7 +1408,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     } catch (e) { 
       toast('falha ao carregar: ' + e.message, true); 
     } finally {
-      setAdminLoading(false);
+      if (isFirstLoad) setAdminLoading(false);
     }
   }
   function updateAdminCount() { const el = document.getElementById('admin-count'); if (!el) return; const total = adminData && adminData.count != null ? adminData.count : 0; el.innerHTML = '<b>' + total + '</b> pessoa' + (total === 1 ? '' : 's'); }
