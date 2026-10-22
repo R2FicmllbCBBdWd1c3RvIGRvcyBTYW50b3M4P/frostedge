@@ -179,27 +179,25 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-#banned-overlay {
+/* TELAS DE BLOQUEIO */
+#expired-overlay, #killed-overlay, #closed-overlay, #banned-overlay {
   position: fixed; inset: 0; z-index: 9999999;
   background: var(--bg);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; padding: 24px;
 }
-#banned-overlay.hidden { display: none !important; }
-#banned-overlay .icon {
+#expired-overlay.hidden, #killed-overlay.hidden, #closed-overlay.hidden, #banned-overlay.hidden { display: none !important; }
+.overlay-icon {
   width: 80px; height: 80px; border-radius: 50%;
-  background: rgba(224, 82, 82, 0.1); color: var(--danger);
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 24px; border: 1px solid rgba(224, 82, 82, 0.3);
-  box-shadow: 0 0 40px rgba(224, 82, 82, 0.15);
+  margin-bottom: 24px;
 }
-#banned-overlay h1 {
-  font-size: 42px; color: var(--danger); margin: 0 0 16px 0; letter-spacing: -1px;
-}
-#banned-overlay p {
-  color: var(--dim); font-size: 16px; max-width: 500px; line-height: 1.6; margin: 0 0 12px 0;
-}
-#banned-overlay b { color: var(--text); }
+.overlay-icon.danger { background: rgba(224, 82, 82, 0.1); color: var(--danger); border: 1px solid rgba(224, 82, 82, 0.3); box-shadow: 0 0 40px rgba(224, 82, 82, 0.15); }
+.overlay-icon.neutral { background: rgba(59, 130, 246, 0.1); color: var(--accent-2); border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 0 0 40px rgba(59, 130, 246, 0.15); }
+.overlay-title { font-size: 42px; margin: 0 0 16px 0; letter-spacing: -1px; color: var(--text); }
+.overlay-title.danger { color: var(--danger); }
+.overlay-sub { color: var(--dim); font-size: 16px; max-width: 500px; line-height: 1.6; margin: 0 0 12px 0; }
+.overlay-sub b { color: var(--text); }
 
 @media (max-width: 600px) {.version-options {grid-template-columns:1fr}.version-modal {padding:32px 24px}}
 @media (max-width:560px){header{padding:14px 18px}.rule{margin:0 18px}main{padding:36px 18px 64px}#view-area{padding:0 18px 64px}.nav .btn span{display:none}.admin-meta{min-width:0}#terms-overlay{padding:12px}.terms-modal{max-height:94vh;border-radius:14px}.terms-header{padding:16px 18px 12px}.terms-header h3{font-size:16px}.terms-content-wrap{padding:12px 14px}.terms-content{padding:16px 16px;font-size:13px}.terms-footer{padding:12px 16px 16px}}
@@ -299,14 +297,41 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     </div>
   </div>
 </div>
-<div id="banned-overlay" class="hidden">
-  <div class="icon">
+
+<div id="expired-overlay" class="hidden">
+  <div class="overlay-icon neutral">
+    <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+  </div>
+  <h1 class="overlay-title">Sessão expirada</h1>
+  <p class="overlay-sub">Seu tempo de login acabou.</p>
+  <button class="terms-accept" style="max-width: 200px;" onclick="window.location.reload()">Fazer login novamente</button>
+</div>
+
+<div id="killed-overlay" class="hidden">
+  <div class="overlay-icon danger">
+    <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+  </div>
+  <h1 class="overlay-title danger">Sua sessão foi encerrada</h1>
+  <p class="overlay-sub">Fale com <b id="killed-admin">um administrador</b> se você acha que isso é um erro.</p>
+</div>
+
+<div id="closed-overlay" class="hidden">
+  <div class="overlay-icon neutral">
     <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg>
   </div>
-  <h1>Você foi banido</h1>
-  <p>O seu acesso à plataforma foi bloqueado por um administrador.</p>
-  <p>Se você acha que isso foi um engano, <b>fale com o admin da sua sala</b>.</p>
+  <h1 class="overlay-title">A aba de todos foi fechada</h1>
+  <p class="overlay-sub">O administrador encerrou as atividades no site.</p>
+  <button class="terms-accept" style="max-width: 200px;" onclick="window.location.reload()">Recarregar Página</button>
 </div>
+
+<div id="banned-overlay" class="hidden">
+  <div class="overlay-icon danger">
+    <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg>
+  </div>
+  <h1 class="overlay-title danger">Você foi banido</h1>
+  <p class="overlay-sub">Contate <b id="banned-admin">um administrador</b> se você acha que isso é um erro.</p>
+</div>
+
 <div id="admin-toast" class="admin-toast"></div>
 <datalist id="people-emails"></datalist>
 <script>
@@ -356,18 +381,38 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   function applyTheme(name) { const t = name || 'azul'; if (t === 'azul') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t); document.querySelectorAll('.theme-swatch').forEach(s => { s.classList.toggle('selected', s.dataset.theme === t); }); }
   document.querySelectorAll('.theme-swatch').forEach(s => { s.addEventListener('click', async () => { const theme = s.dataset.theme; applyTheme(theme); const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) return; try { await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, setTheme: theme }) }); } catch {} }); });
 
-  function showBannedScreen() {
+  function showExpiredScreen() {
+    stopPolling();
+    try { sessionStorage.removeItem(SESSION_KEY); } catch {}
+    const views = ['view-login', 'view-site', 'view-area', 'area-loader', 'exec-overlay', 'lynx-version-overlay', 'terms-overlay'];
+    views.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
+    document.getElementById('expired-overlay').classList.remove('hidden');
+  }
+
+  function showKilledScreen(adminName) {
     stopPolling();
     try { sessionStorage.removeItem(SESSION_KEY); } catch {}
     try { localStorage.clear(); } catch {}
-    
     const views = ['view-login', 'view-site', 'view-area', 'area-loader', 'exec-overlay', 'lynx-version-overlay', 'terms-overlay'];
     views.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
-    
-    const banned = document.getElementById('banned-overlay');
-    if (banned) banned.classList.remove('hidden');
-    
-    try { window.close(); } catch {}
+    document.getElementById('killed-admin').textContent = adminName || 'um administrador';
+    document.getElementById('killed-overlay').classList.remove('hidden');
+  }
+
+  function showClosedScreen() {
+    stopPolling();
+    const views = ['view-login', 'view-site', 'view-area', 'area-loader', 'exec-overlay', 'lynx-version-overlay', 'terms-overlay'];
+    views.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
+    document.getElementById('closed-overlay').classList.remove('hidden');
+  }
+
+  function showBannedScreen(adminName) {
+    stopPolling();
+    // Não remove sessionStorage
+    const views = ['view-login', 'view-site', 'view-area', 'area-loader', 'exec-overlay', 'lynx-version-overlay', 'terms-overlay'];
+    views.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
+    document.getElementById('banned-admin').textContent = adminName || 'um administrador';
+    document.getElementById('banned-overlay').classList.remove('hidden');
   }
 
   function openTerms(opts) {
@@ -451,8 +496,13 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     }
     if (!r.ok) {
       const err = await r.json().catch(() => ({}));
+      if (err.error === 'expired' || err.error === 'bad_jwt') {
+        showExpiredScreen(); return;
+      }
+      if (err.error === 'banned') {
+        showBannedScreen(err.roomAdmin); return;
+      }
       sessionStorage.removeItem(SESSION_KEY);
-      if (err.error === 'banned') { showBannedScreen(); return; }
       if (err.error === 'not_found') loginErr.textContent = 'seu email não está cadastrado.';
       else if (err.error === 'no_authorized_block') loginErr.textContent = 'sua conta não tem nenhum bloco autorizado.';
       else if (err.error && err.error.startsWith('no_binding_')) loginErr.textContent = 'configuração do servidor incompleta.';
@@ -712,7 +762,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     document.querySelectorAll('.area-panel').forEach(p => p.classList.toggle('hidden', p.dataset.panel !== name)); 
     
     if (name === 'acesso' && (currentUser.isAdmin || currentUser.isMod)) {
-      if (!adminData) loadAdmin(); // Só carrega se a lista ainda não veio
+      if (!adminData) loadAdmin();
     } 
   }
   function wireTabs() { document.querySelectorAll('.area-tab').forEach(t => { t.removeEventListener('click', onTabClick); t.addEventListener('click', onTabClick); }); }
@@ -900,12 +950,18 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
             </div></div>
             <button class="admin-btn kill-submit-btn" type="submit" id="kill-submit" disabled style="margin-top: 10px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Executar Comando</button>
           </form>
-        </div>
+        </div>`;
+      
+      if (iAmAdmin) {
+        panelsHTML += `
         <div class="area-card danger-zone">
           <h3><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Zona de Perigo</h3>
           <p style="font-size: 12.5px; margin-bottom: 16px;">Encerra a sessão de <b>TODOS</b> os usuários ativos no sistema instantaneamente.</p>
           <button class="admin-btn admin-btn-danger" type="button" id="admin-kill-all" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg> Desligar todos os usuários</button>
-        </div>
+        </div>`;
+      }
+      
+      panelsHTML += `
         <div class="area-card"><h3>Desligamentos pendentes</h3><div class="kill-pending-list" id="kill-pending-list"><div class="admin-empty">Nenhum desligamento pendente.</div></div></div>
       </div>`;
     }
@@ -1633,7 +1689,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       if (!kills.length) { list.innerHTML = '<div class="admin-empty">nenhum pendente.</div>'; return; }
       for (const k of kills) {
         const row = document.createElement('div'); row.className = 'kill-row';
-        const modeLabel = k.mode === 'hard' ? 'deslogar' : 'fechar';
+        const modeLabel = k.mode === 'hard' ? 'deslogar' : (k.mode === 'soft' ? 'fechar' : 'fechar todos');
         row.innerHTML = '<div class="kill-row-meta"><div class="kill-row-email">' + escapeHtml(k.email) + '</div><div class="kill-row-sub">' + escapeHtml(fmtRelative(k.ts)) + '</div></div><span class="kill-row-mode ' + k.mode + '">' + modeLabel + '</span>';
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -1711,34 +1767,38 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     });
   }
 
-  async function _handleKill(kill) {
-    if (_killInProgress) return;
-    _killInProgress = true;
-    stopPolling();
-    try { sessionStorage.removeItem(SESSION_KEY); } catch {}
-    try { localStorage.clear(); } catch {}
-    try { document.documentElement.innerHTML = ''; } catch {}
-    try { window.close(); } catch {}
-    setTimeout(() => { try { window.location.replace('about:blank'); window.close(); } catch {} }, 500);
-  }
-
   async function pollTick() {
     const jwt = sessionStorage.getItem(SESSION_KEY);
     if (!jwt) return;
     const data = await _post({ jwt, action: 'checkState' });
     if (!data) return;
+    
     if (data.ok === false) {
-      if (data.error === 'no_jwt' || data.error === 'bad_jwt' || data.error === 'not_found' || data.error === 'banned') {
-        await _handleKill({ mode: 'hard' });
+      if (data.error === 'banned') {
+        showBannedScreen(data.roomAdmin);
+      } else if (data.error === 'no_jwt' || data.error === 'bad_jwt' || data.error === 'not_found' || data.error === 'expired') {
+        showExpiredScreen();
       }
       return;
     }
-    if (data.banned) { showBannedScreen(); return; }
+    
+    if (data.banned) { showBannedScreen(data.roomAdmin); return; }
+    
     if (data.kill) {
       try { await _post({ jwt, action: 'ackKill' }); } catch {}
-      await _handleKill(data.kill);
+      if (data.kill.mode === 'soft') {
+        stopPolling();
+        document.documentElement.innerHTML = '';
+        window.close();
+        setTimeout(() => { window.location.replace('about:blank'); window.close(); }, 500);
+      } else if (data.kill.mode === 'hard') {
+        showKilledScreen(data.roomAdmin);
+      } else if (data.kill.mode === 'killAll') {
+        showClosedScreen();
+      }
       return;
     }
+    
     if (data.theme) applyTheme(data.theme);
     if (data.name !== undefined && currentUser) { currentUser.name = data.name; who.textContent = displayName(currentUser); }
     if (data.nick !== undefined && currentUser) { currentUser.nick = data.nick; who.textContent = displayName(currentUser); }
