@@ -162,13 +162,10 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     <h1 class="area-title">Minha <em>área</em></h1><p class="area-sub">Dados da conta</p>
     <div class="area-tabs" id="area-tabs"><button class="area-tab selected" data-tab="perfil">Perfil</button></div>
     <div class="area-panel" data-panel="perfil">
-      <div class="area-card"><h3>Conta</h3><div class="area-row"><span class="k">Nome</span><span class="v" id="area-name">—</span></div><div class="area-row"><span class="k">Email</span><span class="v" id="area-email">—</span></div></div>
-      <div class="area-card"><h3>Apelido</h3>
-        <div class="admin-field" style="margin:4px 0 10px;">
-          <label>Como quer ser chamado</label>
-          <input id="nick-input" type="text" maxlength="40" placeholder="ex: kaio, lx, zé">
-        </div>
-        <button class="admin-btn" id="nick-save-btn" type="button" style="width:100%; justify-content:center;">Salvar apelido</button>
+      <div class="area-card"><h3>Conta</h3>
+        <div class="area-row"><span class="k">Nome</span><span class="v" id="area-name">—</span></div>
+        <div class="area-row"><span class="k">Apelido</span><span class="v" id="area-nick" style="display:flex; align-items:center; justify-content:flex-end; gap:8px;"></span></div>
+        <div class="area-row"><span class="k">Email</span><span class="v" id="area-email">—</span></div>
       </div>
       <div class="area-card"><h3>Acessos liberados</h3><div class="area-tags" id="area-tags"></div></div>
       <div class="area-card"><h3>Aparência</h3><div class="theme-row">
@@ -528,8 +525,16 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     if (!currentUser) return;
     document.getElementById('area-name').textContent  = currentUser.name || '—';
     document.getElementById('area-email').textContent = currentUser.email || '—';
-    const nickInput = document.getElementById('nick-input');
-    if (nickInput && document.activeElement !== nickInput) nickInput.value = currentUser.nick || '';
+    
+    const nickRow = document.getElementById('area-nick');
+    if (nickRow) {
+      nickRow.innerHTML = `<span style="font-weight:500; color:var(--text);">${currentUser.nick ? '@' + escapeHtml(currentUser.nick) : '—'}</span>
+        <button class="terms-btn-sm" id="btn-edit-nick" style="padding:4px 8px; font-size:11px; display:flex; align-items:center; gap:4px;">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Alterar
+        </button>`;
+      document.getElementById('btn-edit-nick').addEventListener('click', startNickEdit);
+    }
+
     const statusEl = document.getElementById('terms-status');
     if (statusEl) {
       if (currentUser.termsAccepted) { statusEl.textContent = 'aceito em ' + fmtDate(currentUser.termsAcceptedAt); statusEl.style.color = ''; }
@@ -541,6 +546,49 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     } else {
       currentUser.blocks.forEach(b => { const span = document.createElement('span'); span.className = 'area-tag' + (b.tag === 'Ingles' ? ' gold' : ''); span.textContent = b.tag; wrap.appendChild(span); });
     }
+  }
+
+  function startNickEdit() {
+    const nickRow = document.getElementById('area-nick');
+    if (!nickRow) return;
+    nickRow.innerHTML = `
+      <input id="nick-input" type="text" maxlength="40" placeholder="ex: kaio" style="flex:1; min-width:0; background:rgba(10,10,12,.6); border:1px solid var(--line-2); border-radius:8px; padding:6px 10px; color:var(--text); font-size:13px; margin-right:4px;" value="${escapeHtml(currentUser.nick || '')}">
+      <button class="terms-btn-sm" id="nick-save-btn" style="padding:6px 10px; font-size:12px; display:flex; align-items:center; gap:4px;">Salvar</button>
+      <button class="terms-btn-sm danger" id="nick-cancel-btn" style="padding:6px 10px; font-size:12px;">Cancelar</button>
+    `;
+    const inp = document.getElementById('nick-input');
+    inp.focus();
+    
+    document.getElementById('nick-cancel-btn').addEventListener('click', renderArea);
+    document.getElementById('nick-save-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('nick-save-btn');
+      if (btn.dataset.busy === '1') return;
+      const newNick = (inp.value || '').replace(/\s+/g, ' ').trim();
+      if (newNick.length === 1) { toast('mínimo 2 caracteres.', true); return; }
+      
+      const jwt = sessionStorage.getItem(SESSION_KEY);
+      if (!jwt) { kill(); return; }
+      
+      btn.dataset.busy = '1'; btn.disabled = true;
+      btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
+      try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 15000);
+        const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:setNick', nick: newNick }), signal: ctrl.signal });
+        clearTimeout(timer);
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok || !data.ok) throw new Error(data.error || ('http ' + r.status));
+        currentUser.nick = data.nick || '';
+        who.textContent = displayName(currentUser);
+        toast('apelido salvo');
+        renderArea();
+      } catch (e) {
+        toast('falha: ' + e.message, true);
+        btn.disabled = false;
+        delete btn.dataset.busy;
+        btn.innerHTML = 'Salvar';
+      }
+    });
   }
 
   function openArea() { const sub = currentUser && (currentUser.nick || currentUser.name) ? 'carregando dados de ' + displayName(currentUser) : 'carregando seus dados'; withLoader('Abrindo área', sub, () => { selectTab('perfil'); renderArea(); showView('area'); playAreaEntrance(); }); }
@@ -579,36 +627,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
       kill();
     } catch (e) { alert('falha ao revogar: ' + e.message); }
-  });
-
-  document.getElementById('nick-save-btn').addEventListener('click', async () => {
-    const btn = document.getElementById('nick-save-btn');
-    const inp = document.getElementById('nick-input');
-    if (btn.dataset.busy === '1') return;
-    const newNick = (inp.value || '').replace(/\s+/g, ' ').trim();
-    if (newNick.length === 1) { toast('mínimo 2 caracteres.', true); return; }
-    const jwt = sessionStorage.getItem(SESSION_KEY);
-    if (!jwt) { kill(); return; }
-    btn.dataset.busy = '1'; btn.disabled = true;
-    const originalHTML = btn.innerHTML;
-    btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
-    try {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 15000);
-      const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:setNick', nick: newNick }), signal: ctrl.signal });
-      clearTimeout(timer);
-      const data = await r.json().catch(() => ({}));
-      if (!r.ok || !data.ok) throw new Error(data.error || ('http ' + r.status));
-      currentUser.nick = data.nick || '';
-      who.textContent = displayName(currentUser);
-      toast('apelido salvo');
-    } catch (e) {
-      toast('falha: ' + e.message, true);
-      btn.innerHTML = originalHTML;
-    } finally {
-      btn.disabled = false;
-      delete btn.dataset.busy;
-    }
   });
 
   function mountAdminUI() {
