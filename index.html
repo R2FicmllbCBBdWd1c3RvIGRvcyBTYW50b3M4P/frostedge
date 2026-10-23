@@ -566,31 +566,47 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   }
 
   function renderBlock(b) {
-    const el = document.createElement('article');
-    el.className = 'card' + (b.tag === 'Ingles' ? ' gold' : '');
-    el.dataset.tag = b.tag;
+  const card = document.createElement('div');
+  card.className = 'card' + (b.gold ? ' gold' : '');
+  card.dataset.tag = b.tag;
 
-    if (!b.blocked) {
-      if (b.tag === 'Lynx') {
-        payloads.set('Lynx_new', b.payload_new || '');
-        payloads.set('Lynx_old', b.payload_old || '');
-      } else {
-        payloads.set(b.tag, b.payload || '');
-      }
-    } else {
-      payloads.delete('Lynx_new');
-      payloads.delete('Lynx_old');
-      payloads.delete(b.tag);
-    }
-
-    const feats = (b.features || []).map(f => '<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>' + escapeHtml(f) + '</li>').join('');
-    let ctaHTML = b.blocked
-      ? `<button class="cta blocked" disabled>Em Manutenção</button>`
-      : `<button class="cta">quero <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>`;
-
-    el.innerHTML = '<div class="kicker">' + escapeHtml(b.kicker || 'a gente faz') + '</div><h2><em>' + escapeHtml(b.tag) + '</em></h2><div class="role">' + escapeHtml(b.sub || '') + '</div><ul class="features">' + feats + '</ul><div class="card-actions">' + ctaHTML + '<button class="btn-terms" type="button">Termos de uso</button></div>';
-    return el;
+  // Fix: Check all potential payload formats (b.payload_new, b.payload.new, b.payload_old, b.payload.old, or standard payload fallback)
+  if (b.tag === 'Lynx') {
+    const newPayload = b.payload_new || (b.payload && b.payload.new) || (typeof b.payload === 'string' ? b.payload : '');
+    const oldPayload = b.payload_old || (b.payload && b.payload.old) || (typeof b.payload === 'string' ? b.payload : '');
+    
+    payloads.set('Lynx_new', newPayload);
+    payloads.set('Lynx_old', oldPayload);
+  } else {
+    payloads.set(b.tag, b.payload || '');
   }
+
+  // Generate card inner HTML
+  const featuresList = (b.features || [])
+    .map(f => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>${f}</li>`)
+    .join('');
+
+  const isBlocked = b.blocked === true;
+  const ctaClass = isBlocked ? 'cta blocked' : 'cta';
+  const ctaOnClick = isBlocked ? '' : (b.tag === 'Lynx' ? `openLynxModal()` : `executePayload('${b.tag}')`);
+  const ctaText = isBlocked ? 'Indisponível' : (b.cta || 'Executar');
+
+  card.innerHTML = `
+    <div class="kicker">${b.kicker || 'Módulo'}</div>
+    <h2>${b.title || b.tag}</h2>
+    <div class="role">${b.subtitle || ''}</div>
+    <ul class="features">${featuresList}</ul>
+    <div class="card-actions">
+      <button class="${ctaClass}" ${ctaOnClick ? `onclick="${ctaOnClick}"` : ''}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        ${ctaText}
+      </button>
+      ${b.terms ? `<button class="btn-terms" onclick="showTerms('${b.tag}')">Termos</button>` : ''}
+    </div>
+  `;
+
+  return card;
+}
 
   window.startLynxExec = async function(type) {
     document.getElementById('lynx-version-overlay').classList.add('hidden');
