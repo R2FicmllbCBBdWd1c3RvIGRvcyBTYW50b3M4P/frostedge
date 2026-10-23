@@ -1891,9 +1891,15 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('click', () => {
+      stopPolling();
       sessionStorage.removeItem(SESSION_KEY);
       try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
-      kill();
+      
+      window.close();
+
+      setTimeout(() => { 
+        window.location.replace('/'); 
+      }, 150);
     });
   });
 
