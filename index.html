@@ -570,12 +570,13 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
     el.className = 'card' + (b.tag === 'Ingles' ? ' gold' : '');
     el.dataset.tag = b.tag;
 
+    // FIX: Só sobrescreve o payload se o novo vier preenchido
     if (!b.blocked) {
       if (b.tag === 'Lynx') {
-        payloads.set('Lynx_new', b.payload_new || '');
-        payloads.set('Lynx_old', b.payload_old || '');
+        if (b.payload_new) payloads.set('Lynx_new', b.payload_new);
+        if (b.payload_old) payloads.set('Lynx_old', b.payload_old);
       } else {
-        payloads.set(b.tag, b.payload || '');
+        if (b.payload) payloads.set(b.tag, b.payload);
       }
     } else {
       payloads.delete('Lynx_new');
@@ -594,7 +595,14 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 
   window.startLynxExec = async function(type) {
     document.getElementById('lynx-version-overlay').classList.add('hidden');
-    const payload = payloads.get('Lynx_' + type);
+    
+    // FALLBACK: se o Map falhar, busca da lista bruta
+    let payload = payloads.get('Lynx_' + type);
+    if (!payload) {
+      const lynxBlock = currentUser.blocks.find(b => b.tag === 'Lynx');
+      if (lynxBlock) payload = type === 'new' ? lynxBlock.payload_new : lynxBlock.payload_old;
+    }
+
     openExec('Lynx (' + (type === 'new' ? 'Novo' : 'Antigo') + ')');
     if (!payload) {
       await new Promise(r => setTimeout(r, 600));
@@ -622,7 +630,14 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
         document.getElementById('lynx-version-overlay').classList.remove('hidden');
         return;
       }
-      const payload = payloads.get(tag) || '';
+      
+      // FALLBACK
+      let payload = payloads.get(tag);
+      if (!payload) {
+        const block = currentUser.blocks.find(b => b.tag === tag);
+        if (block) payload = block.payload;
+      }
+
       openExec(tag);
       if (!payload) {
         await new Promise(r => setTimeout(r, 600));
@@ -639,6 +654,49 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
       delete btn.dataset.busy;
     }
   });
+
+  function applyBlocksDiff(incoming) {
+    // FIX: Se incoming for nulo ou não for array, aborta a atualização pra não limpar a tela
+    if (!incoming || !Array.isArray(incoming)) return;
+
+    const incomingMap = new Map(incoming.map(b => [b.tag, b]));
+    const added = [], removed = [], changed = [];
+    for (const b of (currentUser.blocks || [])) {
+      if (!incomingMap.has(b.tag)) removed.push(b);
+      else {
+        const inc = incomingMap.get(b.tag);
+        if (JSON.stringify(b) !== JSON.stringify(inc)) changed.push(inc);
+      }
+    }
+    for (const inc of incoming) { if (!knownTags.has(inc.tag)) added.push(inc); }
+    if (!added.length && !removed.length && !changed.length) return;
+    currentUser.blocks = incoming;
+    knownTags = new Set(currentUser.blocks.map(b => b.tag));
+
+    for (const b of removed) {
+      const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
+      if (card) {
+        card.style.transition = 'opacity .25s, transform .25s';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(.95)';
+        setTimeout(() => card.remove(), 260);
+      }
+      payloads.delete(b.tag + '_new');
+      payloads.delete(b.tag + '_old');
+      payloads.delete(b.tag);
+    }
+    for (const b of changed) {
+      const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
+      if (!card) continue;
+      const fresh = renderBlock(b);
+      card.replaceWith(fresh);
+      fadeIn(fresh);
+    }
+    added.forEach((b, i) => {
+      const el = renderBlock(b);
+      setTimeout(() => { grid.appendChild(el); fadeIn(el); }, i * 90);
+    });
+  }
 
   function openExec(name) {
     execEmail.textContent = name || '—';
