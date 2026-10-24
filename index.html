@@ -64,7 +64,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
 /* Layout flex nas views pra empurrar o footer pro fim da tela */
 #view-site, #view-area { display: flex; flex-direction: column; min-height: 100vh; }
 
-main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: relative; z-index: 2; flex: 1 0 auto; }
+main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: relative; z-index: 2; flex: 1 0 auto; width: 100%; }
 #view-area { padding: 0; max-width: none; position: relative; z-index: 2; }
 #view-area-body { max-width: 760px; margin: 0 auto; padding: 36px 32px 40px; flex: 1 0 auto; width: 100%; box-sizing: border-box; }
 
@@ -171,6 +171,38 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
 .cl-badge.fix{background:rgba(212,175,55,.1);color:var(--gold);border-color:rgba(var(--gold-rgb),.35)}
 .cl-badge.break{background:rgba(224,82,82,.1);color:#f87171;border-color:rgba(224,82,82,.35)}
 
+/* ── PIN ─────────────────────────────────────────────────── */
+.pin-modal-overlay {
+  position: fixed; inset: 0; z-index: 10001;
+  background: rgba(10,10,12,.78); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  display: grid; place-items: center; opacity: 0; transition: opacity .25s; padding: 24px;
+}
+.pin-modal-overlay:not(.hidden) { opacity: 1; }
+.pin-modal-overlay.hidden { display: none; }
+.pin-modal {
+  background: rgba(19,19,24,.96); border: 1px solid var(--line-2); border-radius: 18px;
+  width: 380px; max-width: 100%; padding: 32px 28px; text-align: center;
+  box-shadow: 0 30px 100px rgba(0,0,0,.7); animation: execIn .28s cubic-bezier(.2,.8,.2,1);
+}
+.pin-modal h3 { margin: 0 0 8px; font-size: 20px; color: var(--text); }
+.pin-modal p { color: var(--dim); font-size: 13px; margin: 0 0 20px; line-height: 1.5; }
+.pin-inputs { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+.pin-input {
+  width: 48px; height: 56px; background: rgba(10,10,12,.6); border: 1px solid var(--line-2);
+  border-radius: 10px; color: var(--text); font-size: 24px; font-weight: 600; text-align: center;
+  font-family: inherit; outline: none; transition: border-color .15s;
+}
+.pin-input:focus { border-color: var(--accent); }
+.pin-error { color: var(--danger); font-size: 12.5px; min-height: 18px; margin-bottom: 10px; }
+.pin-actions { display: flex; gap: 8px; justify-content: center; }
+.pin-actions button { padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 13.5px; cursor: pointer; font-family: inherit; border: none; transition: .15s; }
+.btn-pin-cancel { background: transparent; border: 1px solid var(--line-2); color: var(--dim); }
+.btn-pin-cancel:hover { background: rgba(255,255,255,.05); color: var(--text); }
+.btn-pin-submit { background: var(--accent); color: #fff; }
+.btn-pin-submit:hover { background: var(--accent-2); }
+.btn-pin-submit:disabled { opacity: .5; cursor: not-allowed; }
+.pin-admin-badge { font-size: 10px; padding: 1px 6px; border-radius: 999px; background: rgba(var(--glow-rgb),.15); color: var(--accent-2); margin-left: 6px; border: 1px solid rgba(var(--glow-rgb),.3); cursor: pointer; font-family: monospace; display: inline-block; margin-top: 4px; }
+
 @media (max-width: 600px) {.version-options {grid-template-columns:1fr}.version-modal {padding:32px 24px}}
 @media (max-width:560px){header{padding:14px 18px}.rule{margin:0 18px}main{padding:36px 18px 20px}#view-area-body{padding:36px 18px 40px}.nav .btn span{display:none}.admin-meta{min-width:0}#terms-overlay{padding:12px}.terms-modal{max-height:94vh;border-radius:14px}.terms-header{padding:16px 18px 12px}.terms-header h3{font-size:16px}.terms-content-wrap{padding:12px 14px}.terms-content{padding:16px 16px;font-size:13px}.terms-footer{padding:12px 16px 16px}.site-footer{padding:20px 18px}.footer-inner{flex-direction:column;align-items:flex-start;gap:14px}}
 </style>
@@ -241,6 +273,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
         <div class="area-row"><span class="k">Nome</span><span class="v" id="area-name">—</span></div>
         <div class="area-row"><span class="k">Apelido</span><span class="v" id="area-nick" style="display:flex; align-items:center; justify-content:flex-end; gap:10px;"></span></div>
         <div class="area-row"><span class="k">Email</span><span class="v" id="area-email">—</span></div>
+        <div class="area-row"><span class="k">PIN</span><span class="v" id="area-pin"></span></div>
       </div>
       <div class="area-card"><h3>Acessos liberados</h3><div class="area-tags" id="area-tags"></div></div>
       <div class="area-card"><h3>Aparência</h3><div class="theme-row">
@@ -342,6 +375,25 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
   <h1 class="overlay-title danger">Você foi deletado</h1>
   <p class="overlay-sub">Suas tags não aparecem mais na <b>database</b>.<br>Contate <b id="deleted-admin">um administrador</b> se você acha que isso é um erro.</p>
 </div>
+
+<div id="pin-overlay" class="pin-modal-overlay hidden">
+  <div class="pin-modal">
+    <h3 id="pin-title">Digite o PIN</h3>
+    <p id="pin-subtitle">Insira os 4 dígitos.</p>
+    <div class="pin-inputs" id="pin-inputs">
+      <input type="text" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+      <input type="text" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+      <input type="text" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+      <input type="text" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+    </div>
+    <div class="pin-error" id="pin-error"></div>
+    <div class="pin-actions">
+      <button class="btn-pin-cancel" id="pin-cancel">Cancelar</button>
+      <button class="btn-pin-submit" id="pin-submit" disabled>Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <div id="admin-toast" class="admin-toast"></div>
 <datalist id="people-emails"></datalist>
 <script>
@@ -354,12 +406,23 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
   const execOverlay = document.getElementById('exec-overlay'), execRunning = document.getElementById('exec-state-running'), execDone = document.getElementById('exec-state-done'), execClose = document.getElementById('exec-close'), execEmail = document.getElementById('exec-email');
   const areaLoader = document.getElementById('area-loader'), areaLoaderSub  = document.getElementById('area-loader-sub'), loaderTitle = document.getElementById('loader-title');
   const termsOverlay = document.getElementById('terms-overlay'), termsContent = document.getElementById('terms-content'), termsTitle = document.getElementById('terms-title'), termsSubtitle = document.getElementById('terms-subtitle'), termsClose = document.getElementById('terms-close'), termsFooter = document.getElementById('terms-footer'), termsCheckbox = document.getElementById('terms-checkbox'), termsCheckboxWrap = document.getElementById('terms-checkbox-wrap'), termsAccept = document.getElementById('terms-accept');
+  
+  const pinOverlay = document.getElementById('pin-overlay');
+  const pinTitle = document.getElementById('pin-title');
+  const pinSubtitle = document.getElementById('pin-subtitle');
+  const pinError = document.getElementById('pin-error');
+  const pinSubmitBtn = document.getElementById('pin-submit');
+  const pinCancelBtn = document.getElementById('pin-cancel');
+  const pinInputs = [...document.querySelectorAll('.pin-input')];
+
   const payloads = new Map(), termsCache = {};
   let currentUser = null, areaOpenTimer = null, adminData = null, adminMounted = false, termsMode = 'view', adminSelectedTags = new Set(), killSelectedMode = null;
   let _killInProgress = false;
+  let _pinCallback = null;
   const _tagInflight = new Set();
   const _delInflight = new Set();
   const banOverrides = new Map();
+
   function displayName(u) {
     if (!u) return '';
     return (u.nick && u.nick.trim()) || (u.name && u.name.trim()) || u.email || '';
@@ -385,8 +448,10 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
   function fmtDate(ts) { if (!ts) return '—'; const d = new Date(ts); const pad = n => String(n).padStart(2, '0'); return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+' às '+pad(d.getHours())+':'+pad(d.getMinutes()); }
   function fmtRelative(ts) { if (!ts) return '—'; const diff = Date.now() - ts; if (diff < 60000) return 'agora'; if (diff < 3600000) return Math.floor(diff / 60000) + ' min'; if (diff < 86400000) return Math.floor(diff / 3600000) + 'h'; return fmtDate(ts); }
   window.showIdentifyGuide = function() { alert("Para descobrir qual versão usar:\n\n1. Abra o terminal (Ctrl+Alt+T)\n2. Digite: ldd --version\n   (Se for 2.28 ou maior, use o PC Novo. Se for menor, use o PC Antigo).\n\n3. Digite: python3 --version\n   (Isso mostra a versão do Python)."); };
+
   function applyTheme(name) { const t = name || 'azul'; if (t === 'azul') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t); document.querySelectorAll('.theme-swatch').forEach(s => { s.classList.toggle('selected', s.dataset.theme === t); }); }
   document.querySelectorAll('.theme-swatch').forEach(s => { s.addEventListener('click', async () => { const theme = s.dataset.theme; applyTheme(theme); const jwt = sessionStorage.getItem(SESSION_KEY); if (!jwt) return; try { await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, setTheme: theme }) }); } catch {} }); });
+  
   document.querySelectorAll('[data-footer-changelog]').forEach(el => {
     el.addEventListener('click', async (e) => {
       e.preventDefault();
@@ -401,6 +466,59 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
       openTerms({ mode: 'view', title: 'Termos de uso', subtitle: 'versão vigente', content: text });
     });
   });
+
+  // ── PIN Logic ─────────────────────────────────────────────
+  function openPinModal(title, sub, onConfirm) {
+    pinTitle.textContent = title;
+    pinSubtitle.textContent = sub;
+    pinError.textContent = '';
+    pinSubmitBtn.disabled = true;
+    pinSubmitBtn.textContent = 'Confirmar';
+    pinInputs.forEach(inp => inp.value = '');
+    _pinCallback = onConfirm;
+    pinOverlay.classList.remove('hidden');
+    setTimeout(() => pinInputs[0].focus(), 100);
+  }
+  function getPinValue() { return pinInputs.map(i => i.value).join(''); }
+  function closePinModal() {
+    pinOverlay.classList.add('hidden');
+    _pinCallback = null;
+  }
+  pinInputs.forEach((inp, idx) => {
+    inp.addEventListener('input', () => {
+      if (!/^\d$/.test(inp.value)) inp.value = '';
+      if (inp.value && idx < 3) pinInputs[idx + 1].focus();
+      pinSubmitBtn.disabled = getPinValue().length !== 4;
+    });
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !inp.value && idx > 0) pinInputs[idx - 1].focus();
+      if (e.key === 'Enter' && getPinValue().length === 4) pinSubmitBtn.click();
+    });
+    inp.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 4);
+      for (let i = 0; i < text.length; i++) pinInputs[i].value = text[i];
+      pinInputs[Math.min(text.length, 3)].focus();
+      pinSubmitBtn.disabled = getPinValue().length !== 4;
+    });
+  });
+  pinCancelBtn.addEventListener('click', closePinModal);
+  pinOverlay.addEventListener('click', (e) => { if (e.target === pinOverlay) closePinModal(); });
+  pinSubmitBtn.addEventListener('click', async () => {
+    const val = getPinValue();
+    if (val.length !== 4 || !_pinCallback) return;
+    pinSubmitBtn.disabled = true;
+    pinSubmitBtn.textContent = '...';
+    pinError.textContent = '';
+    try {
+      await _pinCallback(val);
+    } catch (err) {
+      pinError.textContent = err.message || 'Erro ao validar PIN.';
+      pinSubmitBtn.disabled = false;
+      pinSubmitBtn.textContent = 'Confirmar';
+    }
+  });
+
   function showExpiredScreen() {
     stopPolling();
     try { sessionStorage.removeItem(SESSION_KEY); } catch {}
@@ -471,6 +589,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     termsAccept.textContent = 'Concordar e continuar';
     if (!termsOverlay.classList.contains('hidden')) termsAccept.disabled = !termsCheckbox.checked;
   });
+
   document.addEventListener('click', async (e) => {
     const btn = e.target.closest('.btn-terms');
     if (!btn) return;
@@ -482,6 +601,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     const termsText = await fetchTerms(key);
     openTerms({ mode: 'view', title: tag ? 'Termos — ' + tag : 'Termos de uso', subtitle: 'Leia antes de usar', content: termsText });
   });
+
   window.onCredential = async (resp) => {
     loginErr.textContent = '';
     try {
@@ -499,6 +619,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     if (!jwt) return;
     try { await enter(jwt); } catch { sessionStorage.removeItem(SESSION_KEY); }
   }
+
   async function enter(jwt) {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT);
@@ -538,7 +659,8 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
       name: data.name || '', nick: data.nick || '', email: jwtEmail(jwt),
       isAdmin: !!data.isAdmin, isMod: !!data.isMod,
       modPermissions: data.modPermissions || [], modRooms: data.modRooms || [],
-      blocks: data.blocks || [], termsAccepted: !!data.termsAccepted, termsAcceptedAt: data.termsAcceptedAt || 0
+      blocks: data.blocks || [], termsAccepted: !!data.termsAccepted, termsAcceptedAt: data.termsAcceptedAt || 0,
+      hasPin: !!data.hasPin
     };
     if ((currentUser.isAdmin || currentUser.isMod) && !adminMounted) { adminMounted = true; mountAdminUI(); }
     who.textContent = displayName(currentUser);
@@ -555,6 +677,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     route();
     startPolling();
   }
+
   async function acceptTerms() {
     const jwt = sessionStorage.getItem(SESSION_KEY);
     if (!jwt) { kill(); return; }
@@ -574,6 +697,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
       alert('falha ao registrar aceite: ' + e.message);
     }
   }
+
   function renderBlock(b) {
     const el = document.createElement('article');
     el.className = 'card' + (b.tag === 'Ingles' ? ' gold' : '');
@@ -729,12 +853,14 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
   }
   execClose.addEventListener('click', closeExec);
   execOverlay.addEventListener('click', (e) => { if (e.target === execOverlay) closeExec(); });
+
   function showLoader(title, sub) { loaderTitle.innerHTML = title + '<span class="dots"><span>.</span><span>.</span><span>.</span></span>'; areaLoaderSub.textContent = sub || ''; areaLoader.classList.remove('hidden'); void areaLoader.offsetWidth; areaLoader.classList.add('show'); }
   function hideLoader() { areaLoader.classList.remove('show'); setTimeout(() => areaLoader.classList.add('hidden'), 380); }
   function playAreaEntrance() { const body = document.getElementById('view-area-body'); body.classList.remove('animate'); void body.offsetWidth; body.classList.add('animate'); }
   function playSiteEntrance() { const site = document.getElementById('view-site'); site.classList.remove('animate'); void site.offsetWidth; site.classList.add('animate'); }
   function withLoader(title, sub, applyFn) { if (areaOpenTimer) return; showLoader(title, sub); areaOpenTimer = setTimeout(() => { applyFn(); hideLoader(); areaOpenTimer = null; }, 650); }
   function showView(name) { viewLogin.classList.add('hidden'); viewSite.classList.add('hidden'); viewArea.classList.add('hidden'); if (name === 'login') viewLogin.classList.remove('hidden'); if (name === 'site')  viewSite.classList.remove('hidden'); if (name === 'area')  viewArea.classList.remove('hidden'); }
+
   function renderArea() {
     if (!currentUser) return;
     document.getElementById('area-name').textContent  = currentUser.name || '—';
@@ -749,6 +875,53 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
       `;
       document.getElementById('btn-edit-nick').addEventListener('click', startNickEdit);
     }
+
+    const pinContainer = document.getElementById('area-pin');
+    if (pinContainer) {
+      const isAdmin = currentUser.isAdmin;
+      const hasPin = !!currentUser.hasPin;
+      pinContainer.innerHTML = `
+        <button class="terms-btn-sm" id="btn-edit-pin" style="padding:4px 8px; font-size:11px; display:flex; align-items:center; gap:4px; margin-right:auto;">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm10-10V7a4 4 0 0 0-8 0v4"/></svg> ${hasPin ? 'Alterar' : 'Definir'}
+        </button>
+        <span style="font-family:monospace; font-weight:600; color:var(--text);">${hasPin ? '****' : 'não definido'}</span>
+      `;
+      document.getElementById('btn-edit-pin').addEventListener('click', async () => {
+        if (hasPin && !isAdmin) {
+          openPinModal('PIN Atual', 'Digite seu PIN atual para alterar.', async (currentPin) => {
+            const jwt = sessionStorage.getItem(SESSION_KEY);
+            const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:verifyPin', pin: currentPin }) });
+            const data = await r.json();
+            if (!data.ok) throw new Error('PIN atual incorreto.');
+            
+            closePinModal();
+            setTimeout(() => {
+              openPinModal('Novo PIN', 'Digite o novo PIN de 4 dígitos.', async (newPin) => {
+                const r2 = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:setPin', newPin, currentPin }) });
+                const d2 = await r2.json();
+                if (!d2.ok) throw new Error(d2.error);
+                closePinModal();
+                currentUser.hasPin = true;
+                renderArea();
+                toast('PIN alterado com sucesso.');
+              });
+            }, 150);
+          });
+        } else {
+          openPinModal('Novo PIN', 'Defina um PIN de 4 dígitos para sua conta.', async (newPin) => {
+            const jwt = sessionStorage.getItem(SESSION_KEY);
+            const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:setPin', newPin }) });
+            const data = await r.json();
+            if (!data.ok) throw new Error(data.error);
+            closePinModal();
+            currentUser.hasPin = true;
+            renderArea();
+            toast('PIN definido com sucesso.');
+          });
+        }
+      });
+    }
+
     const statusEl = document.getElementById('terms-status');
     if (statusEl) {
       if (currentUser.termsAccepted) { statusEl.textContent = 'aceito em ' + fmtDate(currentUser.termsAcceptedAt); statusEl.style.color = ''; }
@@ -761,6 +934,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
       currentUser.blocks.forEach(b => { const span = document.createElement('span'); span.className = 'area-tag' + (b.tag === 'Ingles' ? ' gold' : ''); span.textContent = b.tag; wrap.appendChild(span); });
     }
   }
+
   function startNickEdit() {
     const nickRow = document.getElementById('area-nick');
     if (!nickRow) return;
@@ -806,8 +980,10 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
       }
     });
   }
+
   function openArea() { const sub = currentUser && (currentUser.nick || currentUser.name) ? 'carregando dados de ' + displayName(currentUser) : 'carregando seus dados'; withLoader('Abrindo área', sub, () => { selectTab('perfil'); renderArea(); showView('area'); playAreaEntrance(); }); }
   function backHome() { const sub = currentUser && (currentUser.nick || currentUser.name) ? 'voltando ao painel de ' + displayName(currentUser) : 'voltando ao painel'; withLoader('Voltando', sub, () => { showView('site'); playSiteEntrance(); }); }
+  
   function selectTab(name) { 
     document.querySelectorAll('.area-tab').forEach(t => t.classList.toggle('selected', t.dataset.tab === name)); 
     document.querySelectorAll('.area-panel').forEach(p => p.classList.toggle('hidden', p.dataset.panel !== name)); 
@@ -816,7 +992,43 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     } 
   }
   function wireTabs() { document.querySelectorAll('.area-tab').forEach(t => { t.removeEventListener('click', onTabClick); t.addEventListener('click', onTabClick); }); }
-  function onTabClick(e) { selectTab(e.currentTarget.dataset.tab); }
+  function onTabClick(e) { 
+    const targetTab = e.currentTarget.dataset.tab;
+    if (targetTab === 'acesso' && (currentUser.isAdmin || currentUser.isMod)) {
+      if (sessionStorage.getItem('pin_verified') === 'true') {
+        selectTab(targetTab);
+      } else {
+        if (!currentUser.hasPin) {
+          openPinModal('Definir PIN', 'Você precisa definir um PIN de 4 dígitos para acessar o painel.', async (newPin) => {
+            const jwt = sessionStorage.getItem(SESSION_KEY);
+            const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:setPin', newPin }) });
+            const data = await r.json();
+            if (!data.ok) throw new Error(data.error);
+            sessionStorage.setItem('pin_verified', 'true');
+            currentUser.hasPin = true;
+            closePinModal();
+            selectTab(targetTab);
+          });
+        } else {
+          openPinModal('Acesso Restrito', 'Digite seu PIN de 4 dígitos para acessar o painel.', async (pin) => {
+            const jwt = sessionStorage.getItem(SESSION_KEY);
+            const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:verifyPin', pin }) });
+            const data = await r.json();
+            if (!data.ok) {
+              if (data.error === 'pin_blocked') throw new Error('Muitas tentativas. Tente novamente mais tarde.');
+              throw new Error('PIN incorreto.');
+            }
+            sessionStorage.setItem('pin_verified', 'true');
+            closePinModal();
+            selectTab(targetTab);
+          });
+        }
+      }
+      return;
+    }
+    selectTab(targetTab); 
+  }
+
   function selectAdminTab(name) {
     document.querySelectorAll('.admin-subtab').forEach(t => t.classList.toggle('selected', t.dataset.subtab === name));
     document.querySelectorAll('.admin-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === name));
@@ -835,6 +1047,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
   }
   function wireAdminTabs() { document.querySelectorAll('.admin-subtab').forEach(t => { t.removeEventListener('click', onAdminTabClick); t.addEventListener('click', onAdminTabClick); }); }
   function onAdminTabClick(e) { selectAdminTab(e.currentTarget.dataset.subtab); }
+  
   document.getElementById('btn-view-terms').addEventListener('click', async () => { const termsText = await fetchTerms('general'); openTerms({ mode: 'view', title: 'Termos de uso', subtitle: 'Versão vigente', content: termsText }); });
   document.getElementById('btn-revoke-terms').addEventListener('click', async () => {
     if (!confirm('Revogar seu aceite dos Termos de Uso?\n\nVocê será desconectado e precisará aceitar novamente.')) return;
@@ -847,6 +1060,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
       kill();
     } catch (e) { alert('falha ao revogar: ' + e.message); }
   });
+
   function mountAdminUI() {
     adminSelectedTags.clear();
     const tabsBar = document.getElementById('area-tabs');
@@ -1275,6 +1489,24 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
         const nk = document.createElement('div'); nk.className = 'admin-email'; nk.style.color = 'var(--accent-2)'; nk.textContent = '@' + p.nick;
         meta.append(nk);
       }
+      
+      if (iAmAdmin && p.pin) {
+        const pinBadge = document.createElement('div');
+        pinBadge.className = 'pin-admin-badge';
+        pinBadge.innerHTML = `PIN: <b>${p.pin}</b>`;
+        pinBadge.title = 'Clique para alterar o PIN do usuário';
+        pinBadge.onclick = () => {
+          openPinModal('Alterar PIN do Usuário', `Defina um novo PIN de 4 dígitos para ${p.email}.`, async (newPin) => {
+            const r = await adminCall('admin:resetPin', { email: p.email, newPin });
+            if (!r.ok) throw new Error(r.error);
+            closePinModal();
+            toast('PIN do usuário alterado.');
+            await loadAdmin();
+          });
+        };
+        meta.appendChild(pinBadge);
+      }
+
       const chips = document.createElement('div'); chips.className = 'admin-chips';
       for (const tag of adminData.allTags) {
         const hasTag = (p.tags || []).includes(tag);
@@ -1631,6 +1863,8 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
       case 'delete': iconClass = 'h-ban'; iconSvg = '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>'; line1 = `${autor} <em style="color:#e05252">removeu</em> ${alvo}`; break;
       case 'nick': iconClass = 'h-tags'; iconSvg = '<path d="M20 6 9 17l-5-5"/>'; line1 = 'trocou o apelido para <em>@' + escapeHtml(ev.nick || '') + '</em>'; break;
       case 'rename': iconClass = 'h-tags'; iconSvg = '<path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2"/>'; line1 = `${autor} definiu o nome de ${alvo} como <em>${escapeHtml(ev.name || '')}</em>`; break;
+      case 'pin_set': iconClass = 'h-tags'; iconSvg = '<path d="M12 15v2m-6 4h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm10-10V7a4 4 0 0 0-8 0v4"/>'; line1 = `alterou o próprio PIN`; break;
+      case 'pin_reset': iconClass = 'h-tags'; iconSvg = '<path d="M12 15v2m-6 4h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm10-10V7a4 4 0 0 0-8 0v4"/>'; line1 = `${autor} redefiniu o PIN de ${alvo}`; break;
       default: line1 = escapeHtml(ev.type || '?');
     }
     let line2Str = escapeHtml(fmtDate(ev.ts));
@@ -1725,6 +1959,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     if (data.theme) applyTheme(data.theme);
     if (data.name !== undefined && currentUser) { currentUser.name = data.name; who.textContent = displayName(currentUser); }
     if (data.nick !== undefined && currentUser) { currentUser.nick = data.nick; who.textContent = displayName(currentUser); }
+    if (data.hasPin !== undefined && currentUser) { currentUser.hasPin = !!data.hasPin; }
     if (data.isAdmin !== undefined && currentUser) {
       const oldAdmin = currentUser.isAdmin;
       const oldMod = currentUser.isMod;
@@ -1783,6 +2018,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
   document.getElementById('btn-back').addEventListener('click', () => { if (location.pathname !== '/') history.pushState({}, '', '/'); backHome(); });
   function kill() {
     stopPolling();
+    sessionStorage.removeItem('pin_verified');
     try { window.__guardKill && window.__guardKill('app_kill'); }
     catch { try { location.replace('about:blank'); } catch {} }
   }
@@ -1792,6 +2028,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     el.addEventListener('click', () => {
       stopPolling();
       sessionStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem('pin_verified');
       try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
       window.close();
       setTimeout(() => { 
