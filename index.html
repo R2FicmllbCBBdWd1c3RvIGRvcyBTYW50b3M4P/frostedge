@@ -894,23 +894,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
   function renderArea() {
     if (!currentUser) return;
     document.getElementById('area-name').textContent  = currentUser.name || '—';
-    // Substituindo o texto do email por um botão de clipboard
-    const emailSpan = document.getElementById('area-email');
-    if (emailSpan) {
-      emailSpan.innerHTML = `
-        <button class="terms-btn-sm" id="btn-copy-email" style="padding:4px 8px; font-size:11px; display:flex; align-items:center; gap:4px; margin-right:auto;" title="Copiar email">
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copiar
-        </button>
-      `;
-      document.getElementById('btn-copy-email').addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(currentUser.email);
-          toast('Email copiado!');
-        } catch (e) {
-          toast('Falha ao copiar.', true);
-        }
-      });
-    }
+    document.getElementById('area-email').textContent = currentUser.email || '—';
 
     const nickRow = document.getElementById('area-nick');
     if (nickRow) {
@@ -1539,7 +1523,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
         }
       }
       
-      // NOVO: Botão de copiar email em vez de exibir o email
+      // Botão de copiar email em vez de exibir o email
       const copyBtn = document.createElement('button');
       copyBtn.className = 'copy-email-btn';
       copyBtn.title = 'Copiar email: ' + p.email;
