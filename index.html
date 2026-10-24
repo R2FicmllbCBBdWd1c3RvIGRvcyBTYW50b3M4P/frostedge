@@ -61,7 +61,6 @@ html[data-theme="vermelho"]{--accent:#ef4444;--accent-2:#f87171;--accent-dim:#7f
 header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;position:relative;z-index:2} .brand{display:flex;align-items:center;gap:10px;font-weight:600} .brand .mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--accent-2),var(--accent-dim));display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700;box-shadow:0 0 0 1px rgba(var(--glow-rgb),.3),0 4px 20px rgba(var(--glow-rgb),.4);position:relative;overflow:hidden} .brand .mark::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent, rgba(255,255,255,.4), transparent);transform:rotate(45deg);animation:shine 3s infinite;opacity:0.5;pointer-events:none} @keyframes shine{0%,100%{transform:translateX(-100%) rotate(45deg)}50%{transform:translateX(100%) rotate(45deg)}} .brand .name{font-size:16px} .brand .name em{font-style:normal;color:var(--accent-2)} .nav{display:flex;align-items:center;gap:10px} .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;font-size:13.5px;font-weight:500;border:1px solid var(--line-2);background:rgba(15,15,19,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--text);cursor:pointer;transition:border-color .15s,background .15s,color .15s} .btn:hover{border-color:#33333d;background:rgba(21,21,26,.85)} .btn svg{width:15px;height:15px;opacity:.9} .btn.ghost{color:var(--dim)} .btn.ghost:hover{color:var(--text)}
 .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line-2) 15%,var(--line-2) 85%,transparent);margin:0 32px;position:relative;z-index:2} 
 
-/* Layout flex nas views pra empurrar o footer pro fim da tela */
 #view-site, #view-area { display: flex; flex-direction: column; min-height: 100vh; }
 main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: relative; z-index: 2; flex: 1 0 auto; width: 100%; }
 #view-area { padding: 0; max-width: none; position: relative; z-index: 2; }
@@ -203,25 +202,62 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
 .cl-badge.fix{background:rgba(212,175,55,.1);color:var(--gold);border-color:rgba(var(--gold-rgb),.35)}
 .cl-badge.break{background:rgba(224,82,82,.1);color:#f87171;border-color:rgba(224,82,82,.35)}
 
-/* ── PIN MODAL ─────────────────────────────────────────────── */
-.pin-modal-overlay {position: fixed; inset: 0; z-index: 10001; background: rgba(10,10,12,.82); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); display: grid; place-items: center; opacity: 0; transition: opacity .25s; padding: 24px;}
+/* ── PIN MODAL (REDESIGN) ─────────────────────────────────────── */
+.pin-modal-overlay {position: fixed; inset: 0; z-index: 10001; background: rgba(5,5,6,.85); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); display: grid; place-items: center; opacity: 0; transition: opacity .25s; padding: 24px;}
 .pin-modal-overlay:not(.hidden) { opacity: 1; }
 .pin-modal-overlay.hidden { display: none; }
-.pin-modal {background: rgba(19,19,24,.98); border: 1px solid var(--line-2); border-radius: 16px; width: 420px; max-width: 100%; padding: 36px 32px; text-align: center; box-shadow: 0 24px 80px rgba(0,0,0,.8), 0 0 0 1px rgba(var(--glow-rgb),.1); animation: execIn .28s cubic-bezier(.2,.8,.2,1);}
-.pin-modal h3 { margin: 0 0 8px; font-size: 22px; color: var(--text); font-weight: 600; letter-spacing: -.3px; }
-.pin-modal p { color: var(--dim); font-size: 13.5px; margin: 0 0 28px; line-height: 1.5; }
-.pin-field-group label { display: block; font-size: 11px; font-weight: 600; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; text-align: left; padding-left: 6px; }
-.pin-inputs { display: flex; gap: 12px; justify-content: center; margin-bottom: 12px; }
-.pin-input {width: 54px; height: 64px; background: rgba(10,10,12,.8); border: 1px solid var(--line-2); border-radius: 12px; color: var(--text); font-size: 28px; font-weight: 700; text-align: center; font-family: inherit; outline: none; transition: all .2s;}
-.pin-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--glow-rgb), 0.2); transform: translateY(-2px); }
-.pin-error { color: var(--danger); font-size: 13px; min-height: 20px; margin-bottom: 16px; font-weight: 500; }
-.pin-actions { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
-.pin-actions button { padding: 13px 24px; border-radius: 11px; font-weight: 600; font-size: 14px; cursor: pointer; font-family: inherit; border: none; transition: all .15s; }
+.pin-modal {
+  background: linear-gradient(180deg, rgba(19,19,24,.98), rgba(13,13,16,.98));
+  border: 1px solid var(--line-2); 
+  border-radius: 20px; 
+  width: 380px; 
+  max-width: 100%; 
+  padding: 32px 28px; 
+  text-align: center; 
+  box-shadow: 0 30px 100px rgba(0,0,0,.8), 0 0 0 1px rgba(var(--glow-rgb),.1), inset 0 1px rgba(255,255,255,.05); 
+  animation: execIn .3s cubic-bezier(.2,.8,.2,1);
+}
+.pin-header { margin-bottom: 24px; }
+.pin-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: rgba(var(--glow-rgb), 0.1); color: var(--accent-2);
+  border: 1px solid rgba(var(--glow-rgb), 0.2);
+  display: grid; place-items: center; margin: 0 auto 16px;
+  box-shadow: 0 0 20px rgba(var(--glow-rgb), 0.15);
+}
+.pin-icon svg { width: 22px; height: 22px; }
+.pin-modal h3 { margin: 0 0 6px; font-size: 20px; color: var(--text); font-weight: 600; letter-spacing: -.3px; }
+.pin-modal p { color: var(--dim); font-size: 13.5px; margin: 0; line-height: 1.5; }
+
+.pin-field-group { margin-bottom: 16px; }
+.pin-field-group label { display: block; font-size: 11px; font-weight: 600; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; text-align: left; padding-left: 4px; }
+.pin-inputs { display: flex; gap: 10px; justify-content: center; }
+.pin-input {
+  width: 52px; height: 60px; 
+  background: rgba(0,0,0,.3); 
+  border: 1px solid var(--line-2); 
+  border-radius: 12px; 
+  color: var(--text); 
+  font-size: 26px; font-weight: 700; 
+  text-align: center; font-family: inherit; outline: none; 
+  transition: all .2s cubic-bezier(.2,.8,.2,1);
+}
+.pin-input:focus { 
+  border-color: var(--accent); 
+  background: rgba(var(--glow-rgb), 0.05);
+  box-shadow: 0 0 0 3px rgba(var(--glow-rgb), 0.15), inset 0 0 10px rgba(var(--glow-rgb), 0.05); 
+  transform: translateY(-2px); 
+}
+.pin-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--line-2) 20%, var(--line-2) 80%, transparent); margin: 20px 0; }
+
+.pin-error { color: var(--danger); font-size: 13px; min-height: 20px; margin: 8px 0 0; font-weight: 500; }
+.pin-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+.pin-actions button { padding: 12px 20px; border-radius: 11px; font-weight: 600; font-size: 13.5px; cursor: pointer; font-family: inherit; border: none; transition: all .15s; }
 .btn-pin-cancel { background: transparent; border: 1px solid var(--line-2); color: var(--dim); flex: 1; }
 .btn-pin-cancel:hover { background: rgba(255,255,255,.05); color: var(--text); }
-.btn-pin-submit { background: var(--accent); color: #fff; flex: 1; }
-.btn-pin-submit:hover { background: var(--accent-2); }
-.btn-pin-submit:disabled { opacity: .5; cursor: not-allowed; }
+.btn-pin-submit { background: var(--accent); color: #fff; flex: 1; box-shadow: 0 4px 15px rgba(var(--glow-rgb), 0.25); }
+.btn-pin-submit:hover { background: var(--accent-2); box-shadow: 0 6px 20px rgba(var(--glow-rgb), 0.4); }
+.btn-pin-submit:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
 
 /* ── ABA PINs (ADMIN) ──────────────────────────────────────── */
 .pin-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
@@ -409,8 +445,13 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
 
 <div id="pin-overlay" class="pin-modal-overlay hidden">
   <div class="pin-modal">
-    <h3 id="pin-title">Acesso Restrito</h3>
-    <p id="pin-subtitle">Digite seu PIN de 4 dígitos.</p>
+    <div class="pin-header">
+      <div class="pin-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
+      <h3 id="pin-title">Acesso Restrito</h3>
+      <p id="pin-subtitle">Digite seu PIN de 4 dígitos para acessar o painel.</p>
+    </div>
     
     <div id="pin-error" class="pin-error"></div>
 
@@ -435,7 +476,8 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
           <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
         </div>
       </div>
-      <div class="pin-field-group" style="margin-top: 20px;">
+      <div class="pin-divider"></div>
+      <div class="pin-field-group">
         <label>Novo PIN</label>
         <div class="pin-inputs" id="pin-inputs-new">
           <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
@@ -448,7 +490,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
 
     <div class="pin-actions">
       <button class="btn-pin-cancel" id="pin-cancel">Cancelar</button>
-      <button class="btn-pin-submit hidden" id="pin-submit">Confirmar</button>
+      <button class="btn-pin-submit hidden" id="pin-submit">Salvar Alterações</button>
     </div>
   </div>
 </div>
