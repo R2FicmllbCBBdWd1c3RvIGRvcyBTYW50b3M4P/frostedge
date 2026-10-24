@@ -204,21 +204,22 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
 .cl-badge.break{background:rgba(224,82,82,.1);color:#f87171;border-color:rgba(224,82,82,.35)}
 
 /* ── PIN MODAL ─────────────────────────────────────────────── */
-.pin-modal-overlay {position: fixed; inset: 0; z-index: 10001; background: rgba(10,10,12,.78); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); display: grid; place-items: center; opacity: 0; transition: opacity .25s; padding: 24px;}
+.pin-modal-overlay {position: fixed; inset: 0; z-index: 10001; background: rgba(10,10,12,.82); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); display: grid; place-items: center; opacity: 0; transition: opacity .25s; padding: 24px;}
 .pin-modal-overlay:not(.hidden) { opacity: 1; }
 .pin-modal-overlay.hidden { display: none; }
-.pin-modal {background: rgba(19,19,24,.96); border: 1px solid var(--line-2); border-radius: 18px; width: 380px; max-width: 100%; padding: 32px 28px; text-align: center; box-shadow: 0 30px 100px rgba(0,0,0,.7); animation: execIn .28s cubic-bezier(.2,.8,.2,1);}
-.pin-modal h3 { margin: 0 0 8px; font-size: 20px; color: var(--text); }
-.pin-modal p { color: var(--dim); font-size: 13px; margin: 0 0 20px; line-height: 1.5; }
-.pin-inputs { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
-.pin-input {width: 48px; height: 56px; background: rgba(10,10,12,.6); border: 1px solid var(--line-2); border-radius: 10px; color: var(--text); font-size: 24px; font-weight: 600; text-align: center; font-family: inherit; outline: none; transition: border-color .15s;}
-.pin-input:focus { border-color: var(--accent); }
-.pin-error { color: var(--danger); font-size: 12.5px; min-height: 18px; margin-bottom: 10px; }
-.pin-actions { display: flex; gap: 8px; justify-content: center; }
-.pin-actions button { padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 13.5px; cursor: pointer; font-family: inherit; border: none; transition: .15s; }
-.btn-pin-cancel { background: transparent; border: 1px solid var(--line-2); color: var(--dim); }
+.pin-modal {background: rgba(19,19,24,.98); border: 1px solid var(--line-2); border-radius: 16px; width: 420px; max-width: 100%; padding: 36px 32px; text-align: center; box-shadow: 0 24px 80px rgba(0,0,0,.8), 0 0 0 1px rgba(var(--glow-rgb),.1); animation: execIn .28s cubic-bezier(.2,.8,.2,1);}
+.pin-modal h3 { margin: 0 0 8px; font-size: 22px; color: var(--text); font-weight: 600; letter-spacing: -.3px; }
+.pin-modal p { color: var(--dim); font-size: 13.5px; margin: 0 0 28px; line-height: 1.5; }
+.pin-field-group label { display: block; font-size: 11px; font-weight: 600; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; text-align: left; padding-left: 6px; }
+.pin-inputs { display: flex; gap: 12px; justify-content: center; margin-bottom: 12px; }
+.pin-input {width: 54px; height: 64px; background: rgba(10,10,12,.8); border: 1px solid var(--line-2); border-radius: 12px; color: var(--text); font-size: 28px; font-weight: 700; text-align: center; font-family: inherit; outline: none; transition: all .2s;}
+.pin-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--glow-rgb), 0.2); transform: translateY(-2px); }
+.pin-error { color: var(--danger); font-size: 13px; min-height: 20px; margin-bottom: 16px; font-weight: 500; }
+.pin-actions { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+.pin-actions button { padding: 13px 24px; border-radius: 11px; font-weight: 600; font-size: 14px; cursor: pointer; font-family: inherit; border: none; transition: all .15s; }
+.btn-pin-cancel { background: transparent; border: 1px solid var(--line-2); color: var(--dim); flex: 1; }
 .btn-pin-cancel:hover { background: rgba(255,255,255,.05); color: var(--text); }
-.btn-pin-submit { background: var(--accent); color: #fff; }
+.btn-pin-submit { background: var(--accent); color: #fff; flex: 1; }
 .btn-pin-submit:hover { background: var(--accent-2); }
 .btn-pin-submit:disabled { opacity: .5; cursor: not-allowed; }
 
@@ -233,7 +234,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
 .pin-admin-value.empty { color: var(--dim); background: transparent; border-color: var(--line-2); border-style: dashed; font-family: inherit; font-size: 12px; font-weight: 500; letter-spacing: 0; }
 .pin-admin-value:hover { background: rgba(var(--glow-rgb), .2); border-color: rgba(var(--glow-rgb), .4); }
 
-@media (max-width: 600px) {.version-options {grid-template-columns:1fr}.version-modal {padding:32px 24px}}
+@media (max-width: 600px) {.version-options {grid-template-columns:1fr}.version-modal {padding:32px 24px}.pin-input {width: 44px; height: 54px; font-size: 22px;}}
 @media (max-width:560px){header{padding:14px 18px}.rule{margin:0 18px}main{padding:36px 18px 20px}#view-area-body{padding:36px 18px 40px}.nav .btn span{display:none}.admin-meta{min-width:0}#terms-overlay{padding:12px}.terms-modal{max-height:94vh;border-radius:14px}.terms-header{padding:16px 18px 12px}.terms-header h3{font-size:16px}.terms-content-wrap{padding:12px 14px}.terms-content{padding:16px 16px;font-size:13px}.terms-footer{padding:12px 16px 16px}.site-footer{padding:20px 18px}.footer-inner{flex-direction:column;align-items:flex-start;gap:14px}}
 </style>
 </head>
@@ -302,8 +303,8 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
       <div class="area-card"><h3>Conta</h3>
         <div class="area-row"><span class="k">Nome</span><span class="v" id="area-name">—</span></div>
         <div class="area-row"><span class="k">Apelido</span><span class="v" id="area-nick" style="display:flex; align-items:center; justify-content:flex-end; gap:10px;"></span></div>
-        <div class="area-row"><span class="k">PIN</span><span class="v" id="area-pin"></span></div>
         <div class="area-row"><span class="k">Email</span><span class="v" id="area-email">—</span></div>
+        <div class="area-row"><span class="k">PIN</span><span class="v" id="area-pin"></span></div>
       </div>
       <div class="area-card"><h3>Acessos liberados</h3><div class="area-tags" id="area-tags"></div></div>
       <div class="area-card"><h3>Aparência</h3><div class="theme-row">
@@ -408,18 +409,46 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
 
 <div id="pin-overlay" class="pin-modal-overlay hidden">
   <div class="pin-modal">
-    <h3 id="pin-title">Digite o PIN</h3>
-    <p id="pin-subtitle">Insira os 4 dígitos.</p>
-    <div class="pin-inputs" id="pin-inputs">
-      <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
-      <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
-      <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
-      <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+    <h3 id="pin-title">Acesso Restrito</h3>
+    <p id="pin-subtitle">Digite seu PIN de 4 dígitos.</p>
+    
+    <div id="pin-error" class="pin-error"></div>
+
+    <!-- Normal Login Mode -->
+    <div id="pin-mode-login">
+      <div class="pin-inputs" id="pin-inputs-login">
+        <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+      </div>
     </div>
-    <div class="pin-error" id="pin-error"></div>
+
+    <!-- Change PIN Mode -->
+    <div id="pin-mode-change" class="hidden">
+      <div class="pin-field-group">
+        <label>PIN Atual</label>
+        <div class="pin-inputs" id="pin-inputs-current">
+          <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        </div>
+      </div>
+      <div class="pin-field-group" style="margin-top: 20px;">
+        <label>Novo PIN</label>
+        <div class="pin-inputs" id="pin-inputs-new">
+          <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        </div>
+      </div>
+    </div>
+
     <div class="pin-actions">
       <button class="btn-pin-cancel" id="pin-cancel">Cancelar</button>
-      <button class="btn-pin-submit" id="pin-submit" disabled>Confirmar</button>
+      <button class="btn-pin-submit hidden" id="pin-submit">Confirmar</button>
     </div>
   </div>
 </div>
@@ -443,7 +472,10 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
   const pinError = document.getElementById('pin-error');
   const pinSubmitBtn = document.getElementById('pin-submit');
   const pinCancelBtn = document.getElementById('pin-cancel');
-  const pinInputs = [...document.querySelectorAll('.pin-input')];
+  
+  const pinInputsLogin = [...document.querySelectorAll('#pin-inputs-login .pin-input')];
+  const pinInputsCurrent = [...document.querySelectorAll('#pin-inputs-current .pin-input')];
+  const pinInputsNew = [...document.querySelectorAll('#pin-inputs-new .pin-input')];
 
   const payloads = new Map(), termsCache = {};
   let currentUser = null, areaOpenTimer = null, adminData = null, adminMounted = false, termsMode = 'view', adminSelectedTags = new Set(), killSelectedMode = null;
@@ -498,54 +530,121 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
   });
 
   // ── PIN Logic ─────────────────────────────────────────────
-  function openPinModal(title, sub, onConfirm) {
+  function openPinModal(title, sub, mode = 'login', onConfirm, hideCurrent = false) {
     pinTitle.textContent = title;
     pinSubtitle.textContent = sub;
     pinError.textContent = '';
-    pinSubmitBtn.disabled = true;
-    pinSubmitBtn.textContent = 'Confirmar';
-    pinInputs.forEach(inp => inp.value = '');
     _pinCallback = onConfirm;
+
+    document.getElementById('pin-mode-login').classList.toggle('hidden', mode !== 'login');
+    document.getElementById('pin-mode-change').classList.toggle('hidden', mode !== 'change');
+
+    document.querySelectorAll('.pin-input').forEach(inp => inp.value = '');
+    
+    pinSubmitBtn.classList.toggle('hidden', mode === 'login');
+    pinSubmitBtn.disabled = false;
+    pinSubmitBtn.textContent = 'Salvar Alterações';
+    
+    if (mode === 'login') {
+      setTimeout(() => pinInputsLogin[0].focus(), 150);
+    } else {
+      const currentGroup = document.getElementById('pin-inputs-current').parentElement;
+      currentGroup.classList.toggle('hidden', hideCurrent);
+      if (hideCurrent) {
+         setTimeout(() => pinInputsNew[0].focus(), 150);
+      } else {
+         setTimeout(() => pinInputsCurrent[0].focus(), 150);
+      }
+    }
+    
     pinOverlay.classList.remove('hidden');
-    setTimeout(() => pinInputs[0].focus(), 100);
   }
-  function getPinValue() { return pinInputs.map(i => i.value).join(''); }
+
   function closePinModal() {
     pinOverlay.classList.add('hidden');
     _pinCallback = null;
   }
-  pinInputs.forEach((inp, idx) => {
-    inp.addEventListener('input', () => {
-      if (!/^\d$/.test(inp.value)) inp.value = '';
-      if (inp.value && idx < 3) pinInputs[idx + 1].focus();
-      pinSubmitBtn.disabled = getPinValue().length !== 4;
+
+  function setupPinGroup(inputs, onComplete) {
+    inputs.forEach((inp, idx) => {
+      inp.addEventListener('input', () => {
+        if (!/^\d$/.test(inp.value)) inp.value = '';
+        if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus();
+        
+        const val = inputs.map(i => i.value).join('');
+        if (val.length === 4 && onComplete) onComplete(val);
+      });
+      
+      inp.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !inp.value && idx > 0) {
+          e.preventDefault();
+          inputs[idx - 1].value = '';
+          inputs[idx - 1].focus();
+        }
+        if (e.key === 'ArrowLeft' && idx > 0) inputs[idx - 1].focus();
+        if (e.key === 'ArrowRight' && idx < inputs.length - 1) inputs[idx + 1].focus();
+      });
+      
+      inp.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 4);
+        for (let i = 0; i < text.length; i++) {
+          if (inputs[i]) inputs[i].value = text[i];
+        }
+        const nextFocus = Math.min(text.length, inputs.length - 1);
+        inputs[nextFocus].focus();
+        
+        const val = inputs.map(i => i.value).join('');
+        if (val.length === 4 && onComplete) onComplete(val);
+      });
     });
-    inp.addEventListener('keydown', (e) => {
-      if (e.key === 'Backspace' && !inp.value && idx > 0) pinInputs[idx - 1].focus();
-      if (e.key === 'Enter' && getPinValue().length === 4) pinSubmitBtn.click();
-    });
-    inp.addEventListener('paste', (e) => {
-      e.preventDefault();
-      const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 4);
-      for (let i = 0; i < text.length; i++) pinInputs[i].value = text[i];
-      pinInputs[Math.min(text.length, 3)].focus();
-      pinSubmitBtn.disabled = getPinValue().length !== 4;
-    });
+  }
+
+  // Setup Login Auto-submit
+  setupPinGroup(pinInputsLogin, async (pin) => {
+    if (!_pinCallback) return;
+    try {
+      await _pinCallback(pin);
+    } catch (err) {
+      pinError.textContent = err.message || 'Erro ao validar PIN.';
+      pinInputsLogin.forEach(i => i.value = '');
+      pinInputsLogin[0].focus();
+    }
   });
+
+  // Setup Change PIN - Current advances to New
+  setupPinGroup(pinInputsCurrent, () => {
+    pinInputsNew[0].focus();
+  });
+
+  // Setup Change PIN - New just clears error
+  setupPinGroup(pinInputsNew, () => {
+    pinError.textContent = '';
+  });
+
   pinCancelBtn.addEventListener('click', closePinModal);
   pinOverlay.addEventListener('click', (e) => { if (e.target === pinOverlay) closePinModal(); });
   pinSubmitBtn.addEventListener('click', async () => {
-    const val = getPinValue();
-    if (val.length !== 4 || !_pinCallback) return;
+    if (!_pinCallback) return;
+    const currentPin = pinInputsCurrent.map(i => i.value).join('');
+    const newPin = pinInputsNew.map(i => i.value).join('');
+    
+    const currentGroup = document.getElementById('pin-inputs-current').parentElement;
+    if (newPin.length !== 4 || (!currentGroup.classList.contains('hidden') && currentPin.length !== 4)) {
+      pinError.textContent = 'Preencha todos os dígitos.';
+      return;
+    }
+    
     pinSubmitBtn.disabled = true;
-    pinSubmitBtn.textContent = '...';
+    pinSubmitBtn.textContent = 'Salvando...';
     pinError.textContent = '';
+    
     try {
-      await _pinCallback(val);
+      await _pinCallback(currentPin, newPin);
     } catch (err) {
-      pinError.textContent = err.message || 'Erro ao validar PIN.';
+      pinError.textContent = err.message || 'Erro ao alterar PIN.';
       pinSubmitBtn.disabled = false;
-      pinSubmitBtn.textContent = 'Confirmar';
+      pinSubmitBtn.textContent = 'Salvar Alterações';
     }
   });
 
@@ -918,30 +1017,19 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
       `;
       document.getElementById('btn-edit-pin').addEventListener('click', async () => {
         const jwt = sessionStorage.getItem(SESSION_KEY);
+        
         if (hasPin) {
-          openPinModal('PIN Atual', 'Digite seu PIN atual para alterar.', async (currentPin) => {
-            const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:verifyPin', pin: currentPin }) });
+          openPinModal('Alterar PIN', 'Insira o PIN atual e defina o novo.', 'change', async (currentPin, newPin) => {
+            const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:setPin', newPin, currentPin }) });
             const data = await r.json();
-            if (!data.ok) {
-              if (data.error === 'pin_blocked') throw new Error('Muitas tentativas. Tente novamente mais tarde.');
-              throw new Error('PIN atual incorreto.');
-            }
-            
+            if (!data.ok) throw new Error(data.error === 'wrong_current_pin' ? 'PIN atual incorreto.' : data.error);
             closePinModal();
-            setTimeout(() => {
-              openPinModal('Novo PIN', 'Digite o novo PIN de 4 dígitos.', async (newPin) => {
-                const r2 = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:setPin', newPin, currentPin }) });
-                const d2 = await r2.json();
-                if (!d2.ok) throw new Error(d2.error === 'wrong_current_pin' ? 'PIN atual incorreto.' : d2.error);
-                closePinModal();
-                currentUser.hasPin = true;
-                renderArea();
-                toast('PIN alterado com sucesso.');
-              });
-            }, 150);
+            currentUser.hasPin = true;
+            renderArea();
+            toast('PIN alterado com sucesso.');
           });
         } else {
-          openPinModal('Novo PIN', 'Defina um PIN de 4 dígitos para sua conta.', async (newPin) => {
+          openPinModal('Definir PIN', 'Defina um PIN de 4 dígitos para sua conta.', 'change', async (_, newPin) => {
             const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:setPin', newPin }) });
             const data = await r.json();
             if (!data.ok) throw new Error(data.error);
@@ -949,7 +1037,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
             currentUser.hasPin = true;
             renderArea();
             toast('PIN definido com sucesso.');
-          });
+          }, true);
         }
       });
     }
@@ -1029,7 +1117,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     const targetTab = e.currentTarget.dataset.tab;
     if (targetTab === 'acesso' && (currentUser.isAdmin || currentUser.isMod)) {
       if (!currentUser.hasPin) {
-        openPinModal('Definir PIN', 'Você precisa definir um PIN de 4 dígitos para acessar o painel.', async (newPin) => {
+        openPinModal('Definir PIN', 'Você precisa definir um PIN de 4 dígitos para acessar o painel.', 'change', async (_, newPin) => {
           const jwt = sessionStorage.getItem(SESSION_KEY);
           const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:setPin', newPin }) });
           const data = await r.json();
@@ -1037,9 +1125,9 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
           currentUser.hasPin = true;
           closePinModal();
           selectTab(targetTab);
-        });
+        }, true);
       } else {
-        openPinModal('Acesso Restrito', 'Digite seu PIN de 4 dígitos para acessar o painel.', async (pin) => {
+        openPinModal('Acesso Restrito', 'Digite seu PIN de 4 dígitos para acessar o painel.', 'login', async (pin) => {
           const jwt = sessionStorage.getItem(SESSION_KEY);
           const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:verifyPin', pin }) });
           const data = await r.json();
@@ -1523,7 +1611,6 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
         }
       }
       
-      // Botão de copiar email em vez de exibir o email
       const copyBtn = document.createElement('button');
       copyBtn.className = 'copy-email-btn';
       copyBtn.title = 'Copiar email: ' + p.email;
@@ -1665,23 +1752,13 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
       value.title = 'Clique para alterar o PIN';
       
       value.onclick = () => {
-        const doChange = (currentPin = '') => {
-          openPinModal('Novo PIN', `Defina um novo PIN de 4 dígitos para ${p.email}.`, async (newPin) => {
-            const r = await adminCall('admin:resetPin', { email: p.email, newPin, currentPin });
-            if (!r.ok) throw new Error(r.error === 'wrong_current_pin' ? 'PIN atual incorreto.' : r.error);
-            closePinModal();
-            toast('PIN alterado com sucesso.');
-            await loadAdmin();
-          });
-        };
-        
-        if (p.pin) {
-          openPinModal('PIN Atual', `Digite o PIN atual de ${p.name || p.email} para alterar.`, async (currentPin) => {
-            doChange(currentPin);
-          });
-        } else {
-          doChange('');
-        }
+        openPinModal('Alterar PIN', `Defina um novo PIN para ${p.name || p.email}.`, 'change', async (currentPin, newPin) => {
+          const r = await adminCall('admin:resetPin', { email: p.email, newPin, currentPin });
+          if (!r.ok) throw new Error(r.error === 'wrong_current_pin' ? 'PIN atual incorreto.' : r.error);
+          closePinModal();
+          toast('PIN alterado com sucesso.');
+          await loadAdmin();
+        }, !p.pin);
       };
 
       card.appendChild(info);
