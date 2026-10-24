@@ -61,6 +61,7 @@ html[data-theme="vermelho"]{--accent:#ef4444;--accent-2:#f87171;--accent-dim:#7f
 header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;position:relative;z-index:2} .brand{display:flex;align-items:center;gap:10px;font-weight:600} .brand .mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--accent-2),var(--accent-dim));display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700;box-shadow:0 0 0 1px rgba(var(--glow-rgb),.3),0 4px 20px rgba(var(--glow-rgb),.4);position:relative;overflow:hidden} .brand .mark::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent, rgba(255,255,255,.4), transparent);transform:rotate(45deg);animation:shine 3s infinite;opacity:0.5;pointer-events:none} @keyframes shine{0%,100%{transform:translateX(-100%) rotate(45deg)}50%{transform:translateX(100%) rotate(45deg)}} .brand .name{font-size:16px} .brand .name em{font-style:normal;color:var(--accent-2)} .nav{display:flex;align-items:center;gap:10px} .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;font-size:13.5px;font-weight:500;border:1px solid var(--line-2);background:rgba(15,15,19,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--text);cursor:pointer;transition:border-color .15s,background .15s,color .15s} .btn:hover{border-color:#33333d;background:rgba(21,21,26,.85)} .btn svg{width:15px;height:15px;opacity:.9} .btn.ghost{color:var(--dim)} .btn.ghost:hover{color:var(--text)}
 .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line-2) 15%,var(--line-2) 85%,transparent);margin:0 32px;position:relative;z-index:2} 
 
+/* Layout flex nas views pra empurrar o footer pro fim da tela */
 #view-site, #view-area { display: flex; flex-direction: column; min-height: 100vh; }
 main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: relative; z-index: 2; flex: 1 0 auto; width: 100%; }
 #view-area { padding: 0; max-width: none; position: relative; z-index: 2; }
@@ -181,27 +182,15 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
 .cl-badge.fix{background:rgba(212,175,55,.1);color:var(--gold);border-color:rgba(var(--gold-rgb),.35)}
 .cl-badge.break{background:rgba(224,82,82,.1);color:#f87171;border-color:rgba(224,82,82,.35)}
 
-/* ── PIN ─────────────────────────────────────────────────── */
-.pin-modal-overlay {
-  position: fixed; inset: 0; z-index: 10001;
-  background: rgba(10,10,12,.78); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-  display: grid; place-items: center; opacity: 0; transition: opacity .25s; padding: 24px;
-}
+/* ── PIN MODAL ─────────────────────────────────────────────── */
+.pin-modal-overlay {position: fixed; inset: 0; z-index: 10001; background: rgba(10,10,12,.78); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); display: grid; place-items: center; opacity: 0; transition: opacity .25s; padding: 24px;}
 .pin-modal-overlay:not(.hidden) { opacity: 1; }
 .pin-modal-overlay.hidden { display: none; }
-.pin-modal {
-  background: rgba(19,19,24,.96); border: 1px solid var(--line-2); border-radius: 18px;
-  width: 380px; max-width: 100%; padding: 32px 28px; text-align: center;
-  box-shadow: 0 30px 100px rgba(0,0,0,.7); animation: execIn .28s cubic-bezier(.2,.8,.2,1);
-}
+.pin-modal {background: rgba(19,19,24,.96); border: 1px solid var(--line-2); border-radius: 18px; width: 380px; max-width: 100%; padding: 32px 28px; text-align: center; box-shadow: 0 30px 100px rgba(0,0,0,.7); animation: execIn .28s cubic-bezier(.2,.8,.2,1);}
 .pin-modal h3 { margin: 0 0 8px; font-size: 20px; color: var(--text); }
 .pin-modal p { color: var(--dim); font-size: 13px; margin: 0 0 20px; line-height: 1.5; }
 .pin-inputs { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
-.pin-input {
-  width: 48px; height: 56px; background: rgba(10,10,12,.6); border: 1px solid var(--line-2);
-  border-radius: 10px; color: var(--text); font-size: 24px; font-weight: 600; text-align: center;
-  font-family: inherit; outline: none; transition: border-color .15s;
-}
+.pin-input {width: 48px; height: 56px; background: rgba(10,10,12,.6); border: 1px solid var(--line-2); border-radius: 10px; color: var(--text); font-size: 24px; font-weight: 600; text-align: center; font-family: inherit; outline: none; transition: border-color .15s;}
 .pin-input:focus { border-color: var(--accent); }
 .pin-error { color: var(--danger); font-size: 12.5px; min-height: 18px; margin-bottom: 10px; }
 .pin-actions { display: flex; gap: 8px; justify-content: center; }
@@ -211,6 +200,17 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
 .btn-pin-submit { background: var(--accent); color: #fff; }
 .btn-pin-submit:hover { background: var(--accent-2); }
 .btn-pin-submit:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── ABA PINs (ADMIN) ──────────────────────────────────────── */
+.pin-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.pin-admin-card { background: rgba(10,10,12,.4); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; transition: border-color .15s; }
+.pin-admin-card:hover { border-color: var(--line-2); }
+.pin-admin-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.pin-admin-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pin-admin-email { font-size: 11.5px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pin-admin-value { font-family: monospace; font-size: 16px; font-weight: 700; color: var(--accent-2); letter-spacing: 2px; background: rgba(var(--glow-rgb), .1); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(var(--glow-rgb), .2); display: flex; align-items: center; gap: 6px; flex-shrink: 0; cursor: pointer; transition: background .15s, border-color .15s; }
+.pin-admin-value.empty { color: var(--dim); background: transparent; border-color: var(--line-2); border-style: dashed; font-family: inherit; font-size: 12px; font-weight: 500; letter-spacing: 0; }
+.pin-admin-value:hover { background: rgba(var(--glow-rgb), .2); border-color: rgba(var(--glow-rgb), .4); }
 
 @media (max-width: 600px) {.version-options {grid-template-columns:1fr}.version-modal {padding:32px 24px}}
 @media (max-width:560px){header{padding:14px 18px}.rule{margin:0 18px}main{padding:36px 18px 20px}#view-area-body{padding:36px 18px 40px}.nav .btn span{display:none}.admin-meta{min-width:0}#terms-overlay{padding:12px}.terms-modal{max-height:94vh;border-radius:14px}.terms-header{padding:16px 18px 12px}.terms-header h3{font-size:16px}.terms-content-wrap{padding:12px 14px}.terms-content{padding:16px 16px;font-size:13px}.terms-footer{padding:12px 16px 16px}.site-footer{padding:20px 18px}.footer-inner{flex-direction:column;align-items:flex-start;gap:14px}}
@@ -390,10 +390,10 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     <h3 id="pin-title">Digite o PIN</h3>
     <p id="pin-subtitle">Insira os 4 dígitos.</p>
     <div class="pin-inputs" id="pin-inputs">
-      <input type="text" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
-      <input type="text" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
-      <input type="text" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
-      <input type="text" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+      <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+      <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+      <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+      <input type="password" class="pin-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
     </div>
     <div class="pin-error" id="pin-error"></div>
     <div class="pin-actions">
@@ -897,7 +897,6 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
       document.getElementById('btn-edit-pin').addEventListener('click', async () => {
         const jwt = sessionStorage.getItem(SESSION_KEY);
         if (hasPin) {
-          // SEMPRE pede o PIN atual, independente de ser admin ou não
           openPinModal('PIN Atual', 'Digite seu PIN atual para alterar.', async (currentPin) => {
             const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:verifyPin', pin: currentPin }) });
             const data = await r.json();
