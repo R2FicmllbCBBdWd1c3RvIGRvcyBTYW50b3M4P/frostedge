@@ -991,37 +991,32 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     } 
   }
   function wireTabs() { document.querySelectorAll('.area-tab').forEach(t => { t.removeEventListener('click', onTabClick); t.addEventListener('click', onTabClick); }); }
+  
   function onTabClick(e) { 
     const targetTab = e.currentTarget.dataset.tab;
     if (targetTab === 'acesso' && (currentUser.isAdmin || currentUser.isMod)) {
-      if (sessionStorage.getItem('pin_verified') === 'true') {
-        selectTab(targetTab);
+      if (!currentUser.hasPin) {
+        openPinModal('Definir PIN', 'Você precisa definir um PIN de 4 dígitos para acessar o painel.', async (newPin) => {
+          const jwt = sessionStorage.getItem(SESSION_KEY);
+          const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:setPin', newPin }) });
+          const data = await r.json();
+          if (!data.ok) throw new Error(data.error);
+          currentUser.hasPin = true;
+          closePinModal();
+          selectTab(targetTab);
+        });
       } else {
-        if (!currentUser.hasPin) {
-          openPinModal('Definir PIN', 'Você precisa definir um PIN de 4 dígitos para acessar o painel.', async (newPin) => {
-            const jwt = sessionStorage.getItem(SESSION_KEY);
-            const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:setPin', newPin }) });
-            const data = await r.json();
-            if (!data.ok) throw new Error(data.error);
-            sessionStorage.setItem('pin_verified', 'true');
-            currentUser.hasPin = true;
-            closePinModal();
-            selectTab(targetTab);
-          });
-        } else {
-          openPinModal('Acesso Restrito', 'Digite seu PIN de 4 dígitos para acessar o painel.', async (pin) => {
-            const jwt = sessionStorage.getItem(SESSION_KEY);
-            const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:verifyPin', pin }) });
-            const data = await r.json();
-            if (!data.ok) {
-              if (data.error === 'pin_blocked') throw new Error('Muitas tentativas. Tente novamente mais tarde.');
-              throw new Error('PIN incorreto.');
-            }
-            sessionStorage.setItem('pin_verified', 'true');
-            closePinModal();
-            selectTab(targetTab);
-          });
-        }
+        openPinModal('Acesso Restrito', 'Digite seu PIN de 4 dígitos para acessar o painel.', async (pin) => {
+          const jwt = sessionStorage.getItem(SESSION_KEY);
+          const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:verifyPin', pin }) });
+          const data = await r.json();
+          if (!data.ok) {
+            if (data.error === 'pin_blocked') throw new Error('Muitas tentativas. Tente novamente mais tarde.');
+            throw new Error('PIN incorreto.');
+          }
+          closePinModal();
+          selectTab(targetTab);
+        });
       }
       return;
     }
@@ -2063,7 +2058,6 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
   document.getElementById('btn-back').addEventListener('click', () => { if (location.pathname !== '/') history.pushState({}, '', '/'); backHome(); });
   function kill() {
     stopPolling();
-    sessionStorage.removeItem('pin_verified');
     try { window.__guardKill && window.__guardKill('app_kill'); }
     catch { try { location.replace('about:blank'); } catch {} }
   }
@@ -2073,7 +2067,6 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     el.addEventListener('click', () => {
       stopPolling();
       sessionStorage.removeItem(SESSION_KEY);
-      sessionStorage.removeItem('pin_verified');
       try { if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); } catch {}
       window.close();
       setTimeout(() => { 
