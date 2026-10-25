@@ -1256,7 +1256,8 @@
             if (_tagInflight.has(key)) return;
             _tagInflight.add(key);
             const wasOn = c.classList.contains('on');
-            const set = new Set(p.tags || []);
+            const originalTags = [...(p.tags || [])];
+            const set = new Set(originalTags);
             if (wasOn) set.delete(tag); else set.add(tag);
             p.tags = [...set];
             c.classList.toggle('on');
@@ -1266,7 +1267,9 @@
               toast('atualizado');
               applyAdminFilter();
             } catch (e) {
-              c.classList.toggle('on');
+              p.tags = originalTags;
+              c.classList.toggle('on', wasOn);
+              row.dataset.tags = originalTags.join('|');
               toast('falha: ' + e.message, true);
             } finally {
               _tagInflight.delete(key);
@@ -1448,7 +1451,74 @@
       });
     });
   }
+  function adminCallWithPin(action, extra, hasRetriedStepUp = false) {
+    return new Promise((resolve, reject) => {
+      if (!currentUser || !currentUser.hasPin) {
+        reject(new Error('Você precisa definir um PIN antes.'));
+        return;
+      }
+
+      let settled = false;
+      let submitting = false;
+      const cleanup = () => {
+        pinCancelBtn.removeEventListener('click', cancel);
+        pinOverlay.removeEventListener('click', onBackdrop);
+      };
+      const cancel = () => {
+        if (settled || submitting) return;
+        settled = true;
+        cleanup();
+        closePinModal();
+        reject(new Error('Operação cancelada.'));
+      };
+      const onBackdrop = (event) => {
+        if (event.target === pinOverlay) cancel();
+      };
+
+      pinCancelBtn.addEventListener('click', cancel);
+      pinOverlay.addEventListener('click', onBackdrop);
+      openPinModal('Autorização', 'Digite seu PIN de administrador para salvar as alterações.', 'login', async (adminPin) => {
+        if (settled || submitting) return;
+        submitting = true;
+        pinCancelBtn.disabled = true;
+        try {
+          const result = await adminCall(action, { ...(extra || {}), adminPin }, hasRetriedStepUp);
+          if (settled) return;
+          settled = true;
+          cleanup();
+          closePinModal();
+          resolve(result);
+        } catch (error) {
+          const message = error && error.message === 'wrong_admin_pin'
+            ? 'PIN do administrador incorreto.'
+            : error && error.message === 'pin_blocked'
+              ? PIN_LOCKOUT_MESSAGE
+              : error && error.message === 'no_admin_pin'
+                ? 'Você precisa definir um PIN antes.'
+                : (error && error.message) || 'Falha ao validar o PIN.';
+          // Throw back into the PIN modal handler so a bad PIN can be retried
+          // without generating a second request or permanently closing the modal.
+          throw new Error(message);
+        } finally {
+          submitting = false;
+          pinCancelBtn.disabled = false;
+        }
+      });
+    });
+  }
+
   async function adminCall(action, extra, hasRetriedStepUp = false) {
+    const dataToSend = extra || {};
+    const setUserNeedsPin = action === 'admin:setUser' && (
+      dataToSend.tags !== undefined ||
+      dataToSend.isMod !== undefined ||
+      dataToSend.modPermissions !== undefined ||
+      dataToSend.modRooms !== undefined
+    );
+    if (setUserNeedsPin && !String(dataToSend.adminPin || '').trim()) {
+      return adminCallWithPin(action, dataToSend, hasRetriedStepUp);
+    }
+
     const jwt = sessionStorage.getItem(SESSION_KEY);
     if (!jwt) throw new Error('no_jwt');
     const ctrl = new AbortController();
