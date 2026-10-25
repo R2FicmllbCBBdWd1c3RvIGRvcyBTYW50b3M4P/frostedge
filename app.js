@@ -1515,7 +1515,16 @@
       dataToSend.modPermissions !== undefined ||
       dataToSend.modRooms !== undefined
     );
-    if (setUserNeedsPin && !String(dataToSend.adminPin || '').trim()) {
+
+    // The Worker requires the administrator's PIN for admin ban/unban and delete.
+    // Moderators can ban/unban within their permissions without an admin PIN.
+    const adminModerationNeedsPin = !!(currentUser && currentUser.isAdmin) && (
+      action === 'admin:banUser' ||
+      action === 'admin:unbanUser' ||
+      action === 'admin:deleteUser'
+    );
+
+    if ((setUserNeedsPin || adminModerationNeedsPin) && !String(dataToSend.adminPin || '').trim()) {
       return adminCallWithPin(action, dataToSend, hasRetriedStepUp);
     }
 
