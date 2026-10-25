@@ -1428,7 +1428,8 @@
         const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:verifyPin', pin }) });
         const data = await r.json().catch(() => ({}));
         if (!r.ok || !data.ok) {
-          if (data.error === 'pin_blocked') throw new Error('Muitas tentativas. Tente novamente mais tarde.');
+          if (data.error === 'pin_blocked') throw new Error('Muitas tentativas. Aguarde o bloqueio temporário terminar.');
+          if (data.error === 'pin_hash_unsupported' || data.error === 'pin_verification_unavailable') throw new Error('Não foi possível verificar o PIN salvo. Peça a redefinição do PIN pelo administrador ou tente novamente mais tarde.');
           throw new Error(data.error === 'step_up_required' ? 'PIN necessário.' : 'PIN incorreto.');
         }
         if (!settled) {
@@ -1461,7 +1462,9 @@
       return adminCall(action, extra, true);
     }
     if (!r.ok) {
-      if (r.status === 401 || data.error === 'no_jwt' || data.error === 'bad_jwt' || data.error === 'not_found') {
+      // A resource-level 404 (for example, target account not found) must not
+      // invalidate the currently logged-in administrator's own session.
+      if (r.status === 401 || data.error === 'no_jwt' || data.error === 'bad_jwt' || data.error === 'email_not_verified') {
         kill();
       }
       throw new Error(data.error || ('http ' + r.status));
