@@ -3,6 +3,7 @@
   const SESSION_KEY = 'auth_jwt';
   const FETCH_TIMEOUT = 15000;
   const ADMIN_TIMEOUT = 20000;
+  const PIN_LOCKOUT_MESSAGE = 'Muitas tentativas. Aguarde 1 minuto antes de tentar novamente.';
   const viewLogin = document.getElementById('view-login'), viewSite  = document.getElementById('view-site'), viewArea  = document.getElementById('view-area'), grid = document.getElementById('grid'), who = document.getElementById('who'), loginErr  = document.getElementById('login-err');
   const execOverlay = document.getElementById('exec-overlay'), execRunning = document.getElementById('exec-state-running'), execDone = document.getElementById('exec-state-done'), execClose = document.getElementById('exec-close'), execEmail = document.getElementById('exec-email');
   const areaLoader = document.getElementById('area-loader'), areaLoaderSub  = document.getElementById('area-loader-sub'), loaderTitle = document.getElementById('loader-title');
@@ -598,7 +599,12 @@
           openPinModal('Alterar PIN', 'Insira o PIN atual e defina o novo.', 'change', async (currentPin, newPin) => {
             const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:setPin', newPin, currentPin }) });
             const data = await r.json();
-            if (!data.ok) throw new Error(data.error === 'wrong_current_pin' ? 'PIN atual incorreto.' : data.error);
+            if (!data.ok) {
+              if (data.error === 'wrong_current_pin') throw new Error('PIN atual incorreto.');
+              if (data.error === 'pin_blocked') throw new Error(PIN_LOCKOUT_MESSAGE);
+              if (data.error === 'pin_verification_unavailable' || data.error === 'pin_hash_unsupported') throw new Error('Não foi possível verificar o PIN agora. Tente novamente mais tarde.');
+              throw new Error(data.error || 'Falha ao alterar PIN.');
+            }
             closePinModal();
             currentUser.hasPin = true;
             renderArea();
@@ -708,7 +714,7 @@
           const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:verifyPin', pin }) });
           const data = await r.json();
           if (!data.ok) {
-            if (data.error === 'pin_blocked') throw new Error('Muitas tentativas. Tente novamente mais tarde.');
+            if (data.error === 'pin_blocked') throw new Error(PIN_LOCKOUT_MESSAGE);
             throw new Error('PIN incorreto.');
           }
           closePinModal();
@@ -1007,7 +1013,7 @@
             modEmailInp.value = '';
             updateModToggleState();
           } catch (e) {
-            throw new Error(e.message === 'wrong_admin_pin' ? 'PIN do administrador incorreto.' : e.message);
+            throw new Error(e.message === 'wrong_admin_pin' ? 'PIN do administrador incorreto.' : e.message === 'pin_blocked' ? PIN_LOCKOUT_MESSAGE : e.message);
           } finally {
             modToggleBtn.disabled = false;
             delete modToggleBtn.dataset.busy;
@@ -1428,7 +1434,7 @@
         const r = await window.fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jwt, action: 'self:verifyPin', pin }) });
         const data = await r.json().catch(() => ({}));
         if (!r.ok || !data.ok) {
-          if (data.error === 'pin_blocked') throw new Error('Muitas tentativas. Aguarde o bloqueio temporário terminar.');
+          if (data.error === 'pin_blocked') throw new Error(PIN_LOCKOUT_MESSAGE);
           if (data.error === 'pin_hash_unsupported' || data.error === 'pin_verification_unavailable') throw new Error('Não foi possível verificar o PIN salvo. Peça a redefinição do PIN pelo administrador ou tente novamente mais tarde.');
           throw new Error(data.error === 'step_up_required' ? 'PIN necessário.' : 'PIN incorreto.');
         }
@@ -1462,6 +1468,9 @@
       return adminCall(action, extra, true);
     }
     if (!r.ok) {
+      // PIN errors get a consistent message; lockouts are always one minute.
+      if (data.error === 'pin_blocked') throw new Error(PIN_LOCKOUT_MESSAGE);
+      if (data.error === 'wrong_admin_pin') throw new Error('PIN do administrador incorreto.');
       // A resource-level 404 (for example, target account not found) must not
       // invalidate the currently logged-in administrator's own session.
       if (r.status === 401 || data.error === 'no_jwt' || data.error === 'bad_jwt' || data.error === 'email_not_verified') {
@@ -1613,7 +1622,7 @@
             const updatedItem = [...wrap.children].find(el => el.innerText.includes(mod.email));
             if (updatedItem) updatedItem.classList.add('open');
           } catch (e) {
-            throw new Error(e.message === 'wrong_admin_pin' ? 'PIN do administrador incorreto.' : e.message);
+            throw new Error(e.message === 'wrong_admin_pin' ? 'PIN do administrador incorreto.' : e.message === 'pin_blocked' ? PIN_LOCKOUT_MESSAGE : e.message);
           } finally {
             saveBtn.disabled = false;
             delete saveBtn.dataset.busy;
