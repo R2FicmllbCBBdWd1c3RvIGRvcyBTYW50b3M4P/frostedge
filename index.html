@@ -202,54 +202,22 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
 .cl-badge.fix{background:rgba(212,175,55,.1);color:var(--gold);border-color:rgba(var(--gold-rgb),.35)}
 .cl-badge.break{background:rgba(224,82,82,.1);color:#f87171;border-color:rgba(224,82,82,.35)}
 
-/* ── PIN MODAL (REDESIGN) ─────────────────────────────────────── */
+/* ── PIN MODAL ─────────────────────────────────────────────── */
 .pin-modal-overlay {position: fixed; inset: 0; z-index: 10001; background: rgba(5,5,6,.85); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); display: grid; place-items: center; opacity: 0; transition: opacity .25s; padding: 24px;}
 .pin-modal-overlay:not(.hidden) { opacity: 1; }
 .pin-modal-overlay.hidden { display: none; }
-.pin-modal {
-  background: linear-gradient(180deg, rgba(19,19,24,.98), rgba(13,13,16,.98));
-  border: 1px solid var(--line-2); 
-  border-radius: 20px; 
-  width: 380px; 
-  max-width: 100%; 
-  padding: 32px 28px; 
-  text-align: center; 
-  box-shadow: 0 30px 100px rgba(0,0,0,.8), 0 0 0 1px rgba(var(--glow-rgb),.1), inset 0 1px rgba(255,255,255,.05); 
-  animation: execIn .3s cubic-bezier(.2,.8,.2,1);
-}
+.pin-modal {background: linear-gradient(180deg, rgba(19,19,24,.98), rgba(13,13,16,.98)); border: 1px solid var(--line-2); border-radius: 20px; width: 380px; max-width: 100%; padding: 32px 28px; text-align: center; box-shadow: 0 30px 100px rgba(0,0,0,.8), 0 0 0 1px rgba(var(--glow-rgb),.1), inset 0 1px rgba(255,255,255,.05); animation: execIn .3s cubic-bezier(.2,.8,.2,1);}
 .pin-header { margin-bottom: 24px; }
-.pin-icon {
-  width: 48px; height: 48px; border-radius: 12px;
-  background: rgba(var(--glow-rgb), 0.1); color: var(--accent-2);
-  border: 1px solid rgba(var(--glow-rgb), 0.2);
-  display: grid; place-items: center; margin: 0 auto 16px;
-  box-shadow: 0 0 20px rgba(var(--glow-rgb), 0.15);
-}
+.pin-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(var(--glow-rgb), 0.1); color: var(--accent-2); border: 1px solid rgba(var(--glow-rgb), 0.2); display: grid; place-items: center; margin: 0 auto 16px; box-shadow: 0 0 20px rgba(var(--glow-rgb), 0.15); }
 .pin-icon svg { width: 22px; height: 22px; }
 .pin-modal h3 { margin: 0 0 6px; font-size: 20px; color: var(--text); font-weight: 600; letter-spacing: -.3px; }
 .pin-modal p { color: var(--dim); font-size: 13.5px; margin: 0; line-height: 1.5; }
-
 .pin-field-group { margin-bottom: 16px; }
 .pin-field-group label { display: block; font-size: 11px; font-weight: 600; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; text-align: left; padding-left: 4px; }
 .pin-inputs { display: flex; gap: 10px; justify-content: center; }
-.pin-input {
-  width: 52px; height: 60px; 
-  background: rgba(0,0,0,.3); 
-  border: 1px solid var(--line-2); 
-  border-radius: 12px; 
-  color: var(--text); 
-  font-size: 26px; font-weight: 700; 
-  text-align: center; font-family: inherit; outline: none; 
-  transition: all .2s cubic-bezier(.2,.8,.2,1);
-}
-.pin-input:focus { 
-  border-color: var(--accent); 
-  background: rgba(var(--glow-rgb), 0.05);
-  box-shadow: 0 0 0 3px rgba(var(--glow-rgb), 0.15), inset 0 0 10px rgba(var(--glow-rgb), 0.05); 
-  transform: translateY(-2px); 
-}
+.pin-input { width: 52px; height: 60px; background: rgba(0,0,0,.3); border: 1px solid var(--line-2); border-radius: 12px; color: var(--text); font-size: 26px; font-weight: 700; text-align: center; font-family: inherit; outline: none; transition: all .2s cubic-bezier(.2,.8,.2,1);}
+.pin-input:focus { border-color: var(--accent); background: rgba(var(--glow-rgb), 0.05); box-shadow: 0 0 0 3px rgba(var(--glow-rgb), 0.15), inset 0 0 10px rgba(var(--glow-rgb), 0.05); transform: translateY(-2px); }
 .pin-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--line-2) 20%, var(--line-2) 80%, transparent); margin: 20px 0; }
-
 .pin-error { color: var(--danger); font-size: 13px; min-height: 20px; margin: 8px 0 0; font-weight: 500; }
 .pin-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
 .pin-actions button { padding: 12px 20px; border-radius: 11px; font-weight: 600; font-size: 13.5px; cursor: pointer; font-family: inherit; border: none; transition: all .15s; }
@@ -260,18 +228,14 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
 .btn-pin-submit:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
 
 /* ── ABA PINs (ADMIN) ──────────────────────────────────────── */
-.pin-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.pin-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
 .pin-admin-card { background: rgba(10,10,12,.4); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; transition: border-color .15s; }
 .pin-admin-card:hover { border-color: var(--line-2); }
 .pin-admin-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .pin-admin-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pin-admin-email { font-size: 11.5px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pin-admin-value { font-family: monospace; font-size: 16px; font-weight: 700; color: var(--accent-2); letter-spacing: 2px; background: rgba(var(--glow-rgb), .1); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(var(--glow-rgb), .2); display: flex; align-items: center; gap: 6px; flex-shrink: 0; cursor: pointer; transition: background .15s, border-color .15s; }
+.pin-admin-value { font-family: monospace; font-size: 16px; font-weight: 700; color: var(--accent-2); letter-spacing: 2px; background: rgba(var(--glow-rgb), .1); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(var(--glow-rgb), .2); display: flex; align-items: center; gap: 6px; flex-shrink: 0; transition: background .15s, border-color .15s; }
 .pin-admin-value.empty { color: var(--dim); background: transparent; border-color: var(--line-2); border-style: dashed; font-family: inherit; font-size: 12px; font-weight: 500; letter-spacing: 0; }
-.pin-admin-value:hover { background: rgba(var(--glow-rgb), .2); border-color: rgba(var(--glow-rgb), .4); }
-
-@media (max-width: 600px) {.version-options {grid-template-columns:1fr}.version-modal {padding:32px 24px}.pin-input {width: 44px; height: 54px; font-size: 22px;}}
-@media (max-width:560px){header{padding:14px 18px}.rule{margin:0 18px}main{padding:36px 18px 20px}#view-area-body{padding:36px 18px 40px}.nav .btn span{display:none}.admin-meta{min-width:0}#terms-overlay{padding:12px}.terms-modal{max-height:94vh;border-radius:14px}.terms-header{padding:16px 18px 12px}.terms-header h3{font-size:16px}.terms-content-wrap{padding:12px 14px}.terms-content{padding:16px 16px;font-size:13px}.terms-footer{padding:12px 16px 16px}.site-footer{padding:20px 18px}.footer-inner{flex-direction:column;align-items:flex-start;gap:14px}}
 </style>
 </head>
 <body>
@@ -1776,7 +1740,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     list.className = 'pin-admin-grid';
 
     const people = [...adminData.people].sort((a, b) => {
-      if (!!a.pin !== !!b.pin) return a.pin ? -1 : 1;
+      if (!!a.hasPin !== !!b.hasPin) return a.hasPin ? -1 : 1;
       return (a.name || a.email).localeCompare(b.name || b.email);
     });
 
@@ -1788,23 +1752,56 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
       info.className = 'pin-admin-info';
       info.innerHTML = `<div class="pin-admin-name">${escapeHtml(p.name || '(sem nome)')}</div><div class="pin-admin-email">${escapeHtml(p.email)}</div>`;
 
+      const valueWrap = document.createElement('div');
+      valueWrap.style.display = 'flex';
+      valueWrap.style.alignItems = 'center';
+      valueWrap.style.gap = '8px';
+      valueWrap.style.flexShrink = '0';
+
       const value = document.createElement('div');
-      value.className = 'pin-admin-value' + (p.pin ? '' : ' empty');
-      value.textContent = p.pin ? p.pin : 'não definido';
-      value.title = 'Clique para alterar o PIN';
+      value.className = 'pin-admin-value' + (p.hasPin ? '' : ' empty');
+      value.textContent = p.hasPin ? '****' : 'não definido';
       
-      value.onclick = () => {
-        openPinModal('Alterar PIN', `Defina um novo PIN para ${p.name || p.email}.`, 'change', async (currentPin, newPin) => {
-          const r = await adminCall('admin:resetPin', { email: p.email, newPin, currentPin });
-          if (!r.ok) throw new Error(r.error === 'wrong_current_pin' ? 'PIN atual incorreto.' : r.error);
+      const viewBtn = document.createElement('button');
+      viewBtn.className = 'terms-btn-sm';
+      viewBtn.style.padding = '4px 8px';
+      viewBtn.style.fontSize = '11px';
+      viewBtn.textContent = 'Ver';
+      viewBtn.onclick = () => {
+        openPinModal('Autorização', 'Digite seu PIN de administrador para ver o PIN de ' + (p.name || p.email) + '.', 'login', async (adminPin) => {
+          const r = await adminCall('admin:getPin', { email: p.email, currentPin: adminPin });
+          if (!r.ok) throw new Error(r.error === 'wrong_current_pin' ? 'PIN do administrador incorreto.' : r.error);
           closePinModal();
-          toast('PIN alterado com sucesso.');
-          await loadAdmin();
-        }, !p.pin);
+          toast('O PIN de ' + (p.name || p.email) + ' é: ' + (r.pin || 'não definido'));
+        });
       };
 
+      const changeBtn = document.createElement('button');
+      changeBtn.className = 'terms-btn-sm';
+      changeBtn.style.padding = '4px 8px';
+      changeBtn.style.fontSize = '11px';
+      changeBtn.textContent = 'Alterar';
+      changeBtn.onclick = () => {
+        openPinModal('Autorização', 'Digite seu PIN de administrador para alterar o PIN de ' + (p.name || p.email) + '.', 'login', async (adminPin) => {
+          closePinModal();
+          setTimeout(() => {
+             openPinModal('Novo PIN', 'Defina o novo PIN para ' + (p.name || p.email) + '.', 'change', async (_, newPin) => {
+               const r = await adminCall('admin:resetPin', { email: p.email, newPin, currentPin: adminPin });
+               if (!r.ok) throw new Error(r.error === 'wrong_current_pin' ? 'PIN do administrador incorreto.' : r.error);
+               closePinModal();
+               toast('PIN alterado com sucesso.');
+               await loadAdmin();
+             }, true);
+          }, 150);
+        });
+      };
+
+      valueWrap.appendChild(value);
+      valueWrap.appendChild(viewBtn);
+      valueWrap.appendChild(changeBtn);
+
       card.appendChild(info);
-      card.appendChild(value);
+      card.appendChild(valueWrap);
       list.appendChild(card);
     }
   }
