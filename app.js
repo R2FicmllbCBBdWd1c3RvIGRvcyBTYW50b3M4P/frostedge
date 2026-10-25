@@ -1516,15 +1516,22 @@
       dataToSend.modRooms !== undefined
     );
 
-    // The Worker requires the administrator's PIN for admin ban/unban and delete.
-    // Moderators can ban/unban within their permissions without an admin PIN.
+    // These administrative operations require a fresh admin PIN in the Worker.
+    // Moderators may ban/unban within their permissions without an admin PIN.
     const adminModerationNeedsPin = !!(currentUser && currentUser.isAdmin) && (
       action === 'admin:banUser' ||
       action === 'admin:unbanUser' ||
       action === 'admin:deleteUser'
     );
+    // The module-blocking panel and global shutdown button also require a PIN
+    // server-side; route them through the same prompt instead of sending an
+    // empty adminPin and accidentally consuming a failed PIN attempt.
+    const adminHighImpactNeedsPin = !!(currentUser && currentUser.isAdmin) && (
+      action === 'admin:blockModule' ||
+      action === 'admin:killAll'
+    );
 
-    if ((setUserNeedsPin || adminModerationNeedsPin) && !String(dataToSend.adminPin || '').trim()) {
+    if ((setUserNeedsPin || adminModerationNeedsPin || adminHighImpactNeedsPin) && !String(dataToSend.adminPin || '').trim()) {
       return adminCallWithPin(action, dataToSend, hasRetriedStepUp);
     }
 
