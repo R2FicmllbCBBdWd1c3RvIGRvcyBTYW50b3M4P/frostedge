@@ -108,15 +108,14 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
 .admin-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(19,19,24,.96);border:1px solid var(--line-2);border-radius:10px;padding:11px 18px;color:var(--text);font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:10001;max-width:80vw;text-align:center} .admin-toast.show{opacity:1;transform:translateX(-50%) translateY(0)} .admin-toast.err{border-color:rgba(224,82,82,.55);color:#e05252}
 
 /* CSS Adicional para a Aba PINs e Botões de Clipboard */
-.pin-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.pin-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
 .pin-admin-card { background: rgba(10,10,12,.4); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; transition: border-color .15s; }
 .pin-admin-card:hover { border-color: var(--line-2); }
 .pin-admin-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .pin-admin-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pin-admin-email { font-size: 11.5px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pin-admin-value { font-family: monospace; font-size: 16px; font-weight: 700; color: var(--accent-2); letter-spacing: 2px; background: rgba(var(--glow-rgb), .1); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(var(--glow-rgb), .2); display: flex; align-items: center; gap: 6px; flex-shrink: 0; cursor: pointer; transition: background .15s, border-color .15s; }
+.pin-admin-value { font-family: monospace; font-size: 16px; font-weight: 700; color: var(--accent-2); letter-spacing: 2px; background: rgba(var(--glow-rgb), .1); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(var(--glow-rgb), .2); display: flex; align-items: center; gap: 6px; flex-shrink: 0; transition: background .15s, border-color .15s; }
 .pin-admin-value.empty { color: var(--dim); background: transparent; border-color: var(--line-2); border-style: dashed; font-family: inherit; font-size: 12px; font-weight: 500; letter-spacing: 0; }
-.pin-admin-value:hover { background: rgba(var(--glow-rgb), .2); border-color: rgba(var(--glow-rgb), .4); }
 
 .copy-email-btn {
   display: inline-flex;
@@ -236,6 +235,9 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
 .pin-admin-email { font-size: 11.5px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pin-admin-value { font-family: monospace; font-size: 16px; font-weight: 700; color: var(--accent-2); letter-spacing: 2px; background: rgba(var(--glow-rgb), .1); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(var(--glow-rgb), .2); display: flex; align-items: center; gap: 6px; flex-shrink: 0; transition: background .15s, border-color .15s; }
 .pin-admin-value.empty { color: var(--dim); background: transparent; border-color: var(--line-2); border-style: dashed; font-family: inherit; font-size: 12px; font-weight: 500; letter-spacing: 0; }
+
+@media (max-width: 600px) {.version-options {grid-template-columns:1fr}.version-modal {padding:32px 24px}.pin-input {width: 44px; height: 54px; font-size: 22px;}}
+@media (max-width:560px){header{padding:14px 18px}.rule{margin:0 18px}main{padding:36px 18px 20px}#view-area-body{padding:36px 18px 40px}.nav .btn span{display:none}.admin-meta{min-width:0}#terms-overlay{padding:12px}.terms-modal{max-height:94vh;border-radius:14px}.terms-header{padding:16px 18px 12px}.terms-header h3{font-size:16px}.terms-content-wrap{padding:12px 14px}.terms-content{padding:16px 16px;font-size:13px}.terms-footer{padding:12px 16px 16px}.site-footer{padding:20px 18px}.footer-inner{flex-direction:column;align-items:flex-start;gap:14px}}
 </style>
 </head>
 <body>
@@ -304,7 +306,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
         <div class="area-row"><span class="k">Nome</span><span class="v" id="area-name">—</span></div>
         <div class="area-row"><span class="k">Apelido</span><span class="v" id="area-nick" style="display:flex; align-items:center; justify-content:flex-end; gap:10px;"></span></div>
         <div class="area-row"><span class="k">Email</span><span class="v" id="area-email">—</span></div>
-        <div class="area-row"><span class="k">PIN</span><span class="v" id="area-pin"></span></div>
+        <div class="area-row" id="area-pin-row"><span class="k">PIN</span><span class="v" id="area-pin"></span></div>
       </div>
       <div class="area-card"><h3>Acessos liberados</h3><div class="area-tags" id="area-tags"></div></div>
       <div class="area-card"><h3>Aparência</h3><div class="theme-row">
@@ -1001,6 +1003,9 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     document.getElementById('area-name').textContent  = currentUser.name || '—';
     document.getElementById('area-email').textContent = currentUser.email || '—';
 
+    const pinRow = document.getElementById('area-pin-row');
+    if (pinRow) pinRow.style.display = (currentUser.isAdmin || currentUser.isMod) ? 'flex' : 'none';
+
     const nickRow = document.getElementById('area-nick');
     if (nickRow) {
       nickRow.innerHTML = `
@@ -1013,7 +1018,7 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     }
 
     const pinContainer = document.getElementById('area-pin');
-    if (pinContainer) {
+    if (pinContainer && (currentUser.isAdmin || currentUser.isMod)) {
       const hasPin = !!currentUser.hasPin;
       pinContainer.innerHTML = `
         <button class="terms-btn-sm" id="btn-edit-pin" style="padding:4px 8px; font-size:11px; display:flex; align-items:center; gap:4px; margin-right:auto;">
@@ -1413,28 +1418,37 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
         if (modPermHist.checked) perms.push('history');
         if (modPermLogs.checked) perms.push('logs');
         const room = modRoomSel.value;
-        modToggleBtn.dataset.busy = '1';
-        modToggleBtn.disabled = true;
-        const originalHTML = modToggleBtn.innerHTML;
-        modToggleBtn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
-        try {
-          if (isMod) {
-            await adminCall('admin:setUser', { email, isMod: false, modPermissions: [], modRooms: [] });
-            toast('moderador removido');
-          } else {
-            await adminCall('admin:setUser', { email, name: target?.name || '', tags: target?.tags || [], isMod: true, modPermissions: perms, modRooms: room ? [room] : [] });
-            toast('moderador salvo');
-          }
-          await loadAdmin();
-          modEmailInp.value = '';
-          updateModToggleState();
-        } catch (e) {
-          toast('falha: ' + e.message, true);
-          modToggleBtn.innerHTML = originalHTML;
-        } finally {
-          modToggleBtn.disabled = false;
-          delete modToggleBtn.dataset.busy;
+
+        if (!currentUser.hasPin) {
+          toast('Você precisa definir um PIN antes.', true);
+          return;
         }
+
+        openPinModal('Autorização', 'Digite seu PIN de admin para salvar as alterações.', 'login', async (adminPin) => {
+          modToggleBtn.dataset.busy = '1';
+          modToggleBtn.disabled = true;
+          const originalHTML = modToggleBtn.innerHTML;
+          modToggleBtn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
+          try {
+            if (isMod) {
+              await adminCall('admin:setUser', { email, isMod: false, modPermissions: [], modRooms: [], adminPin });
+              toast('moderador removido');
+            } else {
+              await adminCall('admin:setUser', { email, name: target?.name || '', tags: target?.tags || [], isMod: true, modPermissions: perms, modRooms: room ? [room] : [], adminPin });
+              toast('moderador salvo');
+            }
+            closePinModal();
+            await loadAdmin();
+            modEmailInp.value = '';
+            updateModToggleState();
+          } catch (e) {
+            throw new Error(e.message === 'wrong_admin_pin' ? 'PIN do administrador incorreto.' : e.message);
+          } finally {
+            modToggleBtn.disabled = false;
+            delete modToggleBtn.dataset.busy;
+            modToggleBtn.innerHTML = originalHTML;
+          }
+        });
       });
     }
     const adminSearchInp = document.getElementById('admin-search');
@@ -1739,10 +1753,15 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
     
     list.className = 'pin-admin-grid';
 
-    const people = [...adminData.people].sort((a, b) => {
+    const people = [...adminData.people].filter(p => p.isAdmin || p.isMod).sort((a, b) => {
       if (!!a.hasPin !== !!b.hasPin) return a.hasPin ? -1 : 1;
       return (a.name || a.email).localeCompare(b.name || b.email);
     });
+
+    if (!people.length) {
+      list.innerHTML = '<div class="admin-empty">Nenhum moderador ou admin no sistema.</div>';
+      return;
+    }
 
     for (const p of people) {
       const card = document.createElement('div');
@@ -1957,23 +1976,32 @@ main { padding: 56px 32px 20px; max-width: 1120px; margin: 0 auto; position: rel
         const newRoom = body.querySelector(`#${roomId}`).value;
         const newPerms = [];
         body.querySelectorAll('input[type="checkbox"]').forEach(cb => { if (cb.checked) newPerms.push(cb.dataset.perm); });
-        const originalHTML = saveBtn.innerHTML;
-        saveBtn.dataset.busy = '1';
-        saveBtn.disabled = true;
-        saveBtn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
-        try {
-          await adminCall('admin:setUser', { email: mod.email, name: mod.name, tags: mod.tags, isMod: true, modPermissions: newPerms, modRooms: newRoom ? [newRoom] : [] });
-          toast('moderador atualizado');
-          await loadAdmin();
-          const updatedItem = [...wrap.children].find(el => el.innerText.includes(mod.email));
-          if (updatedItem) updatedItem.classList.add('open');
-        } catch (e) {
-          toast('falha: ' + e.message, true);
-          saveBtn.innerHTML = originalHTML;
-        } finally {
-          saveBtn.disabled = false;
-          delete saveBtn.dataset.busy;
+        
+        if (!currentUser.hasPin) {
+          toast('Você precisa definir um PIN antes.', true);
+          return;
         }
+
+        openPinModal('Autorização', 'Digite seu PIN de admin para salvar as alterações.', 'login', async (adminPin) => {
+          const originalHTML = saveBtn.innerHTML;
+          saveBtn.dataset.busy = '1';
+          saveBtn.disabled = true;
+          saveBtn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
+          try {
+            await adminCall('admin:setUser', { email: mod.email, name: mod.name, tags: mod.tags, isMod: true, modPermissions: newPerms, modRooms: newRoom ? [newRoom] : [], adminPin });
+            toast('moderador atualizado');
+            closePinModal();
+            await loadAdmin();
+            const updatedItem = [...wrap.children].find(el => el.innerText.includes(mod.email));
+            if (updatedItem) updatedItem.classList.add('open');
+          } catch (e) {
+            throw new Error(e.message === 'wrong_admin_pin' ? 'PIN do administrador incorreto.' : e.message);
+          } finally {
+            saveBtn.disabled = false;
+            delete saveBtn.dataset.busy;
+            saveBtn.innerHTML = originalHTML;
+          }
+        });
       });
       item.appendChild(header);
       item.appendChild(body);
