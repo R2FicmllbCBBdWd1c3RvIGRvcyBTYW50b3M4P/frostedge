@@ -1799,7 +1799,9 @@
       case 'login': line1 = 'fez login no site'; break;
       case 'copy': iconClass = 'h-copy'; iconSvg = '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>'; line1 = 'copiou o bloco ' + bloco; break;
       case 'terms_accept': iconClass = 'h-terms_a'; iconSvg = '<path d="M20 6 9 17l-5-5"/>'; line1 = 'aceitou os termos de uso'; break;
-      case 'tags_update': iconClass = 'h-tags'; iconSvg = '<path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2"/>'; line1 = `tags atualizadas por ${autor}`; break;
+      case 'tags_update': iconClass = 'h-tags'; iconSvg = '<path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2"/>'; line1 = `tags atualizadas por ${autor}${ev.target ? ' em ' + alvo : ''}`; break;
+      case 'user_update': iconClass = 'h-tags'; iconSvg = '<path d="M20 6 9 17l-5-5"/>'; line1 = `${autor} atualizou ${alvo} (${escapeHtml(Array.isArray(ev.changes) ? ev.changes.join(', ') : 'dados da conta')})`; break;
+      case 'clear_kill': iconClass = 'h-tags'; iconSvg = '<path d="M20 6 9 17l-5-5"/>'; line1 = `${autor} limpou o bloqueio de sessão de ${alvo}`; break;
       case 'kill_soft': iconClass = 'h-kill_s'; iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/>'; line1 = `${autor} <em style="color:#fbbf24">derrubou a sessão</em> de ${alvo}`; break;
       case 'kill_hard': iconClass = 'h-kill'; iconSvg = '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/>'; line1 = `${autor} <em style="color:#e05252">derrubou e deslogou</em> ${alvo}`; break;
       case 'banned': iconClass = 'h-ban'; iconSvg = '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>'; line1 = `${autor} <em style="color:#e05252">BANIU</em> ${alvo} do sistema`; break;
