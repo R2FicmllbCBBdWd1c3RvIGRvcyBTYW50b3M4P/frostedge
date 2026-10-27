@@ -296,7 +296,7 @@
     e.preventDefault(); e.stopPropagation();
     const card = btn.closest('.card');
     const tag = card?.querySelector('h2 em')?.textContent || '';
-    const termsMap = { 'Lynx': 'lynx', 'Escritor Baiano': 'escritor', 'Baiano do Khan': 'khan', 'Ingles': 'ingles', 'Quizziz': 'quizziz' };
+    const termsMap = { 'Lynx': 'lynx', 'Escritor Baiano': 'escritor', 'Soundpad': 'soundpad', 'Ingles': 'ingles', 'Quizziz': 'quizziz' };
     const key = termsMap[tag] || tag.toLowerCase();
     const termsText = await fetchTerms(key);
     openTerms({ mode: 'view', title: tag ? 'Termos — ' + tag : 'Termos de uso', subtitle: 'Leia antes de usar', content: termsText });
