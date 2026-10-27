@@ -227,10 +227,8 @@
     document.getElementById('deleted-admin').textContent = adminName || 'um administrador';
     document.getElementById('deleted-overlay').classList.remove('hidden');
   }
-  // F-13: sanitize stored HTML before rendering in the terms modal
   function sanitizeTermsHtml(raw) {
     if (!raw) return '';
-    // Allow only a safe subset of block/inline elements; strip script, iframe, on* handlers
     const ALLOWED_TAGS = /^(p|br|b|strong|em|i|ul|ol|li|h1|h2|h3|h4|h5|h6|span|div|a|hr|blockquote|code|pre|small|sub|sup|mark|table|thead|tbody|tr|th|td)$/i;
     const tmp = document.createElement('div');
     tmp.innerHTML = raw;
@@ -238,13 +236,10 @@
       if (!ALLOWED_TAGS.test(el.tagName)) { el.replaceWith(document.createTextNode(el.textContent)); return; }
       [...el.attributes].forEach(attr => {
         const n = attr.name.toLowerCase();
-        // F-09: strip event handlers, dangerous attrs, and style (can be used for CSS injection)
         if (n.startsWith('on') || n === 'srcdoc' || n === 'formaction' || n === 'data' || n === 'style') {
           el.removeAttribute(attr.name); return;
         }
         if (n === 'href' || n === 'src') {
-          // F-09: allowlist-based scheme check — parse the URL to resist obfuscation via
-          // embedded whitespace, unicode, or non-standard encoding
           try {
             const parsed = new URL(attr.value, 'https://example.com');
             if (!['https:', 'mailto:'].includes(parsed.protocol)) el.removeAttribute(attr.name);
@@ -425,8 +420,6 @@
     document.getElementById('lynx-version-overlay').classList.add('hidden');
     let payload = payloads.get('Lynx_' + type);
     if (!payload) {
-      // F-02: only use block-object fallback when the block is not marked blocked —
-      // a blocked Lynx may still carry payload_new/payload_old from a stale response
       const lynxBlock = currentUser.blocks.find(b => b.tag === 'Lynx');
       if (lynxBlock && !lynxBlock.blocked) payload = type === 'new' ? lynxBlock.payload_new : lynxBlock.payload_old;
     }
@@ -458,7 +451,6 @@
       }
       let payload = payloads.get(tag);
       if (!payload) {
-        // F-02: never serve payload from a blocked block object
         const block = currentUser.blocks.find(b => b.tag === tag);
         if (block && !block.blocked) payload = block.payload;
       }
@@ -729,7 +721,7 @@
   function selectAdminTab(name) {
     document.querySelectorAll('.admin-subtab').forEach(t => t.classList.toggle('selected', t.dataset.subtab === name));
     document.querySelectorAll('.admin-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === name));
-    if (name === 'acessos' || name === 'gerenciamento' || name === 'bloqueio') {
+    if (name === 'acessos' || name === 'gerenciamento' || name === 'bloqueio' || name === 'reset') {
       if (!adminData) loadAdmin();
     }
     if (name === 'kill') loadKills();
@@ -922,6 +914,23 @@
         </div>
       </div>`;
     }
+    if (iAmAdmin) {
+      subtabsHTML += `<button class="admin-subtab" data-subtab="reset">Reset</button>`;
+      panelsHTML += `
+      <div class="admin-panel" data-panel="reset">
+        <div class="area-card danger-zone">
+          <h3><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg> Reset de Dados</h3>
+          <p style="font-size: 12.5px; margin-bottom: 16px;">Limpa os dados de um usuário mantendo apenas as chaves válidas do schema atual. Use isso quando alguém tiver dados antigos/deprecados quebrando o sistema.</p>
+          <div class="admin-field" style="margin-bottom: 16px;">
+            <label>EMAIL DO USUÁRIO (ou deixe em branco para TODOS)</label>
+            <input id="reset-email" type="email" placeholder="nome.sobrenome@escola.pr.gov.br" list="people-emails">
+          </div>
+          <button class="admin-btn admin-btn-danger" type="button" id="btn-reset-data" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Executar Reset
+          </button>
+        </div>
+      </div>`;
+    }
     panel.innerHTML = `
       <div class="admin-subtabs">
         ${subtabsHTML}
@@ -1034,6 +1043,7 @@
     attachList('kill-email');
     attachList('mod-email');
     attachList('admin-new-email');
+    attachList('reset-email');
     const logsExportBtn = document.getElementById('admin-logs-export');
     if (logsExportBtn) {
       logsExportBtn.addEventListener('click', async () => {
@@ -1106,7 +1116,6 @@
           } catch (err) { toast('falha: ' + err.message, true); }
           finally { delete form.dataset.busy; }
         };
-        // F-05: hard/killAll modes require PIN (server enforces; mirror in UI for smooth flow)
         if (killSelectedMode === 'hard' || killSelectedMode === 'killAll') {
           if (!currentUser.hasPin) { toast('Você precisa definir um PIN antes.', true); delete form.dataset.busy; return; }
           openPinModal('Autorização', 'Digite seu PIN de admin para executar o desligamento permanente.', 'login', async (adminPin) => {
@@ -1127,6 +1136,52 @@
         try { const r = await adminCall('admin:killAll', { mode: 'hard' }); toast('sessões encerradas: ' + r.count); await loadKills(); }
         catch (e) { toast('falha: ' + e.message, true); }
         finally { delete killAllBtn.dataset.busy; }
+      });
+    }
+
+    // ── ABA RESET ────────────────────────────────────────
+    const resetBtn = document.getElementById('btn-reset-data');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', async () => {
+        if (resetBtn.dataset.busy === '1') return;
+        const emailInput = document.getElementById('reset-email').value.trim().toLowerCase();
+        const isAll = emailInput === '';
+
+        if (!isAll && !emailInput.includes('@')) { toast('email inválido.', true); return; }
+
+        const targetLabel = isAll ? 'TODOS os usuários' : emailInput;
+        if (!confirm('Atenção: isso vai apagar os campos antigos e deixar apenas os dados atuais de ' + targetLabel + '.\n\nContinuar?')) return;
+
+        if (!currentUser.hasPin) {
+          toast('Você precisa definir um PIN antes.', true);
+          return;
+        }
+
+        openPinModal('Autorização', 'Digite seu PIN de admin para confirmar o reset.', 'login', async (adminPin) => {
+          resetBtn.dataset.busy = '1';
+          resetBtn.disabled = true;
+          const originalHTML = resetBtn.innerHTML;
+          resetBtn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
+          try {
+            const payload = { action: 'admin:resetUserData', adminPin };
+            if (!isAll) payload.email = emailInput;
+            else payload.email = 'all';
+
+            const r = await adminCall(payload.action, payload);
+            if (!r.ok) throw new Error(r.error || 'falha');
+
+            closePinModal();
+            toast('reset concluído: ' + (r.count || 0) + ' perfil(is) limpo(s).');
+            document.getElementById('reset-email').value = '';
+            await loadAdmin();
+          } catch (e) {
+            throw new Error(e.message === 'wrong_admin_pin' ? 'PIN incorreto.' : e.message === 'pin_blocked' ? PIN_LOCKOUT_MESSAGE : e.message);
+          } finally {
+            resetBtn.disabled = false;
+            delete resetBtn.dataset.busy;
+            resetBtn.innerHTML = originalHTML;
+          }
+        });
       });
     }
   }
@@ -1180,8 +1235,6 @@
       if (isBanned) nameHtml += ` <span style="font-size:10px;color:#e05252;border:1px solid rgba(224,82,82,.55);padding:1px 6px;border-radius:999px;margin-left:4px;letter-spacing:.3px;background:rgba(224,82,82,.08);">banido</span>`;
       const currentSala = (p.tags || []).find(t => t === 'Sala A' || t === 'Sala B' || t === 'Sala C') || '';
       if (iAmAdmin) {
-        // F-02: do NOT interpolate p.email into innerHTML — insert a placeholder and
-        // build the select element with DOM APIs after nm.innerHTML is set.
         nameHtml += '<span data-sala-placeholder="1"></span>';
       } else if (currentSala) {
         const shortSala = currentSala.replace('Sala ', '');
@@ -1189,12 +1242,11 @@
       }
       nm.innerHTML = nameHtml;
       if (iAmAdmin) {
-        // F-02: build the sala <select> with DOM APIs so p.email is never interpolated into HTML
         const placeholder = nm.querySelector('[data-sala-placeholder]');
         if (placeholder) {
           const sel = document.createElement('select');
           sel.className = 'tag-select' + (currentSala ? '' : ' empty');
-          sel.dataset.sala = p.email; // dataset assignment is always safe — treated as text
+          sel.dataset.sala = p.email;
           [['', '#sala'], ['Sala A', '#A'], ['Sala B', '#B'], ['Sala C', '#C']].forEach(([val, label]) => {
             const opt = document.createElement('option');
             opt.value = val;
@@ -1375,9 +1427,6 @@
       const value = document.createElement('div');
       value.className = 'pin-admin-value' + (p.hasPin ? '' : ' empty');
       value.textContent = p.hasPin ? '****' : 'não definido';
-      
-      // F-06: "Ver PIN" button removed — admin:getPin endpoint has been disabled.
-      // PINs must never be returned to callers. Use "Alterar" to reset without revealing.
 
       const changeBtn = document.createElement('button');
       changeBtn.className = 'terms-btn-sm';
@@ -1496,8 +1545,6 @@
               : error && error.message === 'no_admin_pin'
                 ? 'Você precisa definir um PIN antes.'
                 : (error && error.message) || 'Falha ao validar o PIN.';
-          // Throw back into the PIN modal handler so a bad PIN can be retried
-          // without generating a second request or permanently closing the modal.
           throw new Error(message);
         } finally {
           submitting = false;
@@ -1516,16 +1563,11 @@
       dataToSend.modRooms !== undefined
     );
 
-    // These administrative operations require a fresh admin PIN in the Worker.
-    // Moderators may ban/unban within their permissions without an admin PIN.
     const adminModerationNeedsPin = !!(currentUser && currentUser.isAdmin) && (
       action === 'admin:banUser' ||
       action === 'admin:unbanUser' ||
       action === 'admin:deleteUser'
     );
-    // The module-blocking panel and global shutdown button also require a PIN
-    // server-side; route them through the same prompt instead of sending an
-    // empty adminPin and accidentally consuming a failed PIN attempt.
     const adminHighImpactNeedsPin = !!(currentUser && currentUser.isAdmin) && (
       action === 'admin:blockModule' ||
       action === 'admin:killAll'
@@ -1554,11 +1596,8 @@
       return adminCall(action, extra, true);
     }
     if (!r.ok) {
-      // PIN errors get a consistent message; lockouts are always one minute.
       if (data.error === 'pin_blocked') throw new Error(PIN_LOCKOUT_MESSAGE);
       if (data.error === 'wrong_admin_pin') throw new Error('PIN do administrador incorreto.');
-      // A resource-level 404 (for example, target account not found) must not
-      // invalidate the currently logged-in administrator's own session.
       if (r.status === 401 || data.error === 'no_jwt' || data.error === 'bad_jwt' || data.error === 'email_not_verified') {
         kill();
       }
@@ -1679,8 +1718,6 @@
         <button class="admin-btn" style="margin-top: 16px; width: 100%; justify-content: center;" data-save-mod-placeholder="1">Salvar Alterações</button>
       `;
       header.addEventListener('click', () => item.classList.toggle('open'));
-      // F-10: build the save button's data attribute with DOM APIs — never interpolate
-      // mod.email into innerHTML (legacy KV records may contain non-RFC-5321 values).
       const saveBtnPlaceholder = body.querySelector('[data-save-mod-placeholder]');
       if (saveBtnPlaceholder) saveBtnPlaceholder.dataset.saveMod = mod.email;
       const saveBtn = body.querySelector('[data-save-mod]');
@@ -1816,10 +1853,12 @@
       case 'rename': iconClass = 'h-tags'; iconSvg = '<path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2"/>'; line1 = `${autor} definiu o nome de ${alvo} como <em>${escapeHtml(ev.name || '')}</em>`; break;
       case 'pin_set': iconClass = 'h-tags'; iconSvg = '<path d="M12 15v2m-6 4h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm10-10V7a4 4 0 0 0-8 0v4"/>'; line1 = `alterou o próprio PIN`; break;
       case 'pin_reset': iconClass = 'h-tags'; iconSvg = '<path d="M12 15v2m-6 4h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm10-10V7a4 4 0 0 0-8 0v4"/>'; line1 = `${autor} redefiniu o PIN de ${alvo}`; break;
+      case 'reset_user': iconClass = 'h-tags'; iconSvg = '<path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/>'; line1 = `${autor} <em style="color:#fbbf24">resetou os dados</em> de ${alvo}`; break;
+      case 'reset_all': iconClass = 'h-tags'; iconSvg = '<path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/>'; line1 = `${autor} <em style="color:#fbbf24">resetou os dados de TODOS</em> (${escapeHtml(String(ev.count || 0))} pessoa(s))`; break;
       default: line1 = escapeHtml(ev.type || '?');
     }
     let line2Str = escapeHtml(fmtDate(ev.ts));
-    if (ev.target && ev.type !== 'kill_all' && ev.type !== 'import') line2Str += ` · Alvo: <span class="hist-email">${escapeHtml(ev.target)}</span>`;
+    if (ev.target && ev.type !== 'kill_all' && ev.type !== 'import' && ev.type !== 'reset_all') line2Str += ` · Alvo: <span class="hist-email">${escapeHtml(ev.target)}</span>`;
     else if (emailParam && ev.type !== 'kill_all') line2Str += ` · <span class="hist-email">${escapeHtml(emailParam)}</span>`;
     row.innerHTML = `
       <div class="hist-icon ${iconClass}">
@@ -1851,7 +1890,6 @@
         btn.addEventListener('click', async () => {
           if (btn.dataset.busy === '1') return;
           btn.dataset.busy = '1';
-          // F-05: server requires PIN for hard/killAll records — send it proactively
           const isHardRecord = k.mode === 'hard' || k.mode === 'killAll';
           const doClear = async (adminPin) => {
             try {
