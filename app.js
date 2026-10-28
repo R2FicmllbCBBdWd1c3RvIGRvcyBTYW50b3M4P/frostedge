@@ -200,40 +200,104 @@
     document.getElementById('bulk-progress-overlay').classList.add('hidden');
   }
 
-  async function runBulkJob(type) {
-    const jwt = sessionStorage.getItem(SESSION_KEY);
-    if (!jwt) return;
+  function getPinForBulk(title, sub) {
+    return new Promise((resolve) => {
+      if (!currentUser || !currentUser.hasPin) { resolve(null); return; }
+      let settled = false;
+      const finish = (pin) => {
+        if (settled) return;
+        settled = true;
+        pinCancelBtn.removeEventListener('click', onCancel);
+        resolve(pin);
+      };
+      const onCancel = () => finish(null);
+      pinCancelBtn.addEventListener('click', onCancel);
+      openPinModal(title || 'Autorização', sub || 'Digite seu PIN de administrador.', 'login', async (pin) => {
+        closePinModal();
+        finish(pin);
+      });
+    });
+  }
+
+  async function runBulkResetAll() {
+    const adminPin = await getPinForBulk('Autorização', 'Digite seu PIN para resetar todos os usuários.');
+    if (!adminPin) return;
+    const limit = 20;
+    let offset = 0, total = 1, done = false;
+    openBulkProgress('Resetando todos');
+    updateBulkProgress(0, total);
     try {
-      const r = await adminCall('admin:startBulk', { type });
-      if (!r.ok) throw new Error(r.error || 'falha ao iniciar');
-      const jobId = r.jobId;
-      openBulkProgress(
-        type === 'reset_all' ? 'Resetando todos' :
-        type === 'kill_all' ? 'Desligando todos' : 'Sanitizando todos'
-      );
-      updateBulkProgress(0, r.total);
-      let done = false;
       while (!done) {
-        await new Promise(res => setTimeout(res, 1000));
-        const s = await adminCall('admin:bulkStatus', { jobId });
-        if (!s.ok) throw new Error(s.error || 'falha ao verificar');
-        updateBulkProgress(s.processed, s.total);
-        if (s.status === 'done') {
-          done = true;
-          await adminCall('admin:bulkFinish', { jobId });
-          closeBulkProgress();
-          toast('Concluído: ' + s.processed + ' de ' + s.total);
-          await loadAdmin();
-        } else if (s.status === 'error') {
-          done = true;
-          closeBulkProgress();
-          toast('Erro: ' + (s.error || 'desconhecido'), true);
-        }
+        const r = await adminCall('admin:resetUserData', { email: 'all', offset, limit, adminPin });
+        if (!r.ok) throw new Error(r.error || 'falha');
+        offset = r.nextOffset;
+        total = r.total;
+        done = r.done;
+        updateBulkProgress(offset, total);
       }
+      closeBulkProgress();
+      toast('Concluído: ' + offset + ' de ' + total);
+      await loadAdmin();
     } catch (e) {
       closeBulkProgress();
       toast('falha: ' + e.message, true);
     }
+  }
+
+  async function runBulkKillAll() {
+    const adminPin = await getPinForBulk('Autorização', 'Digite seu PIN para desligar todos os usuários.');
+    if (!adminPin) return;
+    const limit = 20;
+    let offset = 0, total = 1, done = false;
+    openBulkProgress('Desligando todos');
+    updateBulkProgress(0, total);
+    try {
+      while (!done) {
+        const r = await adminCall('admin:killAll', { mode: 'killAll', offset, limit, adminPin });
+        if (!r.ok) throw new Error(r.error || 'falha');
+        offset = r.nextOffset;
+        total = r.total;
+        done = r.done;
+        updateBulkProgress(offset, total);
+      }
+      closeBulkProgress();
+      toast('Concluído: ' + offset + ' de ' + total);
+      await loadAdmin();
+    } catch (e) {
+      closeBulkProgress();
+      toast('falha: ' + e.message, true);
+    }
+  }
+
+  async function runBulkSanitize() {
+    const adminPin = await getPinForBulk('Autorização', 'Digite seu PIN para sanitizar todos os usuários.');
+    if (!adminPin) return;
+    const limit = 20;
+    let offset = 0, total = 1, done = false;
+    openBulkProgress('Sanitizando todos');
+    updateBulkProgress(0, total);
+    try {
+      while (!done) {
+        const r = await adminCall('admin:sanitizeAll', { offset, limit, adminPin });
+        if (!r.ok) throw new Error(r.error || 'falha');
+        offset = r.nextOffset;
+        total = r.total;
+        done = r.done;
+        updateBulkProgress(offset, total);
+      }
+      closeBulkProgress();
+      toast('Concluído: ' + offset + ' de ' + total);
+      await loadAdmin();
+    } catch (e) {
+      closeBulkProgress();
+      toast('falha: ' + e.message, true);
+    }
+  }
+
+  async function runBulkJob(type) {
+    if (type === 'reset_all') return runBulkResetAll();
+    if (type === 'kill_all') return runBulkKillAll();
+    if (type === 'sanitize_all') return runBulkSanitize();
   }
 
   function showExpiredScreen() {
@@ -1466,8 +1530,7 @@
     );
     const adminHighImpactNeedsPin = !!(currentUser && currentUser.isAdmin) && (
       action === 'admin:blockModule' || action === 'admin:killAll' ||
-      action === 'admin:resetUserData' || action === 'admin:sanitizeAll' ||
-      action === 'admin:startBulk'
+      action === 'admin:resetUserData' || action === 'admin:sanitizeAll'
     );
     if ((setUserNeedsPin || adminModerationNeedsPin || adminHighImpactNeedsPin) && !String(dataToSend.adminPin || '').trim()) {
       return adminCallWithPin(action, dataToSend, hasRetriedStepUp);
@@ -1508,7 +1571,33 @@
     const isFirstLoad = !adminData;
     if (isFirstLoad) setAdminLoading(true);
     try {
-      adminData = await adminCall('admin:list');
+      let allPeople = [];
+      let allTags = [];
+      let blockedModules = [];
+      let total = 0;
+      let offset = 0;
+      let done = false;
+      const limit = 20;
+
+      openBulkProgress('Carregando usuários');
+      updateBulkProgress(0, 1);
+      while (!done) {
+        const r = await adminCall('admin:list', { offset, limit });
+        if (!r.ok) throw new Error(r.error || 'falha');
+        if (offset === 0) {
+          allTags = r.allTags || [];
+          blockedModules = r.blockedModules || [];
+          total = r.count || 0;
+          updateBulkProgress(0, total);
+        }
+        allPeople = allPeople.concat(r.people || []);
+        offset = r.nextOffset;
+        done = r.done;
+        updateBulkProgress(offset, total);
+      }
+      closeBulkProgress();
+
+      adminData = { people: allPeople, allTags, blockedModules, count: total };
       adminSelectedTags.clear();
       document.querySelectorAll('.admin-tag-chip').forEach(c => c.classList.remove('on'));
       const clearBtn = document.querySelector('.admin-tag-clear');
@@ -1525,7 +1614,10 @@
       if (window.__updateModToggleState) window.__updateModToggleState();
       const currentTab = document.querySelector('.admin-subtab.selected');
       if (currentTab && currentTab.dataset.subtab === 'pins') renderAdminPinsList();
-    } catch (e) { toast('falha ao carregar: ' + e.message, true); }
+    } catch (e) {
+      closeBulkProgress();
+      toast('falha ao carregar: ' + e.message, true);
+    }
     finally { if (isFirstLoad) setAdminLoading(false); }
   }
   function updateAdminCount() { const el = document.getElementById('admin-count'); if (!el) return; const total = adminData && adminData.count != null ? adminData.count : 0; el.innerHTML = '<b>' + total + '</b> pessoa' + (total === 1 ? '' : 's'); }
