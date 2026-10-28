@@ -222,8 +222,8 @@
   async function runBulkResetAll() {
     const adminPin = await getPinForBulk('Autorização', 'Digite seu PIN para resetar todos os usuários.');
     if (!adminPin) return;
-    const limit = 20;
-    let offset = 0, total = 1, done = false;
+    const limit = 5;
+    let offset = 0, total = 0, done = false;
     openBulkProgress('Resetando todos');
     updateBulkProgress(0, total);
     try {
@@ -247,8 +247,8 @@
   async function runBulkKillAll() {
     const adminPin = await getPinForBulk('Autorização', 'Digite seu PIN para desligar todos os usuários.');
     if (!adminPin) return;
-    const limit = 20;
-    let offset = 0, total = 1, done = false;
+    const limit = 5;
+    let offset = 0, total = 0, done = false;
     openBulkProgress('Desligando todos');
     updateBulkProgress(0, total);
     try {
@@ -272,8 +272,8 @@
   async function runBulkSanitize() {
     const adminPin = await getPinForBulk('Autorização', 'Digite seu PIN para sanitizar todos os usuários.');
     if (!adminPin) return;
-    const limit = 20;
-    let offset = 0, total = 1, done = false;
+    const limit = 5;
+    let offset = 0, total = 0, done = false;
     openBulkProgress('Sanitizando todos');
     updateBulkProgress(0, total);
     try {
@@ -1580,7 +1580,7 @@
       const limit = 20;
 
       openBulkProgress('Carregando usuários');
-      updateBulkProgress(0, 1);
+      updateBulkProgress(0, total);
       while (!done) {
         const r = await adminCall('admin:list', { offset, limit });
         if (!r.ok) throw new Error(r.error || 'falha');
