@@ -1,4 +1,5 @@
 (function () {
+  'use strict';
   const WORKER_URL  = 'https://frostedge-gate.mamaetata216.workers.dev/';
   const SESSION_KEY = 'auth_jwt';
   const FETCH_TIMEOUT = 15000;
@@ -181,6 +182,59 @@
       pinSubmitBtn.textContent = 'Salvar Alterações';
     }
   });
+
+  function openBulkProgress(title) {
+    document.getElementById('bulk-title').textContent = title;
+    document.getElementById('bulk-sub').textContent = '0 de 0';
+    document.getElementById('bulk-bar').style.width = '0%';
+    document.getElementById('bulk-percent').textContent = '0%';
+    document.getElementById('bulk-progress-overlay').classList.remove('hidden');
+  }
+  function updateBulkProgress(processed, total) {
+    const pct = total > 0 ? Math.round((processed / total) * 100) : 0;
+    document.getElementById('bulk-sub').textContent = `${processed} de ${total}`;
+    document.getElementById('bulk-bar').style.width = pct + '%';
+    document.getElementById('bulk-percent').textContent = pct + '%';
+  }
+  function closeBulkProgress() {
+    document.getElementById('bulk-progress-overlay').classList.add('hidden');
+  }
+
+  async function runBulkJob(type) {
+    const jwt = sessionStorage.getItem(SESSION_KEY);
+    if (!jwt) return;
+    try {
+      const r = await adminCall('admin:startBulk', { type });
+      if (!r.ok) throw new Error(r.error || 'falha ao iniciar');
+      const jobId = r.jobId;
+      openBulkProgress(
+        type === 'reset_all' ? 'Resetando todos' :
+        type === 'kill_all' ? 'Desligando todos' : 'Sanitizando todos'
+      );
+      updateBulkProgress(0, r.total);
+      let done = false;
+      while (!done) {
+        await new Promise(res => setTimeout(res, 1000));
+        const s = await adminCall('admin:bulkStatus', { jobId });
+        if (!s.ok) throw new Error(s.error || 'falha ao verificar');
+        updateBulkProgress(s.processed, s.total);
+        if (s.status === 'done') {
+          done = true;
+          await adminCall('admin:bulkFinish', { jobId });
+          closeBulkProgress();
+          toast('Concluído: ' + s.processed + ' de ' + s.total);
+          await loadAdmin();
+        } else if (s.status === 'error') {
+          done = true;
+          closeBulkProgress();
+          toast('Erro: ' + (s.error || 'desconhecido'), true);
+        }
+      }
+    } catch (e) {
+      closeBulkProgress();
+      toast('falha: ' + e.message, true);
+    }
+  }
 
   function showExpiredScreen() {
     stopPolling();
@@ -1036,10 +1090,9 @@
       killAllBtn.addEventListener('click', async () => {
         if (killAllBtn.dataset.busy === '1') return;
         if (!confirm('Encerrar a sessão de TODOS os usuários agora?')) return;
+        if (!currentUser.hasPin) { toast('Você precisa definir um PIN antes.', true); return; }
         killAllBtn.dataset.busy = '1';
-        try { const r = await adminCall('admin:killAll', { mode: 'hard' }); toast('sessões encerradas: ' + r.count); await loadKills(); }
-        catch (e) { toast('falha: ' + e.message, true); }
-        finally { delete killAllBtn.dataset.busy; }
+        try { await runBulkJob('kill_all'); } finally { delete killAllBtn.dataset.busy; }
       });
     }
 
@@ -1051,7 +1104,14 @@
         const emailInput = document.getElementById('reset-email').value.trim().toLowerCase();
         const isAll = emailInput === '';
         if (!isAll && !emailInput.includes('@')) { toast('email inválido.', true); return; }
-        const targetLabel = isAll ? 'TODOS os usuários' : emailInput;
+        if (isAll) {
+          if (!confirm('Resetar TODOS os usuários? Esta operação reconstruirá o perfil de cada um.')) return;
+          if (!currentUser.hasPin) { toast('Você precisa definir um PIN antes.', true); return; }
+          resetBtn.dataset.busy = '1'; resetBtn.disabled = true;
+          try { await runBulkJob('reset_all'); } finally { resetBtn.disabled = false; delete resetBtn.dataset.busy; }
+          return;
+        }
+        const targetLabel = emailInput;
         if (!confirm('Atenção: reset reconstrói o perfil do zero. Dropa isAdmin, isBanned e o PIN. Preserva isMod e as tags.\n\nAlvo: ' + targetLabel + '.\n\nContinuar?')) return;
         if (!currentUser.hasPin) { toast('Você precisa definir um PIN antes.', true); return; }
         openPinModal('Autorização', 'Digite seu PIN de admin para confirmar o reset.', 'login', async (adminPin) => {
@@ -1060,7 +1120,7 @@
           resetBtn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
           try {
             const payload = { action: 'admin:resetUserData', adminPin };
-            payload.email = isAll ? 'all' : emailInput;
+            payload.email = emailInput;
             const r = await adminCall(payload.action, payload);
             if (!r.ok) throw new Error(r.error || 'falha');
             closePinModal();
@@ -1083,22 +1143,8 @@
         if (sanitizeBtn.dataset.busy === '1') return;
         if (!confirm('Sanitizar TODOS os usuários?\n\nRemove campos falsos/vazios e deprecated (ex: isAdmin:false, isMod:false, isBanned:false).\nNão altera dados reais: isAdmin, isMod, isBanned, tags, PIN e nome são preservados quando verdadeiros.\n\nContinuar?')) return;
         if (!currentUser.hasPin) { toast('Você precisa definir um PIN antes.', true); return; }
-        openPinModal('Autorização', 'Digite seu PIN de admin para sanitizar todos os usuários.', 'login', async (adminPin) => {
-          sanitizeBtn.dataset.busy = '1'; sanitizeBtn.disabled = true;
-          const originalHTML = sanitizeBtn.innerHTML;
-          sanitizeBtn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin:0;"></div>';
-          try {
-            const r = await adminCall('admin:sanitizeAll', { adminPin });
-            if (!r.ok) throw new Error(r.error || 'falha');
-            closePinModal();
-            toast('sanitizado: ' + r.modified + ' de ' + r.count + ' alterado(s).');
-            await loadAdmin();
-          } catch (e) {
-            throw new Error(e.message === 'wrong_admin_pin' ? 'PIN incorreto.' : e.message === 'pin_blocked' ? PIN_LOCKOUT_MESSAGE : e.message);
-          } finally {
-            sanitizeBtn.disabled = false; delete sanitizeBtn.dataset.busy; sanitizeBtn.innerHTML = originalHTML;
-          }
-        });
+        sanitizeBtn.dataset.busy = '1'; sanitizeBtn.disabled = true;
+        try { await runBulkJob('sanitize_all'); } finally { sanitizeBtn.disabled = false; delete sanitizeBtn.dataset.busy; }
       });
     }
   }
@@ -1420,7 +1466,8 @@
     );
     const adminHighImpactNeedsPin = !!(currentUser && currentUser.isAdmin) && (
       action === 'admin:blockModule' || action === 'admin:killAll' ||
-      action === 'admin:resetUserData' || action === 'admin:sanitizeAll'
+      action === 'admin:resetUserData' || action === 'admin:sanitizeAll' ||
+      action === 'admin:startBulk'
     );
     if ((setUserNeedsPin || adminModerationNeedsPin || adminHighImpactNeedsPin) && !String(dataToSend.adminPin || '').trim()) {
       return adminCallWithPin(action, dataToSend, hasRetriedStepUp);
