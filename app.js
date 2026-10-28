@@ -1571,25 +1571,23 @@
     const isFirstLoad = !adminData;
     if (isFirstLoad) setAdminLoading(true);
     try {
+      const countRes = await adminCall('admin:list', { countOnly: true });
+      if (!countRes.ok) throw new Error(countRes.error || 'falha');
+      let total = countRes.count || 0;
+      const allTags = countRes.allTags || [];
+      const blockedModules = countRes.blockedModules || [];
+
+      openBulkProgress('Carregando usuários');
+      updateBulkProgress(0, total);
+
       let allPeople = [];
-      let allTags = [];
-      let blockedModules = [];
-      let total = 0;
       let offset = 0;
       let done = false;
       const limit = 20;
 
-      openBulkProgress('Carregando usuários');
-      updateBulkProgress(0, total);
       while (!done) {
         const r = await adminCall('admin:list', { offset, limit });
         if (!r.ok) throw new Error(r.error || 'falha');
-        if (offset === 0) {
-          allTags = r.allTags || [];
-          blockedModules = r.blockedModules || [];
-          total = r.count || 0;
-          updateBulkProgress(0, total);
-        }
         allPeople = allPeople.concat(r.people || []);
         offset = r.nextOffset;
         done = r.done;
@@ -1616,7 +1614,12 @@
       if (currentTab && currentTab.dataset.subtab === 'pins') renderAdminPinsList();
     } catch (e) {
       closeBulkProgress();
-      toast('falha ao carregar: ' + e.message, true);
+      if (e.message === 'forbidden') {
+        toast('Você perdeu o acesso de administrador. Recarregue a página.', true);
+        setTimeout(() => location.reload(), 2000);
+      } else {
+        toast('falha ao carregar: ' + e.message, true);
+      }
     }
     finally { if (isFirstLoad) setAdminLoading(false); }
   }
