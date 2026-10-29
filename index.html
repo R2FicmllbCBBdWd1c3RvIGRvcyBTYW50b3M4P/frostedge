@@ -449,38 +449,41 @@ header{
 .admin-search::placeholder{color:var(--dim)}
 
 /* ── 12. TAG FILTERS / CHECKS ─────────────────────────────────── */
-.admin-tag-filter{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
-.admin-tag-chip{
-  padding:5px 12px;border-radius:999px;
-  border:1px solid var(--glass-border);
-  background:transparent;color:var(--dim);
-  font-size:11.5px;font-weight:500;cursor:pointer;
-  font-family:inherit;transition:border-color .15s,background .15s,color .15s;
-}
-.admin-tag-chip:hover{border-color:var(--glass-border-hi);color:var(--text)}
-.admin-tag-chip.on{
-  border-color:rgba(var(--glow-rgb),.5);
-  background:rgba(var(--glow-rgb),.1);
-  color:var(--accent-2);
-}
-.admin-tag-clear{
-  padding:5px 12px;border-radius:999px;border:1px solid transparent;
-  background:transparent;color:var(--dim);font-size:11px;
-  font-weight:500;cursor:pointer;font-family:inherit;transition:color .15s;
-}
-.admin-tag-clear:hover{color:var(--text)}
-.admin-tag-clear.hidden{display:none}
-
 .admin-tag-checks{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0}
 .admin-check{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:7px 13px;border-radius:999px;
+  display:inline-flex;align-items:center;gap:10px;
+  padding:7px 14px;border-radius:999px;
   border:1px solid var(--glass-border);
   background:var(--glass-1);
   font-size:12.5px;color:var(--text);
   cursor:pointer;transition:border-color .15s,background .15s,color .15s;
+  white-space:nowrap; /* Impede o texto de quebrar */
+  flex-shrink:0;      /* Impede o container de ser esmagado */
 }
-.admin-check input{accent-color:var(--accent);margin:0}
+.admin-check input[type="checkbox"]{
+  -webkit-appearance:none;
+  -moz-appearance:none;
+  appearance:none;
+  width:32px;height:18px;
+  background:rgba(255,255,255,.1);
+  border-radius:999px;
+  position:relative;cursor:pointer;outline:none;
+  border:1px solid var(--glass-border);
+  transition:background .2s, border-color .2s;
+  flex-shrink:0;margin:0;
+}
+.admin-check input[type="checkbox"]::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:12px;height:12px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+}
+.admin-check input[type="checkbox"]:checked{
+  background:var(--accent);border-color:var(--accent);
+}
+.admin-check input[type="checkbox"]:checked::after{
+  transform:translateX(14px);
+}
 .admin-check:hover{border-color:var(--glass-border-hi)}
 .admin-check:has(input:checked){
   border-color:rgba(var(--glow-rgb),.45);
