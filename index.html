@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://accounts.google.com https://www.googleapis.com https://frostedge-gate.mamaetata216.workers.dev; frame-src https://accounts.google.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://accounts.google.com https://www.googleapis.com https://frostedge-gate.mamaetata216.workers.dev; frame-src 'self' https://accounts.google.com https://www.youtube.com https://player.vimeo.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>FrostEdge</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2360a5fa%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 2L2 22h20L12 2z%22/><path d=%22M12 6l6 12H6l6-12z%22 fill=%22%2360a5fa%22 opacity=%220.3%22/></svg>">
 <script src="/guard.js?v=3"></script>
@@ -83,19 +83,14 @@ a{color:inherit;text-decoration:none}
 .bg-pattern::before{
   content:'';position:absolute;inset:0;
   background:
-    /* top-center accent bloom */
     radial-gradient(ellipse 90% 55% at 50% -10%,rgba(var(--glow-rgb),.22),transparent 65%),
-    /* bottom-right warm amber orb */
     radial-gradient(ellipse 65% 55% at 95% 105%,rgba(180,90,20,.18),transparent 60%),
-    /* left mid cool blue */
     radial-gradient(ellipse 55% 50% at -5% 55%,rgba(var(--glow-rgb),.13),transparent 65%),
-    /* center deep glow */
     radial-gradient(ellipse 40% 35% at 50% 50%,rgba(var(--glow-rgb),.04),transparent 70%);
   transition:background .5s ease;
 }
 .bg-pattern::after{
   content:'';position:absolute;inset:0;
-  /* Fine grid */
   background-image:
     linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),
     linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
@@ -122,7 +117,6 @@ main{
 header{
   display:flex;align-items:center;justify-content:space-between;
   padding:18px 32px;position:relative;z-index:2;
-  /* glass strip */
   background:rgba(7,7,15,.45);
   -webkit-backdrop-filter:blur(20px) saturate(140%);
   backdrop-filter:blur(20px) saturate(140%);
@@ -205,20 +199,18 @@ header{
   display:flex;flex-direction:column;
   -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
   box-shadow:
-    0 1px 0 var(--glass-shine) inset,  /* top highlight */
-    0 -1px 0 rgba(0,0,0,.15) inset,   /* bottom depth */
+    0 1px 0 var(--glass-shine) inset,
+    0 -1px 0 rgba(0,0,0,.15) inset,
     0 8px 40px rgba(0,0,0,.35),
     0 0 0 1px rgba(var(--glow-rgb),.05);
   transition:border-color .2s,box-shadow .28s,transform .18s;
   position:relative;overflow:hidden;
 }
-/* Top edge shine */
 .card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.14) 40%,rgba(255,255,255,.14) 60%,transparent 100%);
   pointer-events:none;
 }
-/* Inner ambient glow */
 .card::after{
   content:'';position:absolute;inset:0;
   background:radial-gradient(ellipse 60% 40% at 70% -10%,rgba(var(--glow-rgb),.07),transparent 55%);
@@ -449,7 +441,6 @@ header{
 .admin-search::placeholder{color:var(--dim)}
 
 /* ── 12. TAG FILTERS / CHECKS ─────────────────────────────────── */
-/* ── 12. TAG FILTERS / CHECKS ─────────────────────────────────── */
 .admin-tag-filter{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
 .admin-tag-chip{
   padding:5px 12px;border-radius:999px;
@@ -480,8 +471,8 @@ header{
   background:var(--glass-1);
   font-size:12.5px;color:var(--text);
   cursor:pointer;transition:border-color .15s,background .15s,color .15s;
-  white-space:nowrap; /* Impede o texto de quebrar em duas linhas */
-  flex-shrink:0;      /* Impede o chip de ser esmagado pelo flexbox */
+  white-space:nowrap;
+  flex-shrink:0;
 }
 .admin-check input{
   accent-color:var(--accent);
@@ -495,6 +486,7 @@ header{
   border-color:rgba(var(--glow-rgb),.45);
   background:rgba(var(--glow-rgb),.1);color:var(--accent-2);
 }
+
 /* ── 13. ADMIN BUTTONS ────────────────────────────────────────── */
 .admin-btn{
   align-self:flex-start;padding:11px 22px;border-radius:var(--r-sm);
@@ -1364,6 +1356,65 @@ header{
   font-size: 24px; font-weight: 700; color: var(--accent-2); margin: 0;
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: 1px;
 }
+
+/* ── 38. HOW TO USE MODAL ─────────────────────────────────────── */
+#how-to-overlay {
+  position:fixed;inset:0;z-index:10003;
+  background:rgba(7,7,15,.8);
+  -webkit-backdrop-filter:blur(18px) saturate(.8);backdrop-filter:blur(18px) saturate(.8);
+  display:grid;place-items:center;opacity:0;transition:opacity .25s ease;padding:24px;
+}
+#how-to-overlay:not(.hidden){opacity:1}
+#how-to-overlay.hidden{display:none}
+.how-to-modal {
+  background:rgba(13,13,20,.96);border:1px solid var(--glass-border);
+  border-radius:var(--r-xl);width:860px;max-width:100%;height:640px;max-height:88vh;
+  display:flex;flex-direction:column;
+  box-shadow:0 36px 100px rgba(0,0,0,.72),0 0 0 1px rgba(var(--glow-rgb),.07),inset 0 1px rgba(255,255,255,.06);
+  animation:execIn .28s cubic-bezier(.2,.8,.2,1);overflow:hidden;
+}
+.how-to-header {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 26px 16px;border-bottom:1px solid var(--line);flex-shrink:0;
+}
+.how-to-header h3{margin:0;font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.how-to-body {
+  display:flex;flex:1;min-height:0;overflow:hidden;
+}
+.how-to-sidebar {
+  width:220px;flex-shrink:0;
+  border-right:1px solid var(--line);
+  padding:16px 12px;
+  display:flex;flex-direction:column;gap:4px;
+  background:rgba(0,0,0,.2);
+}
+.how-to-tab {
+  text-align:left;background:transparent;border:none;border-radius:var(--r-sm);
+  padding:10px 14px;color:var(--dim);font-size:13.5px;font-weight:500;
+  cursor:pointer;font-family:inherit;transition:all .15s;
+}
+.how-to-tab:hover{background:var(--glass-2);color:var(--text)}
+.how-to-tab.active{
+  background:rgba(var(--glow-rgb),.1);color:var(--accent-2);
+  border:1px solid rgba(var(--glow-rgb),.2);
+}
+.how-to-content-wrap {
+  flex:1;overflow-y:auto;padding:24px 32px;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.how-to-content-wrap::-webkit-scrollbar{display:none}
+.how-to-panel { display:none; animation:fadeIn .2s ease; }
+.how-to-panel.active { display:block; }
+.how-to-panel h4 { font-size:16px; margin:0 0 12px; color:var(--text); }
+.how-to-panel p { font-size:13.5px; color:var(--text-2); margin:0 0 16px; line-height:1.6; }
+.how-to-panel ul { margin:0 0 16px; padding-left:20px; font-size:13.5px; color:var(--text-2); line-height:1.6; }
+.how-to-panel li { margin-bottom:6px; }
+.how-to-panel .video-embed {
+  width:100%; aspect-ratio:16/9; border-radius:var(--r-sm);
+  border:1px solid var(--glass-border); margin-bottom:16px;
+  background:#000; overflow:hidden;
+}
+.how-to-panel .video-embed iframe { width:100%; height:100%; border:none; }
 </style>
 </head>
 <body>
@@ -1386,6 +1437,10 @@ header{
       <div class="name">Frost<em>Edge</em></div>
     </div>
     <nav class="nav">
+      <button class="btn" id="btn-how-to" title="Como usar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Como usar?</span>
+      </button>
       <button class="btn" id="btn-area"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.2-3.4 4-5 7.5-5s6.3 1.6 7.5 5"/></svg><span>Minha área</span></button>
       <button class="btn ghost" id="btn-logout" title="Sair"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5"/><path d="M5 12h11"/></svg><span>Sair</span></button>
     </nav>
@@ -1414,6 +1469,10 @@ header{
       <div class="name">Frost<em>Edge</em></div>
     </div>
     <nav class="nav">
+      <button class="btn" id="btn-how-to-area" title="Como usar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Como usar?</span>
+      </button>
       <button class="btn" id="btn-home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12 12 3l9 9"/><path d="M5 10v10h14V10"/></svg><span>Início</span></button>
       <button class="btn ghost" id="btn-logout-2" title="Sair"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5"/><path d="M5 12h11"/></svg><span>Sair</span></button>
     </nav>
@@ -1485,6 +1544,28 @@ header{
     <div class="terms-footer hidden" id="terms-footer">
       <label class="terms-checkbox" id="terms-checkbox-wrap"><input type="checkbox" id="terms-checkbox"><span>Li, compreendi e <b>concordo integralmente</b> com todos os Termos de Uso acima.</span></label>
       <button class="terms-accept" id="terms-accept" type="button" disabled>Concordar e continuar</button>
+    </div>
+  </div>
+</div>
+<div id="how-to-overlay" class="hidden">
+  <div class="how-to-modal">
+    <div class="how-to-header">
+      <div><h3>Como usar</h3><span class="terms-tag">guia rápido</span></div>
+      <button class="terms-close" id="how-to-close" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="how-to-body">
+      <div class="how-to-sidebar" id="how-to-sidebar">
+        <button class="how-to-tab active" data-tab="lynx">Lynx</button>
+        <button class="how-to-tab" data-tab="escritor">Escritor Baiano</button>
+        <button class="how-to-tab" data-tab="ingles">Inglês</button>
+        <button class="how-to-tab" data-tab="quizziz">Quizziz</button>
+        <button class="how-to-tab" data-tab="soundpad">Soundpad</button>
+      </div>
+      <div class="how-to-content-wrap" id="how-to-content">
+        <!-- Conteúdo injetado via JS -->
+      </div>
     </div>
   </div>
 </div>
