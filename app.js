@@ -577,7 +577,16 @@
       if (!incomingMap.has(b.tag)) removed.push(b);
       else {
         const inc = incomingMap.get(b.tag);
-        if (JSON.stringify(b) !== JSON.stringify(inc)) changed.push(inc);
+        if (
+  b.tag !== inc.tag ||
+  b.blocked !== inc.blocked ||
+  b.kicker !== inc.kicker ||
+  b.sub !== inc.sub ||
+  JSON.stringify(b.features || []) !== JSON.stringify(inc.features || []) ||
+  b.payload !== inc.payload ||
+  b.payload_new !== inc.payload_new ||
+  b.payload_old !== inc.payload_old
+) changed.push(inc);
       }
     }
     for (const inc of incoming) { if (!knownTags.has(inc.tag)) added.push(inc); }
