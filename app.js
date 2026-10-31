@@ -2017,20 +2017,20 @@
       label: 'Inglês',
       title: 'Inglês — exercícios e respostas',
       intro: {
-        paras: ['O módulo de Inglês serve para praticar e conferir atividades da disciplina. Você envia a questão ou abre a atividade e recebe a resposta com explicação.'],
+        paras: ['penis1'],
         steps: [
-          'Abra o card de Inglês.',
-          'Cole a questão (ou a lista de questões) no campo indicado.',
-          'Envie e aguarde o resultado.',
-          'Leia a explicação gramatical, não só a resposta.'
+          'penis2',
+          'penis3',
+          'penis4',
+          'penis5'
         ]
       },
       video: { src: 'TODO:INGLES', title: 'Resolvendo atividades de Inglês' },
       outro: {
-        paras: ['Use como apoio de estudo: copiar a resposta sem entender não ajuda na prova.'],
+        paras: ['penis6'],
         tips: [
-          'Reescreva a resposta com suas próprias palavras.',
-          'Se a explicação não bater, envie de novo com mais contexto.'
+          'penis7',
+          'penis8'
         ],
         warn: 'Sempre certifique-se de usar o site correto antes de instalar scripts (lynx-81f.pages.dev)'
       }
@@ -2040,20 +2040,20 @@
       label: 'Quizziz',
       title: 'Quizziz — como funciona',
       intro: {
-        paras: ['O módulo Quizziz auxilia com quizzes estilo Quizizz, mostrando respostas e justificativas para revisão.'],
+        paras: ['penis1'],
         steps: [
-          'Abra o card do Quizziz.',
-          'Cole o link do quiz ou o código da sala.',
-          'Escolha o modo (revisão ou execução).',
-          'Aguarde o processamento e veja as respostas.'
+          'penis2',
+          'penis3',
+          'penis4',
+          'penis5'
         ]
       },
       video: { src: 'TODO:QUIZZIZ', title: 'Usando o módulo Quizziz' },
       outro: {
-        paras: ['O módulo respeita os limites de tempo da plataforma — quizzes com tempo curto podem não ser processados a tempo.'],
+        paras: ['penis6'],
         tips: [
-          'Prefira revisar depois que o professor liberar o gabarito.',
-          'Use apenas em atividades permitidas pela instituição.'
+          'penis7',
+          'penis8'
         ],
         warn: 'Sempre certifique-se de usar o site correto antes de instalar scripts (lynx-81f.pages.dev)'
       }
@@ -2063,21 +2063,20 @@
       label: 'Soundpad',
       title: 'Soundpad — instalação e uso',
       intro: {
-        paras: ['O Soundpad permite tocar áudios curtos durante chamadas ou jogos. O módulo entrega o executável/configuração pronta para uso.'],
+        paras: ['penis1'],
         steps: [
-          'Abra o card do Soundpad.',
-          'Baixe o pacote correspondente ao seu sistema.',
-          'Extraia em uma pasta e execute o instalador/executável.',
-          'Configure o dispositivo de áudio de saída (virtual cable, se necessário).',
-          'Adicione seus sons e defina atalhos.'
+          'penis2',
+          'penis3',
+          'penis4',
+          'penis5'
         ]
       },
       video: { src: 'TODO:SOUNDPAD', title: 'Configurando o Soundpad no Discord/OBS' },
       outro: {
-        paras: ['Se o som não sair na chamada, confira se o Soundpad está usando o mesmo dispositivo do app (Discord/OBS/etc.).'],
+        paras: ['penis6'],
         tips: [
-          'No Discord, ative "Usar dispositivo de saída padrão" ou selecione o cabo virtual.',
-          'Mantenha os arquivos em WAV/MP3 curtos para menor latência.'
+          'penis7',
+          'penis8'
         ],
         warn: 'Sempre certifique-se de usar o site correto antes de instalar scripts (lynx-81f.pages.dev)'
       }
