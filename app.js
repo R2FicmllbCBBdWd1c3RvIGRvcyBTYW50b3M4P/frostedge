@@ -2334,87 +2334,84 @@ function openHowTo(preferred) {
     void overlay.offsetWidth;
   }
 }
-
-  let debounceTimer = null;
-  function scheduleRefresh() {
-    if (debounceTimer) return;
-    debounceTimer = setTimeout(function () {
-      debounceTimer = null;
-      refreshAll();
-    }, 40);
-  }
-
-  function init() {
-    ['btn-how-to', 'btn-how-to-area'].forEach(function (id) {
-      const b = document.getElementById(id);
-      if (b) b.addEventListener('click', function () { openHowTo('lynx'); });
-    });
-
-    const closeBtn = document.getElementById('how-to-close');
-    if (closeBtn) closeBtn.addEventListener('click', closeHowTo);
-
-    const overlay = document.getElementById('how-to-overlay');
-    if (overlay) {
-      overlay.addEventListener('click', function (e) {
-        if (e.target === overlay) closeHowTo();
-      });
-    }
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && overlay && !overlay.classList.contains('hidden')) closeHowTo();
-    });
-
-    const sidebar = document.getElementById('how-to-sidebar');
-    if (sidebar) {
-      sidebar.addEventListener('click', function (e) {
-        const btn = e.target.closest('.how-to-tab');
-        if (btn && btn.dataset.tab) selectHowToTab(btn.dataset.tab);
-      });
-    }
-
-    const identify = document.querySelector('[data-action="identify-guide"]');
-    if (identify) {
-      identify.addEventListener('click', function (e) {
-        e.preventDefault();
-        const ver = document.getElementById('lynx-version-overlay');
-        if (ver) ver.classList.add('hidden');
-        openHowTo('lynx');
-      });
-    }
-
+  
+let debounceTimer = null;
+function scheduleRefresh() {
+  if (debounceTimer) return;
+  debounceTimer = setTimeout(function () {
+    debounceTimer = null;
     refreshAll();
+  }, 120);
+}
 
-    const observerCfg = {
-      childList: true,
-      subtree: true,
-      characterData: true,
-      attributes: true,
-      attributeFilter: ['style', 'class', 'hidden']
-    };
+function init() {
+  ['btn-how-to', 'btn-how-to-area'].forEach(function (id) {
+    const b = document.getElementById(id);
+    if (b) b.addEventListener('click', function () { openHowTo('lynx'); });
+  });
 
-    const main = document.querySelector('main') || document.body;
-    new MutationObserver(scheduleRefresh).observe(main, observerCfg);
+  const closeBtn = document.getElementById('how-to-close');
+  if (closeBtn) closeBtn.addEventListener('click', closeHowTo);
 
-    const areaTags = document.getElementById('area-tags');
-    if (areaTags) new MutationObserver(scheduleRefresh).observe(areaTags, observerCfg);
-
-    window.addEventListener('resize', scheduleRefresh);
-
-    window.__howTo = {
-      debug: function () {
-        const cards = Array.from(document.querySelectorAll('#grid .card')).map(function (c) {
-          return {
-            data: Object.assign({}, c.dataset),
-            visivel: isVisible(c),
-            title: (c.querySelector('h2') || {}).textContent || ''
-          };
-        });
-        console.log('[HowTo] cards no #grid:', cards);
-        console.log('[HowTo] tags detectadas:', Array.from(getUserTags()));
-        console.log('[HowTo] allowedKeys():', allowedKeys());
-      },
-      refresh: function () { return refreshAll(); }
-    };
+  const overlay = document.getElementById('how-to-overlay');
+  if (overlay) {
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeHowTo();
+    });
   }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay && !overlay.classList.contains('hidden')) closeHowTo();
+  });
+
+  const sidebar = document.getElementById('how-to-sidebar');
+  if (sidebar) {
+    sidebar.addEventListener('click', function (e) {
+      const btn = e.target.closest('.how-to-tab');
+      if (btn && btn.dataset.tab) selectHowToTab(btn.dataset.tab);
+    });
+  }
+
+  const identify = document.querySelector('[data-action="identify-guide"]');
+  if (identify) {
+    identify.addEventListener('click', function (e) {
+      e.preventDefault();
+      const ver = document.getElementById('lynx-version-overlay');
+      if (ver) ver.classList.add('hidden');
+      openHowTo('lynx');
+    });
+  }
+
+  refreshAll();
+
+  const observerCfg = {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['style', 'class', 'hidden', 'data-tag', 'data-key']
+  };
+
+  const grid = document.getElementById('grid');
+  if (grid) new MutationObserver(scheduleRefresh).observe(grid, observerCfg);
+
+  const areaTags = document.getElementById('area-tags');
+  if (areaTags) new MutationObserver(scheduleRefresh).observe(areaTags, observerCfg);
+
+  window.addEventListener('resize', scheduleRefresh);
+
+  window.__howTo = {
+    open: function (tab) { openHowTo(tab || 'lynx'); },
+    refresh: function () { return refreshAll(); },
+    debug: function () {
+      const cards = Array.from(document.querySelectorAll('#grid .card')).map(function (c) {
+        return { data: Object.assign({}, c.dataset), visivel: isVisible(c), title: (c.querySelector('h2') || {}).textContent || '' };
+      });
+      console.log('[HowTo] cards:', cards);
+      console.log('[HowTo] tags:', Array.from(getUserTags()));
+      console.log('[HowTo] allowed:', allowedKeys());
+      console.log('[HowTo] lastKeys:', lastRenderedKeysStr);
+    }
+  };
+}
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
@@ -2425,7 +2422,6 @@ function openHowTo(preferred) {
   tryRestore();
   document.querySelectorAll('[data-action="lynx-new"]').forEach(el => el.addEventListener('click', () => startLynxExec('new')));
   document.querySelectorAll('[data-action="lynx-old"]').forEach(el => el.addEventListener('click', () => startLynxExec('old')));
-  document.querySelectorAll('[data-action="identify-guide"]').forEach(el => el.addEventListener('click', (event) => { event.preventDefault(); window.showIdentifyGuide(); }));
   document.querySelectorAll('[data-action="close-lynx-version"]').forEach(el => el.addEventListener('click', () => document.getElementById('lynx-version-overlay').classList.add('hidden')));
   document.querySelectorAll('[data-action="reload-page"]').forEach(el => el.addEventListener('click', () => window.location.reload()));
 
