@@ -569,67 +569,35 @@
       delete btn.dataset.busy;
     }
   });
-function applyBlocksDiff(incoming) {
-  if (!incoming || !Array.isArray(incoming)) return;
-  const incomingMap = new Map(incoming.map(b => [b.tag, b]));
-  const added = [], removed = [], changed = [];
-
-  for (const b of (currentUser.blocks || [])) {
-    if (!incomingMap.has(b.tag)) {
-      removed.push(b);
-    } else {
-      const inc = incomingMap.get(b.tag);
-      const changedFlag =
-        b.tag         !== inc.tag         ||
-        b.blocked     !== inc.blocked     ||
-        b.kicker      !== inc.kicker      ||
-        b.sub         !== inc.sub         ||
-        b.payload     !== inc.payload     ||
-        b.payload_new !== inc.payload_new ||
-        b.payload_old !== inc.payload_old ||
-        JSON.stringify(b.features || []) !== JSON.stringify(inc.features || []);
-      if (changedFlag) changed.push(inc);
+  function applyBlocksDiff(incoming) {
+    if (!incoming || !Array.isArray(incoming)) return;
+    const incomingMap = new Map(incoming.map(b => [b.tag, b]));
+    const added = [], removed = [], changed = [];
+    for (const b of (currentUser.blocks || [])) {
+      if (!incomingMap.has(b.tag)) removed.push(b);
+      else {
+        const inc = incomingMap.get(b.tag);
+        if (JSON.stringify(b) !== JSON.stringify(inc)) changed.push(inc);
+      }
     }
-  }
-
-  for (const inc of incoming) {
-    if (!knownTags.has(inc.tag)) added.push(inc);
-  }
-
-  if (!added.length && !removed.length && !changed.length) return;
-
-  currentUser.blocks = incoming;
-  knownTags = new Set(currentUser.blocks.map(b => b.tag));
-
-  for (const b of removed) {
-    const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
-    if (card) {
-      card.style.transition = 'opacity .25s, transform .25s';
-      card.style.opacity = '0';
-      card.style.transform = 'scale(.95)';
-      setTimeout(() => card.remove(), 260);
+    for (const inc of incoming) { if (!knownTags.has(inc.tag)) added.push(inc); }
+    if (!added.length && !removed.length && !changed.length) return;
+    currentUser.blocks = incoming;
+    knownTags = new Set(currentUser.blocks.map(b => b.tag));
+    for (const b of removed) {
+      const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
+      if (card) { card.style.transition = 'opacity .25s, transform .25s'; card.style.opacity = '0'; card.style.transform = 'scale(.95)'; setTimeout(() => card.remove(), 260); }
+      payloads.delete(b.tag + '_new'); payloads.delete(b.tag + '_old'); payloads.delete(b.tag);
     }
-    payloads.delete(b.tag + '_new');
-    payloads.delete(b.tag + '_old');
-    payloads.delete(b.tag);
+    for (const b of changed) {
+      const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
+      if (!card) continue;
+      const fresh = renderBlock(b);
+      card.replaceWith(fresh);
+      fadeIn(fresh);
+    }
+    added.forEach((b, i) => { const el = renderBlock(b); setTimeout(() => { grid.appendChild(el); fadeIn(el); }, i * 90); });
   }
-
-  for (const b of changed) {
-    const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
-    if (!card) continue;
-    const fresh = renderBlock(b);
-    card.replaceWith(fresh);
-    fadeIn(fresh);
-  }
-
-  added.forEach((b, i) => {
-    const el = renderBlock(b);
-    setTimeout(() => {
-      grid.appendChild(el);
-      fadeIn(el);
-    }, i * 90);
-  });
-}
   function openExec(name) {
     execEmail.textContent = name || '—';
     execRunning.classList.remove('hidden'); execDone.classList.add('hidden'); execClose.classList.add('hidden');
@@ -2124,16 +2092,16 @@ function applyBlocksDiff(incoming) {
       .replace(/[^a-z0-9]/g, '');
   }
 
-function isVisible(el) {
-  if (!el) return false;
-  if (el.hidden) return false;
-  if (el.hasAttribute('hidden')) return false;
-  if (el.classList && el.classList.contains('hidden')) return false;
-  const cs = getComputedStyle(el);
-  if (cs.display === 'none') return false;
-  if (cs.visibility === 'hidden') return false;
-  return true;
-}
+  function isVisible(el) {
+    if (!el) return false;
+    if (el.hidden) return false;
+    if (el.hasAttribute('hidden')) return false;
+    if (el.classList && el.classList.contains('hidden')) return false;
+    const cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') return false;
+    if (el.offsetParent === null && cs.position !== 'fixed') return false;
+    return true;
+  }
 
   function appendParas(panel, list) {
     (list || []).forEach(function (t) {
@@ -2244,71 +2212,11 @@ function isVisible(el) {
     });
   }
 
-function buildPanel(key, isActive) {
-  const d = HOW_TO_DATA[key];
-  const panel = document.createElement('div');
-  panel.className = 'how-to-panel' + (isActive ? ' active' : '');
-  panel.dataset.panel = key;
+  function renderHowTo(keys) {
+    const wrap = document.getElementById('how-to-content');
+    const sidebar = document.getElementById('how-to-sidebar');
+    if (!wrap || !sidebar) return;
 
-  const h = document.createElement('h4');
-  h.textContent = d.title;
-  panel.appendChild(h);
-
-  if (d.intro) {
-    const b = document.createElement('div');
-    b.className = 'how-to-block';
-    appendParas(b, d.intro.paras);
-    appendSteps(b, d.intro.steps);
-    panel.appendChild(b);
-  }
-
-  appendVideo(panel, d.video);
-
-  if (d.outro) {
-    const b = document.createElement('div');
-    b.className = 'how-to-block';
-    appendParas(b, d.outro.paras);
-    appendSteps(b, d.outro.tips);
-    panel.appendChild(b);
-
-    if (d.outro.warn) {
-      const w = document.createElement('p');
-      w.className = 'how-to-warn';
-      w.textContent = d.outro.warn;
-      panel.appendChild(w);
-    }
-  }
-  return panel;
-}
-
-function renderHowTo(keys) {
-  const wrap = document.getElementById('how-to-content');
-  const sidebar = document.getElementById('how-to-sidebar');
-  if (!wrap || !sidebar) return;
-
-  sidebar.innerHTML = '';
-  keys.forEach(function (key) {
-    const btn = document.createElement('button');
-    btn.className = 'how-to-tab' + (key === activeTab ? ' active' : '');
-    btn.dataset.tab = key;
-    btn.textContent = HOW_TO_DATA[key].label;
-    sidebar.appendChild(btn);
-  });
-
-  wrap.innerHTML = '';
-  keys.forEach(function (key) {
-    wrap.appendChild(buildPanel(key, key === activeTab));
-  });
-}
-
-function updateHowToIncremental(keys) {
-  const wrap = document.getElementById('how-to-content');
-  const sidebar = document.getElementById('how-to-sidebar');
-  if (!wrap || !sidebar) return;
-
-  // sidebar: reconstrói só se a ordem/conjunto mudou (barato, sem iframes)
-  const currentTabKeys = Array.from(sidebar.querySelectorAll('.how-to-tab')).map(function (b) { return b.dataset.tab; });
-  if (currentTabKeys.join('|') !== keys.join('|')) {
     sidebar.innerHTML = '';
     keys.forEach(function (key) {
       const btn = document.createElement('button');
@@ -2317,28 +2225,37 @@ function updateHowToIncremental(keys) {
       btn.textContent = HOW_TO_DATA[key].label;
       sidebar.appendChild(btn);
     });
-  } else {
-    sidebar.querySelectorAll('.how-to-tab').forEach(function (btn) {
-      btn.classList.toggle('active', btn.dataset.tab === activeTab);
+
+    wrap.innerHTML = '';
+    keys.forEach(function (key) {
+      const d = HOW_TO_DATA[key];
+      const panel = document.createElement('div');
+      panel.className = 'how-to-panel' + (key === activeTab ? ' active' : '');
+      panel.dataset.panel = key;
+
+      const h = document.createElement('h4');
+      h.textContent = d.title;
+      panel.appendChild(h);
+
+      if (d.intro) {
+        appendParas(panel, d.intro.paras);
+        appendSteps(panel, d.intro.steps);
+      }
+      appendVideo(panel, d.video);
+      if (d.outro) {
+        appendParas(panel, d.outro.paras);
+        appendSteps(panel, d.outro.tips);
+        if (d.outro.warn) {
+          const w = document.createElement('p');
+          w.style.color = '#f87171';
+          w.style.fontWeight = '600';
+          w.textContent = d.outro.warn;
+          panel.appendChild(w);
+        }
+      }
+      wrap.appendChild(panel);
     });
   }
-
-  // panels: remove só os que saíram, adiciona só os que entraram
-  const currentPanels = new Map();
-  wrap.querySelectorAll('.how-to-panel').forEach(function (p) {
-    currentPanels.set(p.dataset.panel, p);
-  });
-
-  currentPanels.forEach(function (panel, key) {
-    if (keys.indexOf(key) === -1) panel.remove();
-  });
-
-  keys.forEach(function (key) {
-    const existing = wrap.querySelector('.how-to-panel[data-panel="' + key + '"]');
-    if (!existing) wrap.appendChild(buildPanel(key, key === activeTab));
-    else existing.classList.toggle('active', key === activeTab);
-  });
-}
 
   function selectHowToTab(tab) {
     if (!HOW_TO_DATA[tab]) return;
@@ -2353,144 +2270,130 @@ function updateHowToIncremental(keys) {
     if (cw) cw.scrollTop = 0;
   }
 
-let lastRenderedKeysStr = null;
-
-function closeHowTo() {
-  const overlay = document.getElementById('how-to-overlay');
-  if (overlay) overlay.classList.add('hidden');
-}
-
-let lastRenderedKeysStr = null;
-
-let lastRenderedKeysStr = null;
-
-function refreshAll() {
-  const keys = allowedKeys();
-  const any = keys.length > 0;
-
-  ['btn-how-to', 'btn-how-to-area'].forEach(function (id) {
-    const b = document.getElementById(id);
-    if (b) b.style.display = any ? '' : 'none';
-  });
-
-  const overlay = document.getElementById('how-to-overlay');
-  const isOpen = overlay && !overlay.classList.contains('hidden');
-  if (!isOpen) { lastRenderedKeysStr = null; return keys; }
-  if (!any) { closeHowTo(); return keys; }
-
-  const keysStr = keys.join('|');
-  if (keysStr !== lastRenderedKeysStr) {
-    if (keys.indexOf(activeTab) === -1) activeTab = keys[0];
-    updateHowToIncremental(keys);
-    lastRenderedKeysStr = keysStr;
+  function closeHowTo() {
+    const overlay = document.getElementById('how-to-overlay');
+    if (overlay) overlay.classList.add('hidden');
   }
-  return keys;
-}
 
-function openHowTo(preferred) {
-  const overlay = document.getElementById('how-to-overlay');
-  if (!overlay) return;
+  function refreshAll() {
+    const keys = allowedKeys();
+    const any = keys.length > 0;
 
-  const keys = allowedKeys();
-  if (!keys.length) { overlay.classList.add('hidden'); return; }
+    ['btn-how-to', 'btn-how-to-area'].forEach(function (id) {
+      const b = document.getElementById(id);
+      if (b) b.style.display = any ? '' : 'none';
+    });
 
-  if (preferred && keys.indexOf(preferred) !== -1) activeTab = preferred;
-  else if (keys.indexOf(activeTab) === -1) activeTab = keys[0];
+    const overlay = document.getElementById('how-to-overlay');
+    const isOpen = overlay && !overlay.classList.contains('hidden');
 
-  const wrap = document.getElementById('how-to-content');
-  const isEmpty = !wrap || !wrap.querySelector('.how-to-panel');
+    if (isOpen) {
+      if (!any) { closeHowTo(); return keys; }
+      if (keys.indexOf(activeTab) === -1) activeTab = keys[0];
+      renderHowTo(keys);
+    }
 
-  if (isEmpty) renderHowTo(keys);
-  else updateHowToIncremental(keys);
-  lastRenderedKeysStr = keys.join('|');
+    return keys;
+  }
 
-  const wasHidden = overlay.classList.contains('hidden');
-  if (wasHidden) {
+  function openHowTo(preferred) {
+    const overlay = document.getElementById('how-to-overlay');
+    if (!overlay) return;
+
+    const keys = refreshAll();
+    if (!keys.length) return;
+
+    if (preferred && keys.indexOf(preferred) !== -1) {
+      activeTab = preferred;
+    } else if (keys.indexOf(activeTab) === -1) {
+      activeTab = keys[0];
+    }
+
+    renderHowTo(keys);
     overlay.classList.remove('hidden');
     void overlay.offsetWidth;
-    const cw = document.getElementById('how-to-content');
-    if (cw) cw.scrollTop = 0;
   }
-}
-  
-let debounceTimer = null;
-let debounceTimer = null;
-function scheduleRefresh() {
-  if (debounceTimer) return;
-  debounceTimer = setTimeout(function () {
-    debounceTimer = null;
-    refreshAll();
-  }, 150);
-}
-  
-function init() {
-  ['btn-how-to', 'btn-how-to-area'].forEach(function (id) {
-    const b = document.getElementById(id);
-    if (b) b.addEventListener('click', function () { openHowTo('lynx'); });
-  });
 
-  const closeBtn = document.getElementById('how-to-close');
-  if (closeBtn) closeBtn.addEventListener('click', closeHowTo);
+  let debounceTimer = null;
+  function scheduleRefresh() {
+    if (debounceTimer) return;
+    debounceTimer = setTimeout(function () {
+      debounceTimer = null;
+      refreshAll();
+    }, 40);
+  }
 
-  const overlay = document.getElementById('how-to-overlay');
-  if (overlay) {
-    overlay.addEventListener('click', function (e) {
-      if (e.target === overlay) closeHowTo();
+  function init() {
+    ['btn-how-to', 'btn-how-to-area'].forEach(function (id) {
+      const b = document.getElementById(id);
+      if (b) b.addEventListener('click', function () { openHowTo('lynx'); });
     });
-  }
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && overlay && !overlay.classList.contains('hidden')) closeHowTo();
-  });
 
-  const sidebar = document.getElementById('how-to-sidebar');
-  if (sidebar) {
-    sidebar.addEventListener('click', function (e) {
-      const btn = e.target.closest('.how-to-tab');
-      if (btn && btn.dataset.tab) selectHowToTab(btn.dataset.tab);
-    });
-  }
+    const closeBtn = document.getElementById('how-to-close');
+    if (closeBtn) closeBtn.addEventListener('click', closeHowTo);
 
-  const identify = document.querySelector('[data-action="identify-guide"]');
-  if (identify) {
-    identify.addEventListener('click', function (e) {
-      e.preventDefault();
-      const ver = document.getElementById('lynx-version-overlay');
-      if (ver) ver.classList.add('hidden');
-      openHowTo('lynx');
-    });
-  }
-
-  refreshAll();
-
-  const observerCfg = {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['style', 'class', 'hidden', 'data-tag', 'data-key']
-  };
-
-  const grid = document.getElementById('grid');
-  if (grid) new MutationObserver(scheduleRefresh).observe(grid, observerCfg);
-
-  const areaTags = document.getElementById('area-tags');
-  if (areaTags) new MutationObserver(scheduleRefresh).observe(areaTags, observerCfg);
-
-  window.addEventListener('resize', scheduleRefresh);
-
-  window.__howTo = {
-    open: function (tab) { openHowTo(tab || 'lynx'); },
-    refresh: function () { return refreshAll(); },
-    debug: function () {
-      const cards = Array.from(document.querySelectorAll('#grid .card')).map(function (c) {
-        return { data: Object.assign({}, c.dataset), visivel: isVisible(c), title: (c.querySelector('h2') || {}).textContent || '' };
+    const overlay = document.getElementById('how-to-overlay');
+    if (overlay) {
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closeHowTo();
       });
-      console.log('[HowTo] cards:', cards);
-      console.log('[HowTo] tags:', Array.from(getUserTags()));
-      console.log('[HowTo] allowed:', allowedKeys());
-      console.log('[HowTo] lastKeys:', lastRenderedKeysStr);
     }
-  };
-}
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay && !overlay.classList.contains('hidden')) closeHowTo();
+    });
+
+    const sidebar = document.getElementById('how-to-sidebar');
+    if (sidebar) {
+      sidebar.addEventListener('click', function (e) {
+        const btn = e.target.closest('.how-to-tab');
+        if (btn && btn.dataset.tab) selectHowToTab(btn.dataset.tab);
+      });
+    }
+
+    const identify = document.querySelector('[data-action="identify-guide"]');
+    if (identify) {
+      identify.addEventListener('click', function (e) {
+        e.preventDefault();
+        const ver = document.getElementById('lynx-version-overlay');
+        if (ver) ver.classList.add('hidden');
+        openHowTo('lynx');
+      });
+    }
+
+    refreshAll();
+
+    const observerCfg = {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ['style', 'class', 'hidden']
+    };
+
+    const main = document.querySelector('main') || document.body;
+    new MutationObserver(scheduleRefresh).observe(main, observerCfg);
+
+    const areaTags = document.getElementById('area-tags');
+    if (areaTags) new MutationObserver(scheduleRefresh).observe(areaTags, observerCfg);
+
+    window.addEventListener('resize', scheduleRefresh);
+
+    window.__howTo = {
+      debug: function () {
+        const cards = Array.from(document.querySelectorAll('#grid .card')).map(function (c) {
+          return {
+            data: Object.assign({}, c.dataset),
+            visivel: isVisible(c),
+            title: (c.querySelector('h2') || {}).textContent || ''
+          };
+        });
+        console.log('[HowTo] cards no #grid:', cards);
+        console.log('[HowTo] tags detectadas:', Array.from(getUserTags()));
+        console.log('[HowTo] allowedKeys():', allowedKeys());
+      },
+      refresh: function () { return refreshAll(); }
+    };
+  }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
@@ -2501,6 +2404,7 @@ function init() {
   tryRestore();
   document.querySelectorAll('[data-action="lynx-new"]').forEach(el => el.addEventListener('click', () => startLynxExec('new')));
   document.querySelectorAll('[data-action="lynx-old"]').forEach(el => el.addEventListener('click', () => startLynxExec('old')));
+  document.querySelectorAll('[data-action="identify-guide"]').forEach(el => el.addEventListener('click', (event) => { event.preventDefault(); window.showIdentifyGuide(); }));
   document.querySelectorAll('[data-action="close-lynx-version"]').forEach(el => el.addEventListener('click', () => document.getElementById('lynx-version-overlay').classList.add('hidden')));
   document.querySelectorAll('[data-action="reload-page"]').forEach(el => el.addEventListener('click', () => window.location.reload()));
 
