@@ -2238,27 +2238,21 @@ function renderHowTo(keys) {
     panel.appendChild(h);
 
     if (d.intro) {
-      const b = document.createElement('div');
-      b.className = 'how-to-block';
-      appendParas(b, d.intro.paras);
-      appendSteps(b, d.intro.steps);
-      panel.appendChild(b);
+      appendParas(panel, d.intro.paras);
+      appendSteps(panel, d.intro.steps);
     }
 
     appendVideo(panel, d.video);
 
     if (d.outro) {
-      const b = document.createElement('div');
-      b.className = 'how-to-block';
-      appendParas(b, d.outro.paras);
-      appendSteps(b, d.outro.tips);
+      appendParas(panel, d.outro.paras);
+      appendSteps(panel, d.outro.tips);
       if (d.outro.warn) {
         const w = document.createElement('p');
         w.className = 'how-to-warn';
         w.textContent = d.outro.warn;
-        b.appendChild(w);
+        panel.appendChild(w);
       }
-      panel.appendChild(b);
     }
     wrap.appendChild(panel);
   });
