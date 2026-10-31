@@ -1982,9 +1982,7 @@
       },
       video: { src: 'TODO:LYNX', title: 'Instalando o Lynx na prática' },
       outro: {
-        paras: [
-          'Depois da execução espere ele terminar de instalar as 2 etapas.'
-        ],
+        paras: ['Depois da execução espere ele terminar de instalar as 2 etapas.'],
         tips: [
           'Se ocorrer um erro APENAS com você, tente usar a outra versão do Lynx OU reinicie o seu computador.',
           'Se ocorrer qualquer erro contate o Administrador (45988208796)',
@@ -1993,15 +1991,12 @@
         warn: 'Sempre certifique-se de usar o site correto antes de instalar scripts (lynx-81f.pages.dev)'
       }
     },
-
     escritor: {
       tag: 'escritor',
       label: 'Escritor Baiano',
       title: 'Escritor Baiano — como usar',
       intro: {
-        paras: [
-          'O Escritor Baiano gera textos a partir de um comando (prompt). Ideal para rascunhos rápidos, resumos e variações de escrita.'
-        ],
+        paras: ['O Escritor Baiano gera textos a partir de um comando (prompt). Ideal para rascunhos rápidos, resumos e variações de escrita.'],
         steps: [
           'Abra o card do Escritor Baiano na página inicial.',
           'Cole o texto-base ou descreva o que você quer que ele escreva.',
@@ -2011,24 +2006,19 @@
       },
       video: { src: 'TODO:ESCRITOR', title: 'Como gerar textos no Escritor Baiano' },
       outro: {
-        paras: [
-          'Para resultados melhores, seja específico no comando: diga o público, o tamanho desejado e o formato (parágrafo, lista, e-mail, etc.).'
-        ],
+        paras: ['Para resultados melhores, seja específico no comando: diga o público, o tamanho desejado e o formato (parágrafo, lista, e-mail, etc.).'],
         tips: [
           'Revise o texto gerado antes de usar — a ferramenta não garante precisão factual.',
           'Evite enviar dados sensíveis.'
         ]
       }
     },
-
     ingles: {
       tag: 'ingles',
       label: 'Inglês',
       title: 'Inglês — exercícios e respostas',
       intro: {
-        paras: [
-          'O módulo de Inglês serve para praticar e conferir atividades da disciplina. Você envia a questão ou abre a atividade e recebe a resposta com explicação.'
-        ],
+        paras: ['O módulo de Inglês serve para praticar e conferir atividades da disciplina. Você envia a questão ou abre a atividade e recebe a resposta com explicação.'],
         steps: [
           'Abra o card de Inglês.',
           'Cole a questão (ou a lista de questões) no campo indicado.',
@@ -2038,24 +2028,19 @@
       },
       video: { src: 'TODO:INGLES', title: 'Resolvendo atividades de Inglês' },
       outro: {
-        paras: [
-          'Use como apoio de estudo: copiar a resposta sem entender não ajuda na prova.'
-        ],
+        paras: ['Use como apoio de estudo: copiar a resposta sem entender não ajuda na prova.'],
         tips: [
           'Reescreva a resposta com suas próprias palavras.',
           'Se a explicação não bater, envie de novo com mais contexto.'
         ]
       }
     },
-
     quizziz: {
       tag: 'quizziz',
       label: 'Quizziz',
       title: 'Quizziz — como funciona',
       intro: {
-        paras: [
-          'O módulo Quizziz auxilia com quizzes estilo Quizizz, mostrando respostas e justificativas para revisão.'
-        ],
+        paras: ['O módulo Quizziz auxilia com quizzes estilo Quizizz, mostrando respostas e justificativas para revisão.'],
         steps: [
           'Abra o card do Quizziz.',
           'Cole o link do quiz ou o código da sala.',
@@ -2065,24 +2050,19 @@
       },
       video: { src: 'TODO:QUIZZIZ', title: 'Usando o módulo Quizziz' },
       outro: {
-        paras: [
-          'O módulo respeita os limites de tempo da plataforma — quizzes com tempo curto podem não ser processados a tempo.'
-        ],
+        paras: ['O módulo respeita os limites de tempo da plataforma — quizzes com tempo curto podem não ser processados a tempo.'],
         tips: [
           'Prefira revisar depois que o professor liberar o gabarito.',
           'Use apenas em atividades permitidas pela instituição.'
         ]
       }
     },
-
     soundpad: {
       tag: 'soundpad',
       label: 'Soundpad',
       title: 'Soundpad — instalação e uso',
       intro: {
-        paras: [
-          'O Soundpad permite tocar áudios curtos durante chamadas ou jogos. O módulo entrega o executável/configuração pronta para uso.'
-        ],
+        paras: ['O Soundpad permite tocar áudios curtos durante chamadas ou jogos. O módulo entrega o executável/configuração pronta para uso.'],
         steps: [
           'Abra o card do Soundpad.',
           'Baixe o pacote correspondente ao seu sistema.',
@@ -2093,9 +2073,7 @@
       },
       video: { src: 'TODO:SOUNDPAD', title: 'Configurando o Soundpad no Discord/OBS' },
       outro: {
-        paras: [
-          'Se o som não sair na chamada, confira se o Soundpad está usando o mesmo dispositivo do app (Discord/OBS/etc.).'
-        ],
+        paras: ['Se o som não sair na chamada, confira se o Soundpad está usando o mesmo dispositivo do app (Discord/OBS/etc.).'],
         tips: [
           'No Discord, ative "Usar dispositivo de saída padrão" ou selecione o cabo virtual.',
           'Mantenha os arquivos em WAV/MP3 curtos para menor latência.'
@@ -2105,7 +2083,6 @@
     }
   };
 
-  let rendered = false;
   let activeTab = 'lynx';
 
   function norm(s) {
@@ -2113,6 +2090,17 @@
       .toLowerCase()
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]/g, '');
+  }
+
+  function isVisible(el) {
+    if (!el) return false;
+    if (el.hidden) return false;
+    if (el.hasAttribute('hidden')) return false;
+    if (el.classList && el.classList.contains('hidden')) return false;
+    const cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') return false;
+    if (el.offsetParent === null && cs.position !== 'fixed') return false;
+    return true;
   }
 
   function appendParas(panel, list) {
@@ -2166,6 +2154,27 @@
   function getUserTags() {
     const set = new Set();
 
+    const cards = Array.from(document.querySelectorAll('#grid .card')).filter(isVisible);
+
+    if (cards.length > 0) {
+      cards.forEach(function (card) {
+        ['data-key', 'data-tool', 'data-tag', 'data-id'].forEach(function (attr) {
+          const v = card.getAttribute(attr);
+          if (v) set.add(norm(v));
+        });
+        const txt = norm(card.textContent);
+        Object.keys(HOW_TO_DATA).forEach(function (key) {
+          const label = norm(HOW_TO_DATA[key].label);
+          const tag = norm(HOW_TO_DATA[key].tag);
+          if ((label && txt.indexOf(label) !== -1) || (tag && txt.indexOf(tag) !== -1)) {
+            set.add(key);
+            set.add(tag);
+          }
+        });
+      });
+      return set;
+    }
+
     if (Array.isArray(window.__frostedgeTags)) {
       window.__frostedgeTags.forEach(function (t) { set.add(norm(t)); });
     }
@@ -2187,25 +2196,9 @@
       }
     } catch (_) {}
 
-    document.querySelectorAll('#grid .card').forEach(function (card) {
-      ['data-key', 'data-tool', 'data-tag', 'data-id'].forEach(function (attr) {
-        const v = card.getAttribute(attr);
-        if (v) set.add(norm(v));
-      });
-      const txt = norm(card.textContent);
-      Object.keys(HOW_TO_DATA).forEach(function (key) {
-        const label = norm(HOW_TO_DATA[key].label);
-        const tag = norm(HOW_TO_DATA[key].tag);
-        if ((label && txt.indexOf(label) !== -1) || (tag && txt.indexOf(tag) !== -1)) {
-          set.add(key);
-          set.add(tag);
-        }
-      });
-    });
-
-    document.querySelectorAll('#area-tags .area-tag').forEach(function (el) {
-      set.add(norm(el.textContent));
-    });
+    Array.from(document.querySelectorAll('#area-tags .area-tag'))
+      .filter(isVisible)
+      .forEach(function (el) { set.add(norm(el.textContent)); });
 
     return set;
   }
@@ -2262,8 +2255,6 @@
       }
       wrap.appendChild(panel);
     });
-
-    rendered = true;
   }
 
   function selectHowToTab(tab) {
@@ -2279,13 +2270,29 @@
     if (cw) cw.scrollTop = 0;
   }
 
-  function refreshButtons() {
+  function closeHowTo() {
+    const overlay = document.getElementById('how-to-overlay');
+    if (overlay) overlay.classList.add('hidden');
+  }
+
+  function refreshAll() {
     const keys = allowedKeys();
     const any = keys.length > 0;
+
     ['btn-how-to', 'btn-how-to-area'].forEach(function (id) {
       const b = document.getElementById(id);
       if (b) b.style.display = any ? '' : 'none';
     });
+
+    const overlay = document.getElementById('how-to-overlay');
+    const isOpen = overlay && !overlay.classList.contains('hidden');
+
+    if (isOpen) {
+      if (!any) { closeHowTo(); return keys; }
+      if (keys.indexOf(activeTab) === -1) activeTab = keys[0];
+      renderHowTo(keys);
+    }
+
     return keys;
   }
 
@@ -2293,7 +2300,7 @@
     const overlay = document.getElementById('how-to-overlay');
     if (!overlay) return;
 
-    const keys = refreshButtons();
+    const keys = refreshAll();
     if (!keys.length) return;
 
     if (preferred && keys.indexOf(preferred) !== -1) {
@@ -2302,16 +2309,18 @@
       activeTab = keys[0];
     }
 
-    rendered = false;
     renderHowTo(keys);
-
     overlay.classList.remove('hidden');
     void overlay.offsetWidth;
   }
 
-  function closeHowTo() {
-    const overlay = document.getElementById('how-to-overlay');
-    if (overlay) overlay.classList.add('hidden');
+  let debounceTimer = null;
+  function scheduleRefresh() {
+    if (debounceTimer) return;
+    debounceTimer = setTimeout(function () {
+      debounceTimer = null;
+      refreshAll();
+    }, 40);
   }
 
   function init() {
@@ -2351,12 +2360,39 @@
       });
     }
 
-    refreshButtons();
-    const grid = document.getElementById('grid');
-    if (grid) new MutationObserver(refreshButtons).observe(grid, { childList: true, subtree: true });
+    refreshAll();
+
+    const observerCfg = {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ['style', 'class', 'hidden']
+    };
+
+    const main = document.querySelector('main') || document.body;
+    new MutationObserver(scheduleRefresh).observe(main, observerCfg);
 
     const areaTags = document.getElementById('area-tags');
-    if (areaTags) new MutationObserver(refreshButtons).observe(areaTags, { childList: true, subtree: true });
+    if (areaTags) new MutationObserver(scheduleRefresh).observe(areaTags, observerCfg);
+
+    window.addEventListener('resize', scheduleRefresh);
+
+    window.__howTo = {
+      debug: function () {
+        const cards = Array.from(document.querySelectorAll('#grid .card')).map(function (c) {
+          return {
+            data: Object.assign({}, c.dataset),
+            visivel: isVisible(c),
+            title: (c.querySelector('h2') || {}).textContent || ''
+          };
+        });
+        console.log('[HowTo] cards no #grid:', cards);
+        console.log('[HowTo] tags detectadas:', Array.from(getUserTags()));
+        console.log('[HowTo] allowedKeys():', allowedKeys());
+      },
+      refresh: function () { return refreshAll(); }
+    };
   }
 
   if (document.readyState === 'loading') {
