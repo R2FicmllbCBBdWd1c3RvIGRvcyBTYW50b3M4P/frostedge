@@ -2212,50 +2212,57 @@
     });
   }
 
-  function renderHowTo(keys) {
-    const wrap = document.getElementById('how-to-content');
-    const sidebar = document.getElementById('how-to-sidebar');
-    if (!wrap || !sidebar) return;
+function renderHowTo(keys) {
+  const wrap = document.getElementById('how-to-content');
+  const sidebar = document.getElementById('how-to-sidebar');
+  if (!wrap || !sidebar) return;
 
-    sidebar.innerHTML = '';
-    keys.forEach(function (key) {
-      const btn = document.createElement('button');
-      btn.className = 'how-to-tab' + (key === activeTab ? ' active' : '');
-      btn.dataset.tab = key;
-      btn.textContent = HOW_TO_DATA[key].label;
-      sidebar.appendChild(btn);
-    });
+  sidebar.innerHTML = '';
+  keys.forEach(function (key) {
+    const btn = document.createElement('button');
+    btn.className = 'how-to-tab' + (key === activeTab ? ' active' : '');
+    btn.dataset.tab = key;
+    btn.textContent = HOW_TO_DATA[key].label;
+    sidebar.appendChild(btn);
+  });
 
-    wrap.innerHTML = '';
-    keys.forEach(function (key) {
-      const d = HOW_TO_DATA[key];
-      const panel = document.createElement('div');
-      panel.className = 'how-to-panel' + (key === activeTab ? ' active' : '');
-      panel.dataset.panel = key;
+  wrap.innerHTML = '';
+  keys.forEach(function (key) {
+    const d = HOW_TO_DATA[key];
+    const panel = document.createElement('div');
+    panel.className = 'how-to-panel' + (key === activeTab ? ' active' : '');
+    panel.dataset.panel = key;
 
-      const h = document.createElement('h4');
-      h.textContent = d.title;
-      panel.appendChild(h);
+    const h = document.createElement('h4');
+    h.textContent = d.title;
+    panel.appendChild(h);
 
-      if (d.intro) {
-        appendParas(panel, d.intro.paras);
-        appendSteps(panel, d.intro.steps);
+    if (d.intro) {
+      const b = document.createElement('div');
+      b.className = 'how-to-block';
+      appendParas(b, d.intro.paras);
+      appendSteps(b, d.intro.steps);
+      panel.appendChild(b);
+    }
+
+    appendVideo(panel, d.video);
+
+    if (d.outro) {
+      const b = document.createElement('div');
+      b.className = 'how-to-block';
+      appendParas(b, d.outro.paras);
+      appendSteps(b, d.outro.tips);
+      if (d.outro.warn) {
+        const w = document.createElement('p');
+        w.className = 'how-to-warn';
+        w.textContent = d.outro.warn;
+        b.appendChild(w);
       }
-      appendVideo(panel, d.video);
-      if (d.outro) {
-        appendParas(panel, d.outro.paras);
-        appendSteps(panel, d.outro.tips);
-        if (d.outro.warn) {
-          const w = document.createElement('p');
-          w.style.color = '#f87171';
-          w.style.fontWeight = '600';
-          w.textContent = d.outro.warn;
-          panel.appendChild(w);
-        }
-      }
-      wrap.appendChild(panel);
-    });
-  }
+      panel.appendChild(b);
+    }
+    wrap.appendChild(panel);
+  });
+}
 
   function selectHowToTab(tab) {
     if (!HOW_TO_DATA[tab]) return;
@@ -2270,49 +2277,63 @@
     if (cw) cw.scrollTop = 0;
   }
 
-  function closeHowTo() {
-    const overlay = document.getElementById('how-to-overlay');
-    if (overlay) overlay.classList.add('hidden');
-  }
+let lastRenderedKeysStr = null;
 
-  function refreshAll() {
-    const keys = allowedKeys();
-    const any = keys.length > 0;
+function closeHowTo() {
+  const overlay = document.getElementById('how-to-overlay');
+  if (overlay) overlay.classList.add('hidden');
+}
 
-    ['btn-how-to', 'btn-how-to-area'].forEach(function (id) {
-      const b = document.getElementById(id);
-      if (b) b.style.display = any ? '' : 'none';
-    });
+function refreshAll() {
+  const keys = allowedKeys();
+  const any = keys.length > 0;
 
-    const overlay = document.getElementById('how-to-overlay');
-    const isOpen = overlay && !overlay.classList.contains('hidden');
+  ['btn-how-to', 'btn-how-to-area'].forEach(function (id) {
+    const b = document.getElementById(id);
+    if (b) b.style.display = any ? '' : 'none';
+  });
 
-    if (isOpen) {
-      if (!any) { closeHowTo(); return keys; }
-      if (keys.indexOf(activeTab) === -1) activeTab = keys[0];
-      renderHowTo(keys);
-    }
+  const overlay = document.getElementById('how-to-overlay');
+  const isOpen = overlay && !overlay.classList.contains('hidden');
 
-    return keys;
-  }
+  if (!isOpen) { lastRenderedKeysStr = null; return keys; }
+  if (!any)    { closeHowTo(); return keys; }
 
-  function openHowTo(preferred) {
-    const overlay = document.getElementById('how-to-overlay');
-    if (!overlay) return;
-
-    const keys = refreshAll();
-    if (!keys.length) return;
-
-    if (preferred && keys.indexOf(preferred) !== -1) {
-      activeTab = preferred;
-    } else if (keys.indexOf(activeTab) === -1) {
-      activeTab = keys[0];
-    }
-
+  const keysStr = keys.join('|');
+  if (keysStr !== lastRenderedKeysStr) {
+    if (keys.indexOf(activeTab) === -1) activeTab = keys[0];
     renderHowTo(keys);
+    lastRenderedKeysStr = keysStr;
+  }
+  return keys;
+}
+
+function openHowTo(preferred) {
+  const overlay = document.getElementById('how-to-overlay');
+  if (!overlay) return;
+
+  const wasOpen = !overlay.classList.contains('hidden');
+  const keys = allowedKeys();
+  if (!keys.length) { overlay.classList.add('hidden'); return; }
+
+  if (preferred && keys.indexOf(preferred) !== -1) activeTab = preferred;
+  else if (keys.indexOf(activeTab) === -1) activeTab = keys[0];
+
+  const keysStr = keys.join('|');
+  if (!wasOpen || keysStr !== lastRenderedKeysStr) {
+    renderHowTo(keys);
+    lastRenderedKeysStr = keysStr;
+    if (!wasOpen) {
+      const cw = document.getElementById('how-to-content');
+      if (cw) cw.scrollTop = 0;
+    }
+  }
+
+  if (!wasOpen) {
     overlay.classList.remove('hidden');
     void overlay.offsetWidth;
   }
+}
 
   let debounceTimer = null;
   function scheduleRefresh() {
