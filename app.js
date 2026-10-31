@@ -1961,144 +1961,330 @@
       setTimeout(() => { window.location.replace('/'); }, 150);
     });
   });
-    // ==========================================
-  // MÓDULO COMO USAR - INJEÇÃO
-  // ==========================================
-  function injectGuideUI() {
-    if (document.getElementById('btn-guide')) return;
+(function () {
+  'use strict';
 
-    // 1. Injetar CSS
-    const style = document.createElement('style');
-    style.textContent = `
-      .guide-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 10000; align-items: center; justify-content: center; }
-      .guide-modal.open { display: flex; }
-      .guide-content-wrapper { background: #121214; border: 1px solid #2a2a2e; border-radius: 12px; width: 90%; max-width: 900px; height: 75vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
-      .guide-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #2a2a2e; background: #18181b; }
-      .guide-header h2 { margin: 0; font-size: 18px; color: #fff; }
-      .guide-close { background: transparent; border: none; color: #888; font-size: 24px; cursor: pointer; line-height: 1; }
-      .guide-close:hover { color: #fff; }
-      .guide-body { display: flex; flex: 1; overflow: hidden; }
-      .guide-sidebar { width: 200px; background: #161618; border-right: 1px solid #2a2a2e; display: flex; flex-direction: column; padding: 12px 0; overflow-y: auto; }
-      .guide-tab { background: transparent; border: none; border-left: 3px solid transparent; color: #888; text-align: left; padding: 14px 20px; font-size: 14px; cursor: pointer; transition: 0.2s; }
-      .guide-tab:hover { background: rgba(255,255,255,0.03); color: #ccc; }
-      .guide-tab.active { background: rgba(255,59,59,0.08); color: #ff3b3b; border-left-color: #ff3b3b; font-weight: 600; }
-      .guide-main { flex: 1; padding: 32px; overflow-y: auto; color: #bbb; line-height: 1.6; font-size: 15px; }
-      .guide-pane { display: none; animation: fadeGuide 0.3s ease; }
-      .guide-pane.active { display: block; }
-      @keyframes fadeGuide { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
-      .guide-video { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000; margin: 24px 0; }
-      .guide-video iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-    `;
-    document.head.appendChild(style);
-
-    // 2. Injetar Botão ao lado de "Minha Área"
-    const btnArea = document.getElementById('btn-area');
-    if (btnArea) {
-      const btnGuide = document.createElement('button');
-      btnGuide.id = 'btn-guide';
-      btnGuide.className = btnArea.className; // Pega o estilo do botão "Minha área"
-      btnGuide.textContent = 'Como usar?';
-      btnGuide.style.marginRight = '12px';
-      btnArea.parentNode.insertBefore(btnGuide, btnArea);
-    }
-
-    // 3. Injetar Modal e Sidebar
-    const modalHtml = `
-      <div id="guide-modal" class="guide-modal">
-        <div class="guide-content-wrapper">
-          <div class="guide-header">
-            <h2>Como usar</h2>
-            <button id="guide-close" class="guide-close">&times;</button>
-          </div>
-          <div class="guide-body">
-            <aside id="guide-sidebar" class="guide-sidebar"></aside>
-            <main id="guide-main" class="guide-main"></main>
-          </div>
-        </div>
-      </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-
-    const btnGuide = document.getElementById('btn-guide');
-    const modal = document.getElementById('guide-modal');
-    const btnClose = document.getElementById('guide-close');
-    const sidebar = document.getElementById('guide-sidebar');
-    const main = document.getElementById('guide-main');
-    let guideData = null;
-
-    const tabsList = [
-      { id: 'lynx', label: 'Lynx' },
-      { id: 'escritor', label: 'Escritor Baiano' },
-      { id: 'ingles', label: 'Inglês' },
-      { id: 'quizziz', label: 'Quizziz' },
-      { id: 'soundpad', label: 'Soundpad' }
-    ];
-
-    const renderGuide = () => {
-      sidebar.innerHTML = '';
-      main.innerHTML = '';
-
-      tabsList.forEach((tab, index) => {
-        // Botão da Sidebar
-        const btn = document.createElement('button');
-        btn.className = 'guide-tab' + (index === 0 ? ' active' : '');
-        btn.dataset.target = tab.id;
-        btn.textContent = tab.label;
-        
-        // Painel do Conteúdo
-        const pane = document.createElement('div');
-        pane.className = 'guide-pane' + (index === 0 ? ' active' : '');
-        pane.id = 'pane-' + tab.id;
-
-        const data = (guideData && guideData[tab.id]) ? guideData[tab.id] : {};
-        
-        const textTop = data.textTop || `<p>Instruções para <b>${tab.label}</b> em breve.</p>`;
-        const videoHtml = data.videoUrl ? `<div class="guide-video"><iframe src="${data.videoUrl}" allowfullscreen></iframe></div>` : '';
-        const textBottom = data.textBottom || `<p>Notas adicionais em breve.</p>`;
-
-        pane.innerHTML = `<div>${textTop}</div>${videoHtml}<div>${textBottom}</div>`;
-
-        sidebar.appendChild(btn);
-        main.appendChild(pane);
-
-        btn.addEventListener('click', () => {
-          sidebar.querySelectorAll('.guide-tab').forEach(t => t.classList.remove('active'));
-          main.querySelectorAll('.guide-pane').forEach(p => p.classList.remove('active'));
-          btn.classList.add('active');
-          pane.classList.add('active');
-        });
-      });
-    };
-
-    const loadGuide = async () => {
-      sidebar.innerHTML = '<div style="padding:20px;color:#888;font-size:13px;">Carregando...</div>';
-      main.innerHTML = '';
-      try {
-        const res = await window.fetch(WORKER_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'getGuide' })
-        });
-        const json = await res.json();
-        guideData = json.ok ? json.data : {};
-      } catch (e) {
-        guideData = {};
+  /* ---------- CONTEÚDO (Texto + Vídeo + Texto) ---------- */
+  const HOW_TO_DATA = {
+    lynx: {
+      title: 'Lynx — instalação e uso',
+      intro: {
+        paras: [
+          'O Lynx é uma ferramenta executável que roda no seu próprio computador. Antes de baixar, identifique qual build combina com o seu sistema.'
+        ],
+        steps: [
+          'PC Novo: indicado para Linux moderno com glibc 2.28+ e Python 3.12.',
+          'PC Antigo: indicado para distribuições mais velhas com glibc 2.17 e Python 3.8.',
+          'Clique no card do Lynx na página inicial; o seletor de versão abre automaticamente.',
+          'Escolha a versão, baixe o arquivo e guarde em uma pasta dedicada (ex.: ~/lynx).'
+        ]
+      },
+      // TODO: troque por "https://www.youtube.com/embed/SEU_ID" (CSP já libera youtube.com)
+      video: { src: 'TODO:LYNX', title: 'Instalando o Lynx na prática' },
+      outro: {
+        paras: [
+          'Depois do download, abra o terminal na pasta do arquivo, libere a execução com "chmod +x lynx" e rode com "./lynx". Na primeira execução ele pode pedir dependências.'
+        ],
+        tips: [
+          'Se aparecer erro de glibc, troque para a build PC Antigo.',
+          'Se aparecer erro de módulo Python, confirme que a versão do Python bate com a build escolhida.',
+          'Não rode o Lynx como root: use um usuário comum sempre que possível.'
+        ],
+        warn: 'Nunca execute arquivos de fontes desconhecidas. Confira sempre a origem/hash antes.'
       }
-      renderGuide();
-    };
+    },
 
-    btnGuide.addEventListener('click', () => {
-      modal.classList.add('open');
-      if (!guideData) loadGuide();
-    });
+    escritor: {
+      title: 'Escritor Baiano — como usar',
+      intro: {
+        paras: [
+          'O Escritor Baiano gera textos a partir de um comando (prompt). Ideal para rascunhos rápidos, resumos e variações de escrita.'
+        ],
+        steps: [
+          'Abra o card do Escritor Baiano na página inicial.',
+          'Cole o texto-base ou descreva o que você quer que ele escreva.',
+          'Ajuste tom, tamanho e idioma, se as opções estiverem disponíveis.',
+          'Clique em "Gerar" e aguarde a resposta no painel.'
+        ]
+      },
+      video: { src: 'TODO:ESCRITOR', title: 'Como gerar textos no Escritor Baiano' },
+      outro: {
+        paras: [
+          'Para resultados melhores, seja específico no comando: diga o público, o tamanho desejado e o formato (parágrafo, lista, e-mail, etc.).'
+        ],
+        tips: [
+          'Revise o texto gerado antes de usar — a ferramenta não garante precisão factual.',
+          'Evite enviar dados sensíveis.'
+        ]
+      }
+    },
 
-    btnClose.addEventListener('click', () => modal.classList.remove('open'));
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) modal.classList.remove('open');
+    ingles: {
+      title: 'Inglês — exercícios e respostas',
+      intro: {
+        paras: [
+          'O módulo de Inglês serve para praticar e conferir atividades da disciplina. Você envia a questão ou abre a atividade e recebe a resposta com explicação.'
+        ],
+        steps: [
+          'Abra o card de Inglês.',
+          'Cole a questão (ou a lista de questões) no campo indicado.',
+          'Envie e aguarde o resultado.',
+          'Leia a explicação gramatical, não só a resposta.'
+        ]
+      },
+      video: { src: 'TODO:INGLES', title: 'Resolvendo atividades de Inglês' },
+      outro: {
+        paras: [
+          'Use como apoio de estudo: copiar a resposta sem entender não ajuda na prova.'
+        ],
+        tips: [
+          'Reescreva a resposta com suas próprias palavras.',
+          'Se a explicação não bater, envie de novo com mais contexto.'
+        ]
+      }
+    },
+
+    quizziz: {
+      title: 'Quizziz — como funciona',
+      intro: {
+        paras: [
+          'O módulo Quizziz auxilia com quizzes estilo Quizizz, mostrando respostas e justificativas para revisão.'
+        ],
+        steps: [
+          'Abra o card do Quizziz.',
+          'Cole o link do quiz ou o código da sala.',
+          'Escolha o modo (revisão ou execução).',
+          'Aguarde o processamento e veja as respostas.'
+        ]
+      },
+      video: { src: 'TODO:QUIZZIZ', title: 'Usando o módulo Quizziz' },
+      outro: {
+        paras: [
+          'O módulo respeita os limites de tempo da plataforma — quizzes com tempo curto podem não ser processados a tempo.'
+        ],
+        tips: [
+          'Prefira revisar depois que o professor liberar o gabarito.',
+          'Use apenas em atividades permitidas pela instituição.'
+        ]
+      }
+    },
+
+    soundpad: {
+      title: 'Soundpad — instalação e uso',
+      intro: {
+        paras: [
+          'O Soundpad permite tocar áudios curtos durante chamadas ou jogos. O módulo entrega o executável/configuração pronta para uso.'
+        ],
+        steps: [
+          'Abra o card do Soundpad.',
+          'Baixe o pacote correspondente ao seu sistema.',
+          'Extraia em uma pasta e execute o instalador/executável.',
+          'Configure o dispositivo de áudio de saída (virtual cable, se necessário).',
+          'Adicione seus sons e defina atalhos.'
+        ]
+      },
+      video: { src: 'TODO:SOUNDPAD', title: 'Configurando o Soundpad no Discord/OBS' },
+      outro: {
+        paras: [
+          'Se o som não sair na chamada, confira se o Soundpad está usando o mesmo dispositivo do app (Discord/OBS/etc.).'
+        ],
+        tips: [
+          'No Discord, ative "Usar dispositivo de saída padrão" ou selecione o cabo virtual.',
+          'Mantenha os arquivos em WAV/MP3 curtos para menor latência.'
+        ],
+        warn: 'Cuidado com direitos autorais dos áudios.'
+      }
+    }
+  };
+
+  /* ---------- estado ---------- */
+  let rendered = false;
+  let activeTab = 'lynx';
+
+  /* ---------- helpers de DOM ---------- */
+  function appendParas(panel, list) {
+    (list || []).forEach(function (t) {
+      const p = document.createElement('p');
+      p.textContent = t;
+      panel.appendChild(p);
     });
   }
 
-  injectGuideUI(); // Executa a injeção
+  function appendSteps(panel, list) {
+    if (!list || !list.length) return;
+    const ul = document.createElement('ul');
+    list.forEach(function (t) {
+      const li = document.createElement('li');
+      li.textContent = t;
+      ul.appendChild(li);
+    });
+    panel.appendChild(ul);
+  }
+
+  function appendVideo(panel, video) {
+    if (!video || !video.src) return;
+
+    // placeholder quando ainda não há ID real
+    if (video.src.indexOf('TODO:') === 0) {
+      const ph = document.createElement('div');
+      ph.className = 'video-embed';
+      ph.style.display = 'grid';
+      ph.style.placeItems = 'center';
+      ph.style.color = 'var(--dim)';
+      ph.style.fontSize = '13px';
+      ph.style.textAlign = 'center';
+      ph.style.padding = '16px';
+      ph.textContent = 'Vídeo em breve — defina a URL do embed em HOW_TO_DATA.video.src';
+      panel.appendChild(ph);
+      return;
+    }
+
+    const wrap = document.createElement('div');
+    wrap.className = 'video-embed';
+    const iframe = document.createElement('iframe');
+    iframe.src = video.src;
+    iframe.title = video.title || 'Vídeo do guia';
+    iframe.loading = 'lazy';
+    iframe.setAttribute('allow',
+      'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+    iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+    iframe.setAttribute('allowfullscreen', '');
+    wrap.appendChild(iframe);
+    panel.appendChild(wrap);
+  }
+
+  /* ---------- render dos painéis (uma vez) ---------- */
+  function renderHowTo() {
+    const wrap = document.getElementById('how-to-content');
+    if (!wrap) return;
+
+    wrap.innerHTML = '';
+    Object.keys(HOW_TO_DATA).forEach(function (key) {
+      const d = HOW_TO_DATA[key];
+
+      const panel = document.createElement('div');
+      panel.className = 'how-to-panel' + (key === activeTab ? ' active' : '');
+      panel.dataset.panel = key;
+
+      // 1) TEXTO de abertura
+      const h = document.createElement('h4');
+      h.textContent = d.title;
+      panel.appendChild(h);
+
+      if (d.intro) {
+        appendParas(panel, d.intro.paras);
+        appendSteps(panel, d.intro.steps);
+      }
+
+      // 2) VÍDEO
+      appendVideo(panel, d.video);
+
+      // 3) TEXTO de fechamento
+      if (d.outro) {
+        appendParas(panel, d.outro.paras);
+        appendSteps(panel, d.outro.tips);
+        if (d.outro.warn) {
+          const w = document.createElement('p');
+          w.style.color = '#f87171';
+          w.style.fontWeight = '600';
+          w.textContent = d.outro.warn;
+          panel.appendChild(w);
+        }
+      }
+
+      wrap.appendChild(panel);
+    });
+
+    rendered = true;
+  }
+
+  /* ---------- troca de aba ---------- */
+  function selectHowToTab(tab) {
+    if (!HOW_TO_DATA[tab]) return;
+    activeTab = tab;
+
+    document.querySelectorAll('#how-to-sidebar .how-to-tab').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+
+    document.querySelectorAll('#how-to-content .how-to-panel').forEach(function (p) {
+      p.classList.toggle('active', p.dataset.panel === tab);
+    });
+
+    const cw = document.getElementById('how-to-content');
+    if (cw) cw.scrollTop = 0;
+  }
+
+  /* ---------- abrir / fechar ---------- */
+  function openHowTo(tab) {
+    const overlay = document.getElementById('how-to-overlay');
+    if (!overlay) return;
+
+    if (!rendered) renderHowTo();
+    if (tab) selectHowToTab(tab);
+
+    overlay.classList.remove('hidden');
+    // força reflow para a transição de opacity rodar
+    void overlay.offsetWidth;
+  }
+
+  function closeHowTo() {
+    const overlay = document.getElementById('how-to-overlay');
+    if (!overlay) return;
+    overlay.classList.add('hidden');
+  }
+
+  /* ---------- wiring ---------- */
+  function init() {
+    ['btn-how-to', 'btn-how-to-area'].forEach(function (id) {
+      const b = document.getElementById(id);
+      if (b) b.addEventListener('click', function () { openHowTo('lynx'); });
+    });
+
+    const closeBtn = document.getElementById('how-to-close');
+    if (closeBtn) closeBtn.addEventListener('click', closeHowTo);
+
+    const overlay = document.getElementById('how-to-overlay');
+    if (overlay) {
+      // clique no fundo (fora do modal)
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closeHowTo();
+      });
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay && !overlay.classList.contains('hidden')) {
+        closeHowTo();
+      }
+    });
+
+    // delegação: clique nas abas da sidebar
+    const sidebar = document.getElementById('how-to-sidebar');
+    if (sidebar) {
+      sidebar.addEventListener('click', function (e) {
+        const btn = e.target.closest('.how-to-tab');
+        if (btn && btn.dataset.tab) selectHowToTab(btn.dataset.tab);
+      });
+    }
+
+    // "Como identificar meu computador?" abre o guia do Lynx
+    const identify = document.querySelector('[data-action="identify-guide"]');
+    if (identify) {
+      identify.addEventListener('click', function (e) {
+        e.preventDefault();
+        const ver = document.getElementById('lynx-version-overlay');
+        if (ver) ver.classList.add('hidden');
+        openHowTo('lynx');
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
   tryRestore();
   document.querySelectorAll('[data-action="lynx-new"]').forEach(el => el.addEventListener('click', () => startLynxExec('new')));
   document.querySelectorAll('[data-action="lynx-old"]').forEach(el => el.addEventListener('click', () => startLynxExec('old')));
