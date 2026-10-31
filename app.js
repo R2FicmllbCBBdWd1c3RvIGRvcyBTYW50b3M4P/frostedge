@@ -1973,24 +1973,24 @@
           'O Lynx é uma ferramenta executável que roda no seu próprio computador. Antes de baixar, identifique qual build combina com o seu sistema.'
         ],
         steps: [
-          'PC Novo: indicado para Linux moderno com glibc 2.28+ e Python 3.12.',
-          'PC Antigo: indicado para distribuições mais velhas com glibc 2.17 e Python 3.8.',
-          'Clique no card do Lynx na página inicial; o seletor de versão abre automaticamente.',
-          'Escolha a versão, baixe o arquivo e guarde em uma pasta dedicada (ex.: ~/lynx).'
+          'PC Novo: possui um botão de desligar CIRCULAR, localizado na parte direita do gabinete.',
+          'PC Antigo: possui um botão de desligar QUADRADO, localizado mais ao meio do gabinete.',
+          'Clique em quero no card do Lynx na página inicial; o seletor de versão abre automaticamente.',
+          'Escolha a versão, baixe o arquivo e siga as instruções do video.'
         ]
       },
       // TODO: troque por "https://www.youtube.com/embed/SEU_ID" (CSP já libera youtube.com)
       video: { src: 'TODO:LYNX', title: 'Instalando o Lynx na prática' },
       outro: {
         paras: [
-          'Depois do download, abra o terminal na pasta do arquivo, libere a execução com "chmod +x lynx" e rode com "./lynx". Na primeira execução ele pode pedir dependências.'
+          'Depois da execução espere ele terminar de instalar as 2 etapas.'
         ],
         tips: [
-          'Se aparecer erro de glibc, troque para a build PC Antigo.',
-          'Se aparecer erro de módulo Python, confirme que a versão do Python bate com a build escolhida.',
-          'Não rode o Lynx como root: use um usuário comum sempre que possível.'
+          'Se ocorrer um erro APENAS com você, tente usar a outra versão do Lynx OU reinicie o seu computador.',
+          'Se ocorrer qualquer erro contate o Administrador (45988208796)',
+          'Não rode o Lynx dentro de um perfil da escola pela sua segurança e a nossa segurança.'
         ],
-        warn: 'Nunca execute arquivos de fontes desconhecidas. Confira sempre a origem/hash antes.'
+        warn: 'Sempre certifique-se de usar o site correto antes de instalar scripts (lynx-81f.pages.dev)'
       }
     },
 
