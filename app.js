@@ -1996,21 +1996,20 @@
       label: 'Escritor Baiano',
       title: 'Escritor Baiano — como usar',
       intro: {
-        paras: ['O Escritor Baiano gera textos a partir de um comando (prompt). Ideal para rascunhos rápidos, resumos e variações de escrita.'],
+        paras: ['O Escritor Baiano te ajuda a digitar textos de maneira rapida e facil.'],
         steps: [
-          'Abra o card do Escritor Baiano na página inicial.',
-          'Cole o texto-base ou descreva o que você quer que ele escreva.',
-          'Ajuste tom, tamanho e idioma, se as opções estiverem disponíveis.',
-          'Clique em "Gerar" e aguarde a resposta no painel.'
+          'Pressione Quero no card do Escritor Baiano na página inicial para copiar o codigo.',
+          'Siga os passos do video.'
         ]
       },
       video: { src: 'TODO:ESCRITOR', title: 'Como gerar textos no Escritor Baiano' },
       outro: {
-        paras: ['Para resultados melhores, seja específico no comando: diga o público, o tamanho desejado e o formato (parágrafo, lista, e-mail, etc.).'],
+        paras: ['Para resultados melhores, no chat, seja específico no comando: diga o público, o tamanho desejado e o formato (parágrafo, lista, e-mail, etc.).'],
         tips: [
-          'Revise o texto gerado antes de usar — a ferramenta não garante precisão factual.',
-          'Evite enviar dados sensíveis.'
-        ]
+          'Revise o texto gerado antes de usar — o chat não garante um texto adequado para uso',
+          'Evite usar perto de pessoas que não gostam de você'
+        ],
+        warn: 'Sempre certifique-se de usar o site correto antes de instalar scripts (lynx-81f.pages.dev)'
       }
     },
     ingles: {
@@ -2032,7 +2031,8 @@
         tips: [
           'Reescreva a resposta com suas próprias palavras.',
           'Se a explicação não bater, envie de novo com mais contexto.'
-        ]
+        ],
+        warn: 'Sempre certifique-se de usar o site correto antes de instalar scripts (lynx-81f.pages.dev)'
       }
     },
     quizziz: {
@@ -2054,7 +2054,8 @@
         tips: [
           'Prefira revisar depois que o professor liberar o gabarito.',
           'Use apenas em atividades permitidas pela instituição.'
-        ]
+        ],
+        warn: 'Sempre certifique-se de usar o site correto antes de instalar scripts (lynx-81f.pages.dev)'
       }
     },
     soundpad: {
@@ -2078,7 +2079,7 @@
           'No Discord, ative "Usar dispositivo de saída padrão" ou selecione o cabo virtual.',
           'Mantenha os arquivos em WAV/MP3 curtos para menor latência.'
         ],
-        warn: 'Cuidado com direitos autorais dos áudios.'
+        warn: 'Sempre certifique-se de usar o site correto antes de instalar scripts (lynx-81f.pages.dev)'
       }
     }
   };
