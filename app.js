@@ -2124,16 +2124,16 @@ function applyBlocksDiff(incoming) {
       .replace(/[^a-z0-9]/g, '');
   }
 
-  function isVisible(el) {
-    if (!el) return false;
-    if (el.hidden) return false;
-    if (el.hasAttribute('hidden')) return false;
-    if (el.classList && el.classList.contains('hidden')) return false;
-    const cs = getComputedStyle(el);
-    if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') return false;
-    if (el.offsetParent === null && cs.position !== 'fixed') return false;
-    return true;
-  }
+function isVisible(el) {
+  if (!el) return false;
+  if (el.hidden) return false;
+  if (el.hasAttribute('hidden')) return false;
+  if (el.classList && el.classList.contains('hidden')) return false;
+  const cs = getComputedStyle(el);
+  if (cs.display === 'none') return false;
+  if (cs.visibility === 'hidden') return false;
+  return true;
+}
 
   function appendParas(panel, list) {
     (list || []).forEach(function (t) {
