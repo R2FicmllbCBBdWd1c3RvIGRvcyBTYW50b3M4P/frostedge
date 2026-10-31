@@ -1964,9 +1964,10 @@
 (function () {
   'use strict';
 
-  /* ---------- CONTEÚDO (Texto + Vídeo + Texto) ---------- */
   const HOW_TO_DATA = {
     lynx: {
+      tag: 'lynx',
+      label: 'Lynx',
       title: 'Lynx — instalação e uso',
       intro: {
         paras: [
@@ -1979,7 +1980,6 @@
           'Escolha a versão, baixe o arquivo e siga as instruções do video.'
         ]
       },
-      // TODO: troque por "https://www.youtube.com/embed/SEU_ID" (CSP já libera youtube.com)
       video: { src: 'TODO:LYNX', title: 'Instalando o Lynx na prática' },
       outro: {
         paras: [
@@ -1995,6 +1995,8 @@
     },
 
     escritor: {
+      tag: 'escritor',
+      label: 'Escritor Baiano',
       title: 'Escritor Baiano — como usar',
       intro: {
         paras: [
@@ -2020,6 +2022,8 @@
     },
 
     ingles: {
+      tag: 'ingles',
+      label: 'Inglês',
       title: 'Inglês — exercícios e respostas',
       intro: {
         paras: [
@@ -2045,6 +2049,8 @@
     },
 
     quizziz: {
+      tag: 'quizziz',
+      label: 'Quizziz',
       title: 'Quizziz — como funciona',
       intro: {
         paras: [
@@ -2070,6 +2076,8 @@
     },
 
     soundpad: {
+      tag: 'soundpad',
+      label: 'Soundpad',
       title: 'Soundpad — instalação e uso',
       intro: {
         paras: [
@@ -2097,11 +2105,16 @@
     }
   };
 
-  /* ---------- estado ---------- */
   let rendered = false;
   let activeTab = 'lynx';
 
-  /* ---------- helpers de DOM ---------- */
+  function norm(s) {
+    return String(s || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]/g, '');
+  }
+
   function appendParas(panel, list) {
     (list || []).forEach(function (t) {
       const p = document.createElement('p');
@@ -2123,8 +2136,6 @@
 
   function appendVideo(panel, video) {
     if (!video || !video.src) return;
-
-    // placeholder quando ainda não há ID real
     if (video.src.indexOf('TODO:') === 0) {
       const ph = document.createElement('div');
       ph.className = 'video-embed';
@@ -2134,11 +2145,10 @@
       ph.style.fontSize = '13px';
       ph.style.textAlign = 'center';
       ph.style.padding = '16px';
-      ph.textContent = 'Vídeo em breve — defina a URL do embed em HOW_TO_DATA.video.src';
+      ph.textContent = 'Vídeo em breve';
       panel.appendChild(ph);
       return;
     }
-
     const wrap = document.createElement('div');
     wrap.className = 'video-embed';
     const iframe = document.createElement('iframe');
@@ -2153,20 +2163,83 @@
     panel.appendChild(wrap);
   }
 
-  /* ---------- render dos painéis (uma vez) ---------- */
-  function renderHowTo() {
+  function getUserTags() {
+    const set = new Set();
+
+    if (Array.isArray(window.__frostedgeTags)) {
+      window.__frostedgeTags.forEach(function (t) { set.add(norm(t)); });
+    }
+
+    try {
+      const jwt = localStorage.getItem('auth_jwt');
+      if (jwt) {
+        const b64 = jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(
+          decodeURIComponent(
+            atob(b64).split('').map(function (c) {
+              return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join('')
+          )
+        );
+        ['tags', 'acessos', 'tools', 'perms'].forEach(function (k) {
+          if (Array.isArray(payload[k])) payload[k].forEach(function (v) { set.add(norm(v)); });
+        });
+      }
+    } catch (_) {}
+
+    document.querySelectorAll('#grid .card').forEach(function (card) {
+      ['data-key', 'data-tool', 'data-tag', 'data-id'].forEach(function (attr) {
+        const v = card.getAttribute(attr);
+        if (v) set.add(norm(v));
+      });
+      const txt = norm(card.textContent);
+      Object.keys(HOW_TO_DATA).forEach(function (key) {
+        const label = norm(HOW_TO_DATA[key].label);
+        const tag = norm(HOW_TO_DATA[key].tag);
+        if ((label && txt.indexOf(label) !== -1) || (tag && txt.indexOf(tag) !== -1)) {
+          set.add(key);
+          set.add(tag);
+        }
+      });
+    });
+
+    document.querySelectorAll('#area-tags .area-tag').forEach(function (el) {
+      set.add(norm(el.textContent));
+    });
+
+    return set;
+  }
+
+  function allowedKeys() {
+    const tags = getUserTags();
+    return Object.keys(HOW_TO_DATA).filter(function (k) {
+      return tags.has(norm(k)) ||
+             tags.has(norm(HOW_TO_DATA[k].tag)) ||
+             tags.has(norm(HOW_TO_DATA[k].label));
+    });
+  }
+
+  function renderHowTo(keys) {
     const wrap = document.getElementById('how-to-content');
-    if (!wrap) return;
+    const sidebar = document.getElementById('how-to-sidebar');
+    if (!wrap || !sidebar) return;
+
+    sidebar.innerHTML = '';
+    keys.forEach(function (key) {
+      const btn = document.createElement('button');
+      btn.className = 'how-to-tab' + (key === activeTab ? ' active' : '');
+      btn.dataset.tab = key;
+      btn.textContent = HOW_TO_DATA[key].label;
+      sidebar.appendChild(btn);
+    });
 
     wrap.innerHTML = '';
-    Object.keys(HOW_TO_DATA).forEach(function (key) {
+    keys.forEach(function (key) {
       const d = HOW_TO_DATA[key];
-
       const panel = document.createElement('div');
       panel.className = 'how-to-panel' + (key === activeTab ? ' active' : '');
       panel.dataset.panel = key;
 
-      // 1) TEXTO de abertura
       const h = document.createElement('h4');
       h.textContent = d.title;
       panel.appendChild(h);
@@ -2175,11 +2248,7 @@
         appendParas(panel, d.intro.paras);
         appendSteps(panel, d.intro.steps);
       }
-
-      // 2) VÍDEO
       appendVideo(panel, d.video);
-
-      // 3) TEXTO de fechamento
       if (d.outro) {
         appendParas(panel, d.outro.paras);
         appendSteps(panel, d.outro.tips);
@@ -2191,50 +2260,60 @@
           panel.appendChild(w);
         }
       }
-
       wrap.appendChild(panel);
     });
 
     rendered = true;
   }
 
-  /* ---------- troca de aba ---------- */
   function selectHowToTab(tab) {
     if (!HOW_TO_DATA[tab]) return;
     activeTab = tab;
-
     document.querySelectorAll('#how-to-sidebar .how-to-tab').forEach(function (btn) {
       btn.classList.toggle('active', btn.dataset.tab === tab);
     });
-
     document.querySelectorAll('#how-to-content .how-to-panel').forEach(function (p) {
       p.classList.toggle('active', p.dataset.panel === tab);
     });
-
     const cw = document.getElementById('how-to-content');
     if (cw) cw.scrollTop = 0;
   }
 
-  /* ---------- abrir / fechar ---------- */
-  function openHowTo(tab) {
+  function refreshButtons() {
+    const keys = allowedKeys();
+    const any = keys.length > 0;
+    ['btn-how-to', 'btn-how-to-area'].forEach(function (id) {
+      const b = document.getElementById(id);
+      if (b) b.style.display = any ? '' : 'none';
+    });
+    return keys;
+  }
+
+  function openHowTo(preferred) {
     const overlay = document.getElementById('how-to-overlay');
     if (!overlay) return;
 
-    if (!rendered) renderHowTo();
-    if (tab) selectHowToTab(tab);
+    const keys = refreshButtons();
+    if (!keys.length) return;
+
+    if (preferred && keys.indexOf(preferred) !== -1) {
+      activeTab = preferred;
+    } else if (keys.indexOf(activeTab) === -1) {
+      activeTab = keys[0];
+    }
+
+    rendered = false;
+    renderHowTo(keys);
 
     overlay.classList.remove('hidden');
-    // força reflow para a transição de opacity rodar
     void overlay.offsetWidth;
   }
 
   function closeHowTo() {
     const overlay = document.getElementById('how-to-overlay');
-    if (!overlay) return;
-    overlay.classList.add('hidden');
+    if (overlay) overlay.classList.add('hidden');
   }
 
-  /* ---------- wiring ---------- */
   function init() {
     ['btn-how-to', 'btn-how-to-area'].forEach(function (id) {
       const b = document.getElementById(id);
@@ -2246,19 +2325,14 @@
 
     const overlay = document.getElementById('how-to-overlay');
     if (overlay) {
-      // clique no fundo (fora do modal)
       overlay.addEventListener('click', function (e) {
         if (e.target === overlay) closeHowTo();
       });
     }
-
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && overlay && !overlay.classList.contains('hidden')) {
-        closeHowTo();
-      }
+      if (e.key === 'Escape' && overlay && !overlay.classList.contains('hidden')) closeHowTo();
     });
 
-    // delegação: clique nas abas da sidebar
     const sidebar = document.getElementById('how-to-sidebar');
     if (sidebar) {
       sidebar.addEventListener('click', function (e) {
@@ -2267,7 +2341,6 @@
       });
     }
 
-    // "Como identificar meu computador?" abre o guia do Lynx
     const identify = document.querySelector('[data-action="identify-guide"]');
     if (identify) {
       identify.addEventListener('click', function (e) {
@@ -2277,6 +2350,13 @@
         openHowTo('lynx');
       });
     }
+
+    refreshButtons();
+    const grid = document.getElementById('grid');
+    if (grid) new MutationObserver(refreshButtons).observe(grid, { childList: true, subtree: true });
+
+    const areaTags = document.getElementById('area-tags');
+    if (areaTags) new MutationObserver(refreshButtons).observe(areaTags, { childList: true, subtree: true });
   }
 
   if (document.readyState === 'loading') {
