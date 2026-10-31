@@ -2351,15 +2351,8 @@ function refreshAll() {
   const overlay = document.getElementById('how-to-overlay');
   const isOpen = overlay && !overlay.classList.contains('hidden');
 
-  if (!isOpen) { lastRenderedKeysStr = null; return keys; }
-  if (!any)    { closeHowTo(); return keys; }
+  if (isOpen && !any) { closeHowTo(); }
 
-  const keysStr = keys.join('|');
-  if (keysStr !== lastRenderedKeysStr) {
-    if (keys.indexOf(activeTab) === -1) activeTab = keys[0];
-    updateHowToIncremental(keys);
-    lastRenderedKeysStr = keysStr;
-  }
   return keys;
 }
 
