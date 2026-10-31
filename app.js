@@ -569,44 +569,67 @@
       delete btn.dataset.busy;
     }
   });
-  function applyBlocksDiff(incoming) {
-    if (!incoming || !Array.isArray(incoming)) return;
-    const incomingMap = new Map(incoming.map(b => [b.tag, b]));
-    const added = [], removed = [], changed = [];
-    for (const b of (currentUser.blocks || [])) {
-      if (!incomingMap.has(b.tag)) removed.push(b);
-      else {
-        const inc = incomingMap.get(b.tag);
-        if (
-  b.tag !== inc.tag ||
-  b.blocked !== inc.blocked ||
-  b.kicker !== inc.kicker ||
-  b.sub !== inc.sub ||
-  JSON.stringify(b.features || []) !== JSON.stringify(inc.features || []) ||
-  b.payload !== inc.payload ||
-  b.payload_new !== inc.payload_new ||
-  b.payload_old !== inc.payload_old
-) changed.push(inc);
-      }
+function applyBlocksDiff(incoming) {
+  if (!incoming || !Array.isArray(incoming)) return;
+  const incomingMap = new Map(incoming.map(b => [b.tag, b]));
+  const added = [], removed = [], changed = [];
+
+  for (const b of (currentUser.blocks || [])) {
+    if (!incomingMap.has(b.tag)) {
+      removed.push(b);
+    } else {
+      const inc = incomingMap.get(b.tag);
+      const changedFlag =
+        b.tag         !== inc.tag         ||
+        b.blocked     !== inc.blocked     ||
+        b.kicker      !== inc.kicker      ||
+        b.sub         !== inc.sub         ||
+        b.payload     !== inc.payload     ||
+        b.payload_new !== inc.payload_new ||
+        b.payload_old !== inc.payload_old ||
+        JSON.stringify(b.features || []) !== JSON.stringify(inc.features || []);
+      if (changedFlag) changed.push(inc);
     }
-    for (const inc of incoming) { if (!knownTags.has(inc.tag)) added.push(inc); }
-    if (!added.length && !removed.length && !changed.length) return;
-    currentUser.blocks = incoming;
-    knownTags = new Set(currentUser.blocks.map(b => b.tag));
-    for (const b of removed) {
-      const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
-      if (card) { card.style.transition = 'opacity .25s, transform .25s'; card.style.opacity = '0'; card.style.transform = 'scale(.95)'; setTimeout(() => card.remove(), 260); }
-      payloads.delete(b.tag + '_new'); payloads.delete(b.tag + '_old'); payloads.delete(b.tag);
-    }
-    for (const b of changed) {
-      const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
-      if (!card) continue;
-      const fresh = renderBlock(b);
-      card.replaceWith(fresh);
-      fadeIn(fresh);
-    }
-    added.forEach((b, i) => { const el = renderBlock(b); setTimeout(() => { grid.appendChild(el); fadeIn(el); }, i * 90); });
   }
+
+  for (const inc of incoming) {
+    if (!knownTags.has(inc.tag)) added.push(inc);
+  }
+
+  if (!added.length && !removed.length && !changed.length) return;
+
+  currentUser.blocks = incoming;
+  knownTags = new Set(currentUser.blocks.map(b => b.tag));
+
+  for (const b of removed) {
+    const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
+    if (card) {
+      card.style.transition = 'opacity .25s, transform .25s';
+      card.style.opacity = '0';
+      card.style.transform = 'scale(.95)';
+      setTimeout(() => card.remove(), 260);
+    }
+    payloads.delete(b.tag + '_new');
+    payloads.delete(b.tag + '_old');
+    payloads.delete(b.tag);
+  }
+
+  for (const b of changed) {
+    const card = [...grid.querySelectorAll('.card')].find(c => c.dataset.tag === b.tag);
+    if (!card) continue;
+    const fresh = renderBlock(b);
+    card.replaceWith(fresh);
+    fadeIn(fresh);
+  }
+
+  added.forEach((b, i) => {
+    const el = renderBlock(b);
+    setTimeout(() => {
+      grid.appendChild(el);
+      fadeIn(el);
+    }, i * 90);
+  });
+}
   function openExec(name) {
     execEmail.textContent = name || '—';
     execRunning.classList.remove('hidden'); execDone.classList.add('hidden'); execClose.classList.add('hidden');
@@ -2339,6 +2362,8 @@ function closeHowTo() {
 
 let lastRenderedKeysStr = null;
 
+let lastRenderedKeysStr = null;
+
 function refreshAll() {
   const keys = allowedKeys();
   const any = keys.length > 0;
@@ -2350,9 +2375,15 @@ function refreshAll() {
 
   const overlay = document.getElementById('how-to-overlay');
   const isOpen = overlay && !overlay.classList.contains('hidden');
+  if (!isOpen) { lastRenderedKeysStr = null; return keys; }
+  if (!any) { closeHowTo(); return keys; }
 
-  if (isOpen && !any) { closeHowTo(); }
-
+  const keysStr = keys.join('|');
+  if (keysStr !== lastRenderedKeysStr) {
+    if (keys.indexOf(activeTab) === -1) activeTab = keys[0];
+    updateHowToIncremental(keys);
+    lastRenderedKeysStr = keysStr;
+  }
   return keys;
 }
 
@@ -2383,14 +2414,15 @@ function openHowTo(preferred) {
 }
   
 let debounceTimer = null;
+let debounceTimer = null;
 function scheduleRefresh() {
   if (debounceTimer) return;
   debounceTimer = setTimeout(function () {
     debounceTimer = null;
     refreshAll();
-  }, 120);
+  }, 150);
 }
-
+  
 function init() {
   ['btn-how-to', 'btn-how-to-area'].forEach(function (id) {
     const b = document.getElementById(id);
