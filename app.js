@@ -1961,6 +1961,144 @@
       setTimeout(() => { window.location.replace('/'); }, 150);
     });
   });
+    // ==========================================
+  // MÓDULO COMO USAR - INJEÇÃO
+  // ==========================================
+  function injectGuideUI() {
+    if (document.getElementById('btn-guide')) return;
+
+    // 1. Injetar CSS
+    const style = document.createElement('style');
+    style.textContent = `
+      .guide-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 10000; align-items: center; justify-content: center; }
+      .guide-modal.open { display: flex; }
+      .guide-content-wrapper { background: #121214; border: 1px solid #2a2a2e; border-radius: 12px; width: 90%; max-width: 900px; height: 75vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+      .guide-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #2a2a2e; background: #18181b; }
+      .guide-header h2 { margin: 0; font-size: 18px; color: #fff; }
+      .guide-close { background: transparent; border: none; color: #888; font-size: 24px; cursor: pointer; line-height: 1; }
+      .guide-close:hover { color: #fff; }
+      .guide-body { display: flex; flex: 1; overflow: hidden; }
+      .guide-sidebar { width: 200px; background: #161618; border-right: 1px solid #2a2a2e; display: flex; flex-direction: column; padding: 12px 0; overflow-y: auto; }
+      .guide-tab { background: transparent; border: none; border-left: 3px solid transparent; color: #888; text-align: left; padding: 14px 20px; font-size: 14px; cursor: pointer; transition: 0.2s; }
+      .guide-tab:hover { background: rgba(255,255,255,0.03); color: #ccc; }
+      .guide-tab.active { background: rgba(255,59,59,0.08); color: #ff3b3b; border-left-color: #ff3b3b; font-weight: 600; }
+      .guide-main { flex: 1; padding: 32px; overflow-y: auto; color: #bbb; line-height: 1.6; font-size: 15px; }
+      .guide-pane { display: none; animation: fadeGuide 0.3s ease; }
+      .guide-pane.active { display: block; }
+      @keyframes fadeGuide { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+      .guide-video { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000; margin: 24px 0; }
+      .guide-video iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+    `;
+    document.head.appendChild(style);
+
+    // 2. Injetar Botão ao lado de "Minha Área"
+    const btnArea = document.getElementById('btn-area');
+    if (btnArea) {
+      const btnGuide = document.createElement('button');
+      btnGuide.id = 'btn-guide';
+      btnGuide.className = btnArea.className; // Pega o estilo do botão "Minha área"
+      btnGuide.textContent = 'Como usar?';
+      btnGuide.style.marginRight = '12px';
+      btnArea.parentNode.insertBefore(btnGuide, btnArea);
+    }
+
+    // 3. Injetar Modal e Sidebar
+    const modalHtml = `
+      <div id="guide-modal" class="guide-modal">
+        <div class="guide-content-wrapper">
+          <div class="guide-header">
+            <h2>Como usar</h2>
+            <button id="guide-close" class="guide-close">&times;</button>
+          </div>
+          <div class="guide-body">
+            <aside id="guide-sidebar" class="guide-sidebar"></aside>
+            <main id="guide-main" class="guide-main"></main>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    const btnGuide = document.getElementById('btn-guide');
+    const modal = document.getElementById('guide-modal');
+    const btnClose = document.getElementById('guide-close');
+    const sidebar = document.getElementById('guide-sidebar');
+    const main = document.getElementById('guide-main');
+    let guideData = null;
+
+    const tabsList = [
+      { id: 'lynx', label: 'Lynx' },
+      { id: 'escritor', label: 'Escritor Baiano' },
+      { id: 'ingles', label: 'Inglês' },
+      { id: 'quizziz', label: 'Quizziz' },
+      { id: 'soundpad', label: 'Soundpad' }
+    ];
+
+    const renderGuide = () => {
+      sidebar.innerHTML = '';
+      main.innerHTML = '';
+
+      tabsList.forEach((tab, index) => {
+        // Botão da Sidebar
+        const btn = document.createElement('button');
+        btn.className = 'guide-tab' + (index === 0 ? ' active' : '');
+        btn.dataset.target = tab.id;
+        btn.textContent = tab.label;
+        
+        // Painel do Conteúdo
+        const pane = document.createElement('div');
+        pane.className = 'guide-pane' + (index === 0 ? ' active' : '');
+        pane.id = 'pane-' + tab.id;
+
+        const data = (guideData && guideData[tab.id]) ? guideData[tab.id] : {};
+        
+        const textTop = data.textTop || `<p>Instruções para <b>${tab.label}</b> em breve.</p>`;
+        const videoHtml = data.videoUrl ? `<div class="guide-video"><iframe src="${data.videoUrl}" allowfullscreen></iframe></div>` : '';
+        const textBottom = data.textBottom || `<p>Notas adicionais em breve.</p>`;
+
+        pane.innerHTML = `<div>${textTop}</div>${videoHtml}<div>${textBottom}</div>`;
+
+        sidebar.appendChild(btn);
+        main.appendChild(pane);
+
+        btn.addEventListener('click', () => {
+          sidebar.querySelectorAll('.guide-tab').forEach(t => t.classList.remove('active'));
+          main.querySelectorAll('.guide-pane').forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          pane.classList.add('active');
+        });
+      });
+    };
+
+    const loadGuide = async () => {
+      sidebar.innerHTML = '<div style="padding:20px;color:#888;font-size:13px;">Carregando...</div>';
+      main.innerHTML = '';
+      try {
+        const res = await window.fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'getGuide' })
+        });
+        const json = await res.json();
+        guideData = json.ok ? json.data : {};
+      } catch (e) {
+        guideData = {};
+      }
+      renderGuide();
+    };
+
+    btnGuide.addEventListener('click', () => {
+      modal.classList.add('open');
+      if (!guideData) loadGuide();
+    });
+
+    btnClose.addEventListener('click', () => modal.classList.remove('open'));
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('open');
+    });
+  }
+
+  injectGuideUI(); // Executa a injeção
   tryRestore();
   document.querySelectorAll('[data-action="lynx-new"]').forEach(el => el.addEventListener('click', () => startLynxExec('new')));
   document.querySelectorAll('[data-action="lynx-old"]').forEach(el => el.addEventListener('click', () => startLynxExec('old')));
