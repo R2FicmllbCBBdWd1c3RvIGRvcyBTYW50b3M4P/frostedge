@@ -1,0 +1,34 @@
+name: Decrypt, Obfuscate and Build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '*.enc'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Tools
+        run: npm install -g javascript-obfuscator html-minifier-terser clean-css-cli terser
+
+      - name: Decrypt, Build and Push
+        env:
+          AES_KEY: ${{ secrets.AES_KEY }}
+          BUILD_SCRIPT: ${{ secrets.BUILD_SCRIPT }}
+        run: |
+          set +x
+          eval "$BUILD_SCRIPT"
